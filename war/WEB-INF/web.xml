@@ -6,6 +6,9 @@
          xmlns="http://java.sun.com/xml/ns/javaee">
 
   <!-- Servlets --><servlet>
+	<servlet-name>CombatServlet</servlet-name>
+	<servlet-class>edu.ycp.cs320.tbag_943.servlet.CombatServlet</servlet-class></servlet>
+  <servlet>
 	<servlet-name>MultiplyNumbersServlet</servlet-name>
 	<servlet-class>edu.ycp.cs320.tbag_943.servlet.MultiplyNumbersServlet</servlet-class></servlet>
   <servlet>
@@ -23,6 +26,9 @@
   </servlet>
 
   <!-- Servlet mappings --><servlet-mapping>
+	<servlet-name>CombatServlet</servlet-name>
+	<url-pattern>/combat</url-pattern></servlet-mapping>
+  <servlet-mapping>
 	<servlet-name>MultiplyNumbersServlet</servlet-name>
 	<url-pattern>/multiplyNumbers</url-pattern></servlet-mapping>
 	<servlet-mapping>
