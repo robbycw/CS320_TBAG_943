@@ -47,11 +47,11 @@ public class IndexServlet extends HttpServlet {
 		// The issue with using req.getRequestDispatcher is that it only calls the JSP, not the doGet method. 
 		// Hence, the user remains on the index URL until they start using their chosen web application. 
 		
-		if(req.getParameter("add") != null) {
-			System.out.println("Index Servlet: addNumbers");
+		if(req.getParameter("titlePage") != null) {
+			System.out.println("Index Servlet: titlePage");
 			//req.getRequestDispatcher("/_view/addNumbers.jsp").forward(req, resp);
 			
-			resp.sendRedirect("/tbag_943/addNumbers");
+			resp.sendRedirect("/tbag_943/titlePage");
 			
 		} else if(req.getParameter("multiply") != null) {
 			System.out.println("Index Servlet: multiplyNumbers");

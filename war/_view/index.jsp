@@ -11,10 +11,9 @@
 		This is the index view jsp
 
 		<form action="${pageContext.servletContext.contextPath}/index" method="post">
-			<input type="submit" name="add" value="Add Numbers!">
+			<input type="submit" name="titlePage" value="TitlePage!">
 			<input type="submit" name="multiply" value="Multiply Numbers!">
 			<input type="submit" name="guess" value="Guessing Game!">
 		</form>
-
 	</body>
 </html>

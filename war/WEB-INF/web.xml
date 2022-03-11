@@ -14,8 +14,8 @@
   </servlet>
   
   <servlet>
-    <servlet-name>AddNumbersServlet</servlet-name>
-    <servlet-class>edu.ycp.cs320.tbag_943.servlet.AddNumbersServlet</servlet-class>
+    <servlet-name>TitlePageServlet</servlet-name>
+    <servlet-class>edu.ycp.cs320.tbag_943.servlet.TitlePageServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>GuessingGameServlet</servlet-name>
@@ -30,8 +30,8 @@
     <url-pattern>/index</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>AddNumbersServlet</servlet-name>
-    <url-pattern>/addNumbers</url-pattern>
+    <servlet-name>TitlePageServlet</servlet-name>
+    <url-pattern>/titlePage</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>GuessingGameServlet</servlet-name>
