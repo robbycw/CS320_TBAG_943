@@ -26,8 +26,24 @@
 			</div>
 		
 		
-			<div class="column">
-				Console goes here.
+			<div class="column"> Console goes here.
+				<table>
+
+					<c:forEach items="${model.outputLog}" var="str">
+					
+						<tr>
+							<td>${str}</td>
+						</tr>
+
+					</c:forEach>
+					
+
+				</table>
+
+				<form action="${pageContext.servletContext.contextPath}/game" method="post">
+					<input type="text" id="user" name="user"><br>
+					<input type="submit" value="Enter"><br>
+				</form>
 
 				<form action="${pageContext.servletContext.contextPath}/game" method="post">
 					<input type="submit" name="title" value="Title Page">

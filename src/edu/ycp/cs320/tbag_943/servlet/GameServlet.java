@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import edu.ycp.cs320.tbag_943.classes.Game;
 
 public class GameServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -16,6 +17,14 @@ public class GameServlet extends HttpServlet {
 			throws ServletException, IOException {
 		
 		System.out.println("GameServlet: doGet");
+		
+		Game game = new Game(); 
+		game.addOutput("Welcome to 9:43!");
+		game.addOutput("This text was added as a test in the servlet.");
+		game.addOutput("Text was added to Game's outputLog, which was referenced by the JSP to post this all!");
+		
+		// Setting "model" attribute to game will allow JSP to reference game.
+		req.setAttribute("model", game);
 		
 		req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
 	}
@@ -52,7 +61,13 @@ public class GameServlet extends HttpServlet {
 			resp.sendRedirect("/tbag_943/combat");
 			
 		}
-		 
+		// Once we have a Game model that persists each request, we can have it so the Servlet will
+		// store Strings from the user input into the outputLog in Game. 
+		if(req.getParameter("user") != null) {
+			//String in = req.getParameter("user"); 
+			
+		}
 		
+		req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
 	}
 }
