@@ -8,7 +8,10 @@
   <!-- Servlets --><servlet>
 	<servlet-name>MultiplyNumbersServlet</servlet-name>
 	<servlet-class>edu.ycp.cs320.tbag_943.servlet.MultiplyNumbersServlet</servlet-class></servlet>
-  <servlet>
+	<servlet>
+		<servlet-name>EndCreditsServlet</servlet-name>
+		<servlet-class>edu.ycp.cs320.tbag_943.servlet.EndCreditsServlet</servlet-class></servlet>
+	<servlet>
     <servlet-name>IndexServlet</servlet-name>
     <servlet-class>edu.ycp.cs320.tbag_943.servlet.IndexServlet</servlet-class>
   </servlet>
@@ -25,6 +28,9 @@
   <!-- Servlet mappings --><servlet-mapping>
 	<servlet-name>MultiplyNumbersServlet</servlet-name>
 	<url-pattern>/multiplyNumbers</url-pattern></servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>EndCreditsServlet</servlet-name>
+		<url-pattern>/EndCredits</url-pattern></servlet-mapping>
 	<servlet-mapping>
     <servlet-name>IndexServlet</servlet-name>
     <url-pattern>/index</url-pattern>
