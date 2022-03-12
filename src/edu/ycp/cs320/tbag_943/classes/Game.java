@@ -7,12 +7,18 @@ public class Game {
 	private int difficulty; 
 	private String saveFile; 
 	private ArrayList<String> outputLog; 
+	private Timer timer; 
+	private Map map; 
+	private Player player; 
 	
 	
 	public Game() {
 		this.difficulty = 1; 
 		this.saveFile = null; 
 		this.outputLog = new ArrayList<String>(); 
+		this.timer = null; 
+		this.map = null; 
+		this.player = null; 
 	}
 	
 	public int getDifficulty() {
@@ -27,6 +33,30 @@ public class Game {
 		return outputLog;
 	}
 	
+	public Timer getTimer() {
+		return timer;
+	}
+
+	public void setTimer(Timer timer) {
+		this.timer = timer;
+	}
+
+	public Map getMap() {
+		return map;
+	}
+
+	public void setMap(Map map) {
+		this.map = map;
+	}
+
+	public Player getPlayer() {
+		return player;
+	}
+
+	public void setPlayer(Player player) {
+		this.player = player;
+	}
+
 	public void setDifficulty(int difficulty) {
 		this.difficulty = difficulty;
 	}
