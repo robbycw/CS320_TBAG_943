@@ -10,10 +10,19 @@
     <servlet-name>GameServlet</servlet-name>
     <servlet-class>edu.ycp.cs320.tbag_943.servlet.GameServlet</servlet-class>
   </servlet>
+  <servlet>
+		<servlet-name>EndCreditsServlet</servlet-name>
+		<servlet-class>edu.ycp.cs320.tbag_943.servlet.EndCreditsServlet</servlet-class></servlet>
+  </servlet>
 
   <!-- Servlet mappings -->
 	<servlet-mapping>
     <servlet-name>GameServlet</servlet-name>
     <url-pattern>/game</url-pattern>
   </servlet-mapping>
+
+  <servlet-mapping>
+		<servlet-name>EndCreditsServlet</servlet-name>
+		<url-pattern>/EndCredits</url-pattern></servlet-mapping>
+	</servlet-mapping>
 </web-app>
