@@ -6,6 +6,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import edu.ycp.cs320.tbag_943.classes.Game;
 
@@ -16,15 +17,24 @@ public class GameServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
+		HttpSession session = req.getSession(false);
+		
+		if(session == null) {
+			// need to make a new session. 
+			session = req.getSession(); 
+			// will also need to make a Game object for this new session! 
+			Game game = new Game(); 
+			game.addOutput("Welcome to 9:43!");
+			game.addOutput("This text was added as a test in the servlet.");
+			game.addOutput("Text was added to Game's outputLog, which was referenced by the JSP to post this all!");
+			
+			// Game data will be stored in the session, allowing data to be exchanged back and
+			// forth in Servlet and JSP.
+			session.setAttribute("model", game);
+		} 
+		
 		System.out.println("GameServlet: doGet");
 		
-		Game game = new Game(); 
-		game.addOutput("Welcome to 9:43!");
-		game.addOutput("This text was added as a test in the servlet.");
-		game.addOutput("Text was added to Game's outputLog, which was referenced by the JSP to post this all!");
-		
-		// Setting "model" attribute to game will allow JSP to reference game.
-		req.setAttribute("model", game);
 		
 		req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
 	}
@@ -33,20 +43,19 @@ public class GameServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
+		HttpSession session = req.getSession(); 
 		System.out.println("GameServlet: doPost");
 		
 		
 		// We will want to use the resp.sendRedirect method as it will provide an easy way to send the user
 		// to the desired URL, which will consequently call the chosen servlet's doGet method.
 		
-		// The issue with using req.getRequestDispatcher is that it only calls the JSP, not the doGet method. 
-		// Hence, the user remains on the index URL until they start using their chosen web application. 
 		
 		if(req.getParameter("title") != null) {
 			
 			System.out.println("GameServlet: titlePage");
 			
-			resp.sendRedirect("/tbag_943/titlepage");
+			resp.sendRedirect("/tbag_943/titlePage");
 			
 		} else if(req.getParameter("credits") != null) {
 			
@@ -64,8 +73,11 @@ public class GameServlet extends HttpServlet {
 		// Once we have a Game model that persists each request, we can have it so the Servlet will
 		// store Strings from the user input into the outputLog in Game. 
 		if(req.getParameter("user") != null) {
-			//String in = req.getParameter("user"); 
+			String in = req.getParameter("user"); 
+			Game model = (Game) session.getAttribute("model"); 
 			
+			model.addOutput(in);
+			session.setAttribute("model", model);
 		}
 		
 		req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);

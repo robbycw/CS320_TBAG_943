@@ -40,7 +40,7 @@
 	
 		<form action="${pageContext.servletContext.contextPath}/EndCredits" method="get">
 			<center>
-			<button type="Submit" formaction="${pageContext.servletContext.contextPath}/TitlePage">Press to Continue</button>
+			<button type="Submit" formaction="${pageContext.servletContext.contextPath}/titlePage">Press to Continue</button>
 			</center>
 		</form>
 		<h3 style="color: white;font-size:200%;position:fixed;bottom:0;right:0;">

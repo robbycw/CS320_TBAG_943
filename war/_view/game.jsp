@@ -27,18 +27,25 @@
 		
 		
 			<div class="column"> Console goes here.
-				<table>
-
-					<c:forEach items="${model.outputLog}" var="str">
+				
+				<div style="height: 200px; overflow: auto">
 					
-						<tr>
-							<td>${str}</td>
-						</tr>
+					<table>
 
-					</c:forEach>
-					
+						<c:forEach items="${model.outputLog}" var="str">
 
-				</table>
+							<tr>
+								<td>${str}</td>
+							</tr>
+
+						</c:forEach>
+
+
+					</table>
+
+				</div>
+
+				
 
 				<form action="${pageContext.servletContext.contextPath}/game" method="post">
 					<input type="text" id="user" name="user"><br>

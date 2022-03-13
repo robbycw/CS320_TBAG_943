@@ -1,12 +1,9 @@
-package edu.ycp.cs320.tbag_943.java;
+package edu.ycp.cs320.tbag_943.classes;
 
 import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import edu.ycp.cs320.tbag_943.controller.NumbersController;
-import edu.ycp.cs320.tbag_943.model.Numbers;
 
 public class ItemTest {
 	private Item modelHealthPotion, modelSword;
