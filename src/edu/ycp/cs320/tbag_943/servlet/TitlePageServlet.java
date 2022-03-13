@@ -7,9 +7,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import edu.ycp.cs320.tbag_943.controller.NumbersController;
-import edu.ycp.cs320.tbag_943.model.Numbers;
-
 public class TitlePageServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -28,6 +25,26 @@ public class TitlePageServlet extends HttpServlet {
 			throws ServletException, IOException {
 		
 		System.out.println("TitlePage Servlet: doPost");
+		
+		if(req.getParameter("game") != null) {
+			
+			System.out.println("TitlePage Servlet: Game");
+			
+			resp.sendRedirect("/tbag_943/game");
+			
+		} else if(req.getParameter("credits") != null) {
+			
+			System.out.println("TitlePage Servlet: Credits");
+			
+			resp.sendRedirect("/tbag_943/credits");
+			
+		} else if(req.getParameter("options") != null) {
+			
+			System.out.println("TitlePage Servlet: Options");
+			
+			resp.sendRedirect("/tbag_943/game");
+			
+		}
 		
 		
 		// decode POSTed form parameters and dispatch to controller

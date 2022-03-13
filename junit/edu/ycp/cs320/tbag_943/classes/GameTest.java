@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 
-import edu.ycp.cs320.tbag_943.model.Numbers;
-
 public class GameTest {
 	private Game model;
 	

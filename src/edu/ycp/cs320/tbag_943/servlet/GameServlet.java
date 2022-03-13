@@ -55,7 +55,7 @@ public class GameServlet extends HttpServlet {
 			
 			System.out.println("GameServlet: titlePage");
 			
-			resp.sendRedirect("/tbag_943/titlepage");
+			resp.sendRedirect("/tbag_943/titlePage");
 			
 		} else if(req.getParameter("credits") != null) {
 			
