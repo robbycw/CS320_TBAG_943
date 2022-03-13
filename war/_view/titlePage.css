@@ -1,0 +1,22 @@
+#entire{
+	border-top: 5px outset black;
+    	border-bottom: 5px outset black;
+	background-color: black;
+	height: 700px;
+	width:100%;
+}
+
+
+#gameTitle{
+	margin-left: 33%;
+	width:500px;
+	height: 350px;
+	text-align:center;
+  	Color:red;
+    	font-size:225%;
+	margin-top:150px;
+}
+#buttons{
+	text-align:center;
+	margin-top:5px;
+}
