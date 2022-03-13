@@ -17,9 +17,9 @@ public class GameServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
-		HttpSession session = req.getSession(false);
+		HttpSession session = req.getSession(false); 
 		
-		if(session == null) {
+		if(session == null || session.getAttribute("model") == null) {
 			// need to make a new session. 
 			session = req.getSession(); 
 			// will also need to make a Game object for this new session! 
