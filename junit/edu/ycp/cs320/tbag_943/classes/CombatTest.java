@@ -1,4 +1,4 @@
-package edu.ycp.cs320.tbag_943.java;
+package edu.ycp.cs320.tbag_943.classes;
 
 import static org.junit.Assert.assertTrue;
 

@@ -15,18 +15,14 @@
     <servlet-class>edu.ycp.cs320.tbag_943.servlet.TitlePageServlet</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>GuessingGameServlet</servlet-name>
-    <servlet-class>edu.ycp.cs320.tbag_943.servlet.GuessingGameServlet</servlet-class>
-  </servlet>
-  <servlet>
     <servlet-name>EndCreditsServlet</servlet-name>
 		<servlet-class>edu.ycp.cs320.tbag_943.servlet.EndCreditsServlet</servlet-class>
   </servlet>
 
   <!-- Servlet mappings -->
-	<servlet-mapping>
-    <servlet-name>IndexServlet</servlet-name>
-    <url-pattern>/index</url-pattern>
+  <servlet-mapping>
+    <servlet-name>EndCreditsServlet</servlet-name>
+    <url-pattern>/credits</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>TitlePageServlet</servlet-name>
@@ -36,9 +32,4 @@
     <servlet-name>GameServlet</servlet-name>
     <url-pattern>/game</url-pattern>
   </servlet-mapping>
-
-  <servlet-mapping>
-		<servlet-name>EndCreditsServlet</servlet-name>
-		<url-pattern>/EndCredits</url-pattern></servlet-mapping>
-	</servlet-mapping>
 </web-app>

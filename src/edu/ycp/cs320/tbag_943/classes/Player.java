@@ -8,7 +8,7 @@ public class Player {
 	private String icon; 
 	private ArrayList<Item> inventory; 
 	private Location location; 
-	private ArrayList<Stat> stats; 
+	//private ArrayList<Stat> stats; 
 	
 	
 	public Player() { 
@@ -49,13 +49,13 @@ public class Player {
 		this.inventory = inventory;
 	}
 
-	public ArrayList<Stat> getStats() {
-		return stats;
-	}
+	//public ArrayList<Stat> getStats() {
+	//	return stats;
+	//}
 
-	public void setStats(ArrayList<Stat> stats) {
-		this.stats = stats;
-	}
+	//public void setStats(ArrayList<Stat> stats) {
+	//	this.stats = stats;
+	//}
 
 	public void collect(Item item) {
 		this.inventory.add(item); 

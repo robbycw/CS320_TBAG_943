@@ -1,4 +1,4 @@
-package edu.ycp.cs320.tbag_943.java;
+package edu.ycp.cs320.tbag_943.classes;
 
 // model class for GuessingGame
 // only the controller should be allowed to call the set methods

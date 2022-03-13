@@ -113,7 +113,7 @@ public class MapTest {
 		// room4: 2
 		
 		assertTrue(map1.isConnected(r1, r2)); 
-		assertTrue(map1.isConnected(r1, r3); 
+		assertTrue(map1.isConnected(r1, r3)); 
 		assertTrue(map1.isConnected(r2, r3)); 
 		assertTrue(map1.isConnected(r4, r2)); 
 		assertFalse(map1.isConnected(r4, r3)); 
