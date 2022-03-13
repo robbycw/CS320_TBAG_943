@@ -5,7 +5,11 @@
          version="2.5"
          xmlns="http://java.sun.com/xml/ns/javaee">
 
+
   <!-- Servlets -->
+  <servlet>
+	<servlet-name>CombatServlet</servlet-name>
+	<servlet-class>edu.ycp.cs320.tbag_943.servlet.CombatServlet</servlet-class></servlet>
   <servlet>
     <servlet-name>GameServlet</servlet-name>
     <servlet-class>edu.ycp.cs320.tbag_943.servlet.GameServlet</servlet-class>
@@ -24,6 +28,10 @@
   </servlet>
 
   <!-- Servlet mappings -->
+  <servlet-mapping>
+	<servlet-name>CombatServlet</servlet-name>
+	<url-pattern>/combat</url-pattern>
+  </servlet-mapping>
 	<servlet-mapping>
     <servlet-name>IndexServlet</servlet-name>
     <url-pattern>/index</url-pattern>
