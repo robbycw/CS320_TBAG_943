@@ -28,7 +28,7 @@
 		
 			<div class="column"> Console goes here.
 				
-				<div style="height: 200px; overflow: auto">
+				<div id="output" style="height: 200px; overflow: auto">
 					
 					<table>
 
@@ -45,7 +45,11 @@
 
 				</div>
 
-				
+				<!-- This script was found at https://www.codegrepper.com/code-examples/javascript/javascript+scroll+to+bottom+of+table -->
+				<script>
+					var myDiv = document.getElementById("output");
+					myDiv.scrollTop = myDiv.scrollHeight; 
+				</script>
 
 				<form action="${pageContext.servletContext.contextPath}/game" method="post">
 					<input type="text" id="user" name="user"><br>

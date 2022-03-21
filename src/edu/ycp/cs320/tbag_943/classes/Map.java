@@ -6,8 +6,8 @@ import java.util.HashMap;
 
 public class Map {
 	private String icon;
-	private ArrayList<Location> locations; 
-	private HashMap<String, ArrayList<String>> connections; 
+	private HashMap<String, Location> locations; 
+	private HashMap<String, ArrayList<String>> connections;  
 	
 	
 	public Map() {
@@ -16,6 +16,12 @@ public class Map {
 		 this.connections = null; 
 	}
 
+	public Map(HashMap<String, Location> locations, HashMap<String, ArrayList<String>> connections) {
+		 this.icon = null; 
+		 this.locations = locations; 
+		 this.connections = connections; 
+		
+	}
 
 	public String getIcon() {
 		return icon;
@@ -27,17 +33,17 @@ public class Map {
 	}
 
 
-	public ArrayList<Location> getLocations() {
+	public HashMap<String, Location> getLocations() {
 		return locations;
 	}
 
 
-	public void setLocations(ArrayList<Location> locations) {
+	public void setLocations(HashMap<String, Location> locations) {
 		this.locations = locations;
 	}
 	
 	public void addLocation(Location location) {
-		this.locations.add(location); 
+		this.locations.put(location.getName(), location); 
 	}
 
 	public HashMap<String, ArrayList<String>> getConnections() {
@@ -59,5 +65,5 @@ public class Map {
 		}
 		
 	}
-	
+
 }

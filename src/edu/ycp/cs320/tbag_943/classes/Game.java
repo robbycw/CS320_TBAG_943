@@ -21,6 +21,15 @@ public class Game {
 		this.player = null; 
 	}
 	
+	public Game(int difficulty, Map map, Player player) {
+		this.difficulty = difficulty; 
+		this.saveFile = null; 
+		this.outputLog = new ArrayList<String>(); 
+		this.timer = new Timer(); 
+		this.map = map; 
+		this.player = player; 
+	}
+	
 	public int getDifficulty() {
 		return difficulty;
 	}

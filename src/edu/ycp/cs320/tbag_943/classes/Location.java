@@ -1,6 +1,7 @@
 package edu.ycp.cs320.tbag_943.classes;
 
-import java.util.ArrayList; 
+import java.util.ArrayList;
+import java.util.HashMap; 
 
 
 public class Location {
@@ -8,14 +9,14 @@ public class Location {
 	private ArrayList<Puzzle> puzzles; 
 	private ArrayList<Combat> combats;
 	private Loot treasure;
-	//private ArrayList<NPC> npcs;
+	private HashMap<String, NPC> npcs;
 	
 	public Location() {
 		this.name = "Start"; 
 		this.puzzles = null; 
 		this.combats = null; 
 		this.treasure = null; 
-		//this.npcs = null; 
+		this.npcs = null; 
 	}
 	
 	public Location(String name) {
@@ -23,7 +24,7 @@ public class Location {
 		this.puzzles = null; 
 		this.combats = null; 
 		this.treasure = null; 
-		//this.npcs = null; 
+		this.npcs = null; 
 	}
 	
 	public String getName() {
@@ -66,14 +67,14 @@ public class Location {
 	}
 
 
-	//public ArrayList<NPC> getNPCs() {
-		//return npcs;
-	//}
+	public HashMap<String, NPC> getNPCs() {
+		return npcs;
+	}
 
 
-	//public void setNPCs(ArrayList<NPC> npcs) {
-		//this.npcs = npcs;
-	//}
+	public void setNPCs(HashMap<String, NPC> npcs) {
+		this.npcs = npcs;
+	}
 	
 
 }
