@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import edu.ycp.cs320.tbag_943.classes.Game;
+import edu.ycp.cs320.tbag_943.controller.GameController;
 
 public class GameServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -75,8 +76,41 @@ public class GameServlet extends HttpServlet {
 		if(req.getParameter("user") != null) {
 			String in = req.getParameter("user"); 
 			Game model = (Game) session.getAttribute("model"); 
+			GameController controller = new GameController(model); 
 			
-			model.addOutput(in);
+			model.addOutput(in); // The user's command is added to the output 
+			
+			// We will want to ensure the input is all lower case, and then split the
+			// command into an array of strings, as this is necessary to interpret 
+			// multiple-word commands (ex: move north). 
+			
+			in = in.toLowerCase(); 
+			String[] input = in.split(" "); 
+			
+			// The following switch-case will interpret the user's command and call the
+			// appropriate controller functions. 
+			
+			switch(input[0]) {
+			
+				case "move":
+					controller.move(input[1]);
+					break; 
+				case "help":
+					controller.help(); 
+					break; 
+				case "attack":
+					controller.attack(input[1]);
+					break; 
+				case "talk":
+					controller.talk(input[1]);
+					break; 
+				case "collect":
+					controller.collect(input[1]);
+					break; 
+				default: 
+					model.addOutput("Unknown command.");
+			}
+			
 			session.setAttribute("model", model);
 		}
 		

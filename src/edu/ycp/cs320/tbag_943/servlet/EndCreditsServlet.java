@@ -32,24 +32,6 @@ public class EndCreditsServlet extends HttpServlet {
 			req.getRequestDispatcher("/servlet/TitleScreen.java").forward(req, resp);
 		}
 		
-		// Add parameters as request attributes
-		// this creates attributes named "first" and "second for the response, and grabs the
-		// values that were originally assigned to the request attributes, also named "first" and "second"
-		// they don't have to be named the same, but in this case, since we are passing them back
-		// and forth, it's a good idea
-		//req.setAttribute("first", req.getParameter("first"));
-		//req.setAttribute("second", req.getParameter("second"));
-		//req.setAttribute("third", req.getParameter("third"));
-		
-		// add result objects as attributes
-		// this adds the errorMessage text and the result to the response
-		//req.setAttribute("errorMessage", errorMessage);
-		//req.setAttribute("result", model.getResult());
-		//req.setAttribute("submit", req.getParameter("submit"));
-		
-		// We only need to access the model with these changes. 
-		//req.setAttribute("sum", model);
-		
 		// Forward to view to render the result HTML document
 		req.getRequestDispatcher("/_view/EndCredits.jsp").forward(req, resp);
 	}

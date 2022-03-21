@@ -14,7 +14,7 @@ public class MapTest {
 	private HashMap<String, ArrayList<String>> connections; 
 	private String room1, room2, room3, room4; 
 	private ArrayList<String> room1Con, room2Con, room3Con, room4Con; 
-	private ArrayList<Location> locations; 
+	private HashMap<String, Location> locations; 
 	private Location r1, r2, r3, r4; 
 	
 	@Before
@@ -49,15 +49,15 @@ public class MapTest {
 		connections.put(room3, room3Con); 
 		connections.put(room4, room4Con); 
 		
-		locations = new ArrayList<Location>(); 
+		locations = new HashMap<String, Location>(); 
 		r1 = new Location(room1); 
 		r2 = new Location(room2); 
 		r3 = new Location(room3); 
 		r4 = new Location(room4); 
-		locations.add(r1); 
-		locations.add(r2); 
-		locations.add(r3); 
-		locations.add(r4); 
+		locations.put(room1, r1); 
+		locations.put(room2, r2); 
+		locations.put(room3,r3); 
+		locations.put(room4,r4); 
 		
 	}
 	
@@ -93,7 +93,7 @@ public class MapTest {
 		
 		map1.setLocations(locations);
 		
-		for(int i = 0; i < map1.getLocations().size(); i++) {
+		for(String i : map1.getLocations().keySet()) {
 			
 			assertEquals(map1.getLocations().get(i).getName(), locations.get(i).getName()); 
 			

@@ -1,20 +1,29 @@
 package edu.ycp.cs320.tbag_943.classes;
 
 import java.util.ArrayList; 
+import java.util.HashMap; 
 
 
 public class Player {
 	private String name; 
 	private String icon; 
-	private ArrayList<Item> inventory; 
+	private HashMap<String, Item> inventory; 
 	private Location location; 
-	private ArrayList<Stat> stats; 
+	private HashMap<String, Stat> stats; 
 	
 	
 	public Player() { 
 		this.name = "John Johnson"; 
 		this.icon = "path"; 
 		this.location = null; 
+	}
+	
+	public Player(String name, Location location) { 
+		this.name = name; 
+		this.icon = "path"; 
+		this.location = location; 
+		this.inventory = new HashMap<String, Item>(); 
+		this.stats = new HashMap<String, Stat>();
 	}
 	
 	public String getName() {
@@ -41,24 +50,24 @@ public class Player {
 		this.icon = icon;
 	}
 	
-	public ArrayList<Item> getInventory() {
+	public HashMap<String, Item> getInventory() {
 		return inventory;
 	}
 
-	public void setInventory(ArrayList<Item> inventory) {
+	public void setInventory(HashMap<String, Item> inventory) {
 		this.inventory = inventory;
 	}
 
-	public ArrayList<Stat> getStats() {
+	public HashMap<String, Stat> getStats() {
 		return stats;
 	}
 
-	public void setStats(ArrayList<Stat> stats) {
+	public void setStats(HashMap<String, Stat> stats) {
 		this.stats = stats;
 	}
 
 	public void collect(Item item) {
-		this.inventory.add(item); 
+		this.inventory.put(item.getName(), item); 
 	}
 	
 	public void interactWithObject() {

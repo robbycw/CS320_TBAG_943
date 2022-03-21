@@ -1,18 +1,16 @@
 package edu.ycp.cs320.tbag_943.classes;
 
-// model class for GuessingGame
-// only the controller should be allowed to call the set methods
-// the JSP will call the "get" and "is" methods implicitly
-// when the JSP specifies game.min, that gets converted to
-//    a call to model.getMin()
-// when the JSP specifies if(game.done), that gets converted to
-//    a call to model.isDone()
 public class Item {
 	private boolean consumable, isWeapon;
 	private int damage, healthGain, value;
 	private double acuracy;
+	private String name; 
 	
 	public Item() {
+	}
+	
+	public Item(String name) {
+		this.name = name; 
 	}
 	
 	public void setIcon() {
@@ -23,7 +21,13 @@ public class Item {
 		this.value = value;
 	}
 	
+	public String getName() {
+		return name; 
+	}
 	
+	public void setName(String name) {
+		this.name = name; 
+	}
 								///consumable setter stuff//
 	public void isConsumable(boolean consumable) {
 		this.consumable = consumable;
