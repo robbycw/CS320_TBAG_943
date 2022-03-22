@@ -16,7 +16,6 @@ public class NPC {
 	}
 	
 	public String getAttackMove(int get) {
-		
 		return attackMoves[get];
 		
 	}

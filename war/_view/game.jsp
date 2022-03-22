@@ -17,6 +17,44 @@
 	</head>
 
 	<body>
+		<div id="overlay">
+			<div id="charCreationTxt">
+			<p>Name:</p>
+			<p>Strength:</p>
+			<p>Speed:</p>
+			<p>Constitution:</p>
+			<p>Charisma:</p>
+			</div >
+			
+			<div id="charCreationBoxes">
+				
+				<div id= "nameBox">
+				<input type="text" id="pName" name="pName" value="jimmy" ><br>
+				</div>
+				
+				<div id= "strengthBox">
+				<input type="text" id="pName" name="pName" value="Stronk" ><br>
+				</div>
+				
+				<div id= "SpeedBox">
+				<input type="text" id="pName" name="pName" value="GOTTA GO FAst" ><br>
+				</div>
+				
+				<div id= "ConstitutionBox">
+				<input type="text" id="pName" name="pName" value="How many nails do you eat?" ><br>
+				</div>
+				
+				<div id= "charismaBox">
+				<input type="text" id="pName" name="pName" value="MMM yes" ><br>
+				</div>
+				
+			</div>
+			
+			<div id= "submitButton">
+			<input type="submit" id="pName" name="pName" value="Done" onclick="off()">
+			</div>
+		</div>
+		
 		
 		<div id="entire"><div id="row">
 		
@@ -75,6 +113,14 @@
 			</div>
 		
 		</div></div>
+		<script>
+		function on() {
+		  	document.getElementById("overlay").style.display = "block";
+		}
 
+		function off() {
+  			document.getElementById("overlay").style.display = "none";
+		}
+		</script>
 	</body>
 </html>
