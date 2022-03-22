@@ -18,13 +18,10 @@ public class GameController {
 
 	//fields
 	private Game model; 
-	private boolean inCombat; 
-	private boolean playerTurnTaken; 
 	
 	//constructor
 	public GameController(Game model) {
-		this.model = model; 
-		this.inCombat = false; 
+		this.model = model;  
 	}
 
 	public Game getModel() {
@@ -35,73 +32,69 @@ public class GameController {
 		this.model = model;
 	}
 
-	public boolean isInCombat() {
-		return inCombat;
-	}
-
-	public void setInCombat(boolean inCombat) {
-		this.inCombat = inCombat;
-	}
 	
 	public void move(String direction) {
 		Map map = model.getMap(); 
 		Player player = model.getPlayer(); 
-		String start = player.getLocation().getName(); 
-		ArrayList<String> connections = map.getConnections().get(start); 
 		
-		if(direction == "north") {
-			if(connections.get(0) != null) { 
-				
-				Location end = map.getLocations().get(connections.get(0)); 
-				player.move(end); 
-				
-				String desc = player.getName() + " has moved from " + start + " to " + end.getName(); 
-				model.addOutput(desc);
-			}
-		} else if (direction == "east") { 
-			if(connections.get(1) != null) { 
+		if(direction.equals("north")) {
+
+			GameController.doMove(model, map, player, 0);
 			
-				Location end = map.getLocations().get(connections.get(1)); 
-				player.move(end); 
-				
-				String desc = player.getName() + " has moved from " + start + " to " + end.getName(); 
-				model.addOutput(desc);
-			}
-		} else if (direction == "south") { 
-			if(connections.get(2) != null) { 
- 
-				Location end = map.getLocations().get(connections.get(2)); 
-				player.move(end); 
-				
-				String desc = player.getName() + " has moved from " + start + " to " + end.getName(); 
-				model.addOutput(desc);
-			}
-		} else if (direction == "west") { 
-			if(connections.get(3) != null) { 
-				
-				Location end = map.getLocations().get(connections.get(3)); 
-				player.move(end); 
-				
-				String desc = player.getName() + " has moved from " + start + " to " + end.getName(); 
-				model.addOutput(desc);
-			}
+		} else if (direction.equals("east")) { 
+
+			GameController.doMove(model, map, player, 1);
+			
+		} else if (direction.equals("south")) { 
+			
+			GameController.doMove(model, map, player, 2);
+			
+		} else if (direction.equals("west")) { 
+			
+			GameController.doMove(model, map, player, 3);
+			
 		} else {
 			String err = "Invalid move."; 
 			model.addOutput(err);
 		}
 	}
 	
+	public static void doMove(Game model, Map map, Player player, int direction) {
+		String start = player.getLocation().getName();
+		ArrayList<String> connections = map.getConnections().get(start); 
+		// The player can move here. 
+		System.out.println("Printing null string:" + connections.get(direction)); 
+		if(!connections.get(direction).equals("-1")) { 
+			
+			Location end = map.getLocations().get(connections.get(direction)); 
+			player.move(end); 
+			
+			String desc = player.getName() + " has moved from " + start + " to " + end.getName(); 
+			model.addOutput(desc);
+			
+			// Print the room description
+			model.addOutput(player.getLocation().getDescription());
+			
+		} else {
+			// The player cannot move here. 
+			String err = player.getName() + " cannot move in this direction";  
+			model.addOutput(err);
+		}
+		
+	}
+	
 	public void attack(String target) { 
 		// First, we need to ensure that the target exists as an NPC. 
+		System.out.println(target); 
 		if(model.getPlayer().getLocation().getNPCs().containsKey(target)) {
 			// The target exists as an NPC
 			NPC tar = model.getPlayer().getLocation().getNPCs().get(target); 
-			if(inCombat) {
+			if(model.isInCombat()) {
 				// There should be an ongoing combat in this case, which will be referenced in model. 
 				// It must be the player's turn if this branch is accessed. 
 				// We will first want to check if the player is still alive. 
 				if(model.getPlayer().getStats().get("health").getRank() <= 0) {
-					inCombat = false; 
+					model.setInCombat(false);
 					String x = "You have died. GAME OVER."; 
 					model.addOutput(x);
 				} else {
@@ -114,13 +107,13 @@ public class GameController {
 					// Continue the NPCs turns if combat isn't over! 
 					if(c.isDead()) { 
 						// Combat is complete! 
-						inCombat = false; 
+						model.setInCombat(false); 
 						String x = "All enemies have been slain!"; 
 						model.addOutput(x);
 					} else {
 						// Combat is not over
-						playerTurnTaken = true; 
-						c.runCombat(model, model.getPlayer(), playerTurnTaken);
+						model.setPlayerTurnTaken(true);
+						c.runCombat(model, model.getPlayer(), model.isPlayerTurnTaken());
 					}
 				}
 				
@@ -128,7 +121,7 @@ public class GameController {
 				// We will want to ensure that a combat can be initiated with this target. 
 				if(tar.isCombat()) {
 					// The combat will then need to start! 
-					inCombat = true; 
+					model.setInCombat(true);
 					// We will need to find the combat that contains this target. 
 					ArrayList<Combat> combats = model.getPlayer().getLocation().getCombats(); 
 					
@@ -140,23 +133,21 @@ public class GameController {
 					}
 					
 					// The combat can now be started. 
-					playerTurnTaken = false; 
+					model.setPlayerTurnTaken(false);
 					String s = "Combat initiated!"; 
 					model.addOutput(s);
-					model.getCurrentCombat().runCombat(model, model.getPlayer(), playerTurnTaken);
+					model.getCurrentCombat().runCombat(model, model.getPlayer(), model.isPlayerTurnTaken());
 					
 				} else {
 					String s = tar.getName() + " cannot be fought."; 
 					model.addOutput(s);
 				}
 				
-	 
-				
 			}
 			
 		} else {
 			// The target is not an NPC. 
-			
+			model.addOutput(target + " is not a creature.");
 		}
 		
 		
@@ -179,6 +170,10 @@ public class GameController {
 	}
 	
 	public void talk(String NPC) {
+		
+	}
+	
+	public void inventory() {
 		
 	}
 	

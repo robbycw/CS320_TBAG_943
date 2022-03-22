@@ -7,13 +7,11 @@ public class NPC implements Comparable {
 
 	private String name; 
 	private String[] attackMoves;
-	private int health;
 	private boolean combat;
 	private HashMap<String, Stat> stats; 
 	private Item weapon; 
 	
 	public NPC(String name, int health, boolean combat, HashMap<String, Stat> stats) {
-		this.health = health;
 		this.combat = combat;
 		this.name = name;
 		this.stats = stats;
@@ -26,6 +24,26 @@ public class NPC implements Comparable {
 		st.put("speed", sp); 
 		this.stats = st; 
 		this.name = name; 
+	}
+	
+	public NPC(String name, boolean combat, Item weapon, int health, int armor, int strength, int speed) {
+		this.name = name;
+		this.combat = combat; 
+		this.weapon = weapon; 
+		
+		// Generate Stats
+		Stat h = new Stat("health", health); 
+		Stat a = new Stat("armor", armor); 
+		Stat st = new Stat("strength", strength); 
+		Stat sp = new Stat("speed", speed); 
+		
+		HashMap<String, Stat> stat = new HashMap<String, Stat>(); 
+		stat.put("health", h);
+		stat.put("armor", a);
+		stat.put("strength", st);
+		stat.put("speed", sp); 
+		this.stats = stat; 
+		
 	}
 	
 	public Item getWeapon() {
@@ -56,7 +74,7 @@ public class NPC implements Comparable {
 	}
 	
 	public boolean isAlive() {
-		if(health > 0) {
+		if(stats.get("health").getRank() > 0) {
 			return true;
 		}
 		else {

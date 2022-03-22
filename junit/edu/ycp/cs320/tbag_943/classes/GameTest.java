@@ -22,12 +22,6 @@ public class GameTest {
 	}
 	
 	@Test
-	public void testSetSaveFile() {
-		model.setSaveFile("save");
-		assertEquals(model.getSaveFile(), "save");
-	}
-	
-	@Test
 	public void testSetOutputLog() {
 		ArrayList<String> out = new ArrayList<String>(); 
 		out.add("Test1"); 

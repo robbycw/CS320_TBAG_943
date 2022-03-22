@@ -13,6 +13,11 @@ public class Item {
 		this.name = name; 
 	}
 	
+	public Item(String name, int damage) {
+		this.name = name;
+		this.damage = damage; 
+	}
+	
 	public void setIcon() {
 		
 	}

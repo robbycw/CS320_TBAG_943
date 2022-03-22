@@ -18,6 +18,22 @@ public class Combat {
 		rng = new Random(); 
 	}
 	
+	public Combat(ArrayList<NPC> npcs) {
+		this.turn = 0; 
+		rng = new Random(); 
+		// Sort the turnOrder. 
+		this.turnOrder = npcs; 
+		Collections.sort(turnOrder);
+		
+		// We will want to have NPCs added to the HashMap with lowercase keys
+		HashMap<String, NPC> npc = new HashMap<String, NPC>();
+		for(NPC n : npcs) {
+			String key = n.getName().toLowerCase(); 
+			npc.put(key, n); 
+		}
+		this.npcs = npc; 
+	}
+	
 	public int getDifficulty() {
 		return difficulty;
 	}
