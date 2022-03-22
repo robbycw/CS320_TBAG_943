@@ -45,7 +45,6 @@ public class NPC implements Comparable {
 	}
 
 	public String getAttackMove(int get) {
-		
 		return attackMoves[get];
 		
 	}
