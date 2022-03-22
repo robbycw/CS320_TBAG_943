@@ -19,6 +19,7 @@ public class GameController {
 	//fields
 	private Game model; 
 	private boolean inCombat; 
+	private boolean playerTurnTaken; 
 	
 	//constructor
 	public GameController(Game model) {
@@ -91,12 +92,74 @@ public class GameController {
 	}
 	
 	public void attack(String target) { 
-		if(inCombat) {
+		// First, we need to ensure that the target exists as an NPC. 
+		if(model.getPlayer().getLocation().getNPCs().containsKey(target)) {
+			// The target exists as an NPC
+			NPC tar = model.getPlayer().getLocation().getNPCs().get(target); 
+			if(inCombat) {
+				// There should be an ongoing combat in this case, which will be referenced in model. 
+				// It must be the player's turn if this branch is accessed. 
+				// We will first want to check if the player is still alive. 
+				if(model.getPlayer().getStats().get("health").getRank() <= 0) {
+					inCombat = false; 
+					String x = "You have died. GAME OVER."; 
+					model.addOutput(x);
+				} else {
+					// The Player is still alive! 
+					Combat c = model.getCurrentCombat(); 
+					
+					// Calculate and apply player's attack. 
+					c.playerAttack(model, model.getPlayer(), target);
+					
+					// Continue the NPCs turns if combat isn't over! 
+					if(c.isDead()) { 
+						// Combat is complete! 
+						inCombat = false; 
+						String x = "All enemies have been slain!"; 
+						model.addOutput(x);
+					} else {
+						// Combat is not over
+						playerTurnTaken = true; 
+						c.runCombat(model, model.getPlayer(), playerTurnTaken);
+					}
+				}
+				
+			} else {
+				// We will want to ensure that a combat can be initiated with this target. 
+				if(tar.isCombat()) {
+					// The combat will then need to start! 
+					inCombat = true; 
+					// We will need to find the combat that contains this target. 
+					ArrayList<Combat> combats = model.getPlayer().getLocation().getCombats(); 
+					
+					for(Combat c : combats) {
+						if(c.getNpcs().containsKey(target)) {
+							model.setCurrentCombat(c);
+							break; 
+						}
+					}
+					
+					// The combat can now be started. 
+					playerTurnTaken = false; 
+					String s = "Combat initiated!"; 
+					model.addOutput(s);
+					model.getCurrentCombat().runCombat(model, model.getPlayer(), playerTurnTaken);
+					
+				} else {
+					String s = tar.getName() + " cannot be fought."; 
+					model.addOutput(s);
+				}
+				
+	 
+				
+			}
 			
 		} else {
-			inCombat = true; 
+			// The target is not an NPC. 
 			
 		}
+		
+		
 	}
 	
 	// Prints a help 
@@ -117,6 +180,18 @@ public class GameController {
 	
 	public void talk(String NPC) {
 		
+	}
+	
+	public void equip(String item) {
+		HashMap<String, Item> inventory = model.getPlayer().getInventory(); 
+		if(inventory.containsKey(item)) {
+			model.getPlayer().setWeapon(item);
+			String s = item + " is now equipped."; 
+			model.addOutput(s);
+		} else {
+			String s = "You do not have a " + item + '.'; 
+			model.addOutput(s);
+		}
 	}
 	
 }

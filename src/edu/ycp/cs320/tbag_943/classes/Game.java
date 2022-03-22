@@ -10,8 +10,8 @@ public class Game {
 	private Timer timer; 
 	private Map map; 
 	private Player player; 
-	
-	
+	private Combat currentCombat; 
+
 	public Game() {
 		this.difficulty = 1; 
 		this.saveFile = null; 
@@ -72,6 +72,14 @@ public class Game {
 	
 	public void setSaveFile(String saveFile) {
 		this.saveFile = saveFile;
+	}
+	
+	public Combat getCurrentCombat() {
+		return currentCombat;
+	}
+
+	public void setCurrentCombat(Combat currentCombat) {
+		this.currentCombat = currentCombat;
 	}
 	
 	public void setOutputLog(ArrayList<String> outputLog) {

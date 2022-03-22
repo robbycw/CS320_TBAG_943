@@ -10,7 +10,7 @@ public class Player {
 	private HashMap<String, Item> inventory; 
 	private Location location; 
 	private HashMap<String, Stat> stats; 
-	
+	private String weapon; 
 	
 	public Player() { 
 		this.name = "John Johnson"; 
@@ -32,6 +32,14 @@ public class Player {
 	
 	public void setName(String name) {
 		this.name = name; 
+	}
+
+	public String getWeapon() {
+		return weapon;
+	}
+
+	public void setWeapon(String weapon) {
+		this.weapon = weapon;
 	}
 
 	public Location getLocation() {
