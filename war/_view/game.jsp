@@ -27,27 +27,40 @@
 			</div >
 			
 			<div id="charCreationBoxes">
-				
-				<div id= "nameBox">
-				<input type="text" id="pName" name="pName" value="jimmy" ><br>
-				</div>
-				
-				<div id= "strengthBox">
-				<input type="text" id="pName" name="pName" value="Stronk" ><br>
-				</div>
-				
-				<div id= "SpeedBox">
-				<input type="text" id="pName" name="pName" value="GOTTA GO FAst" ><br>
-				</div>
-				
-				<div id= "ConstitutionBox">
-				<input type="text" id="pName" name="pName" value="How many nails do you eat?" ><br>
-				</div>
-				
-				<div id= "charismaBox">
-				<input type="text" id="pName" name="pName" value="MMM yes" ><br>
-				</div>
-				
+				<form action="${pageContext.servletContext.contextPath}/game" method="post">
+					<tr>
+						<div id= "nameBox">
+							<input type="text" id="pName" name="pName" value="${name}">
+						</div>
+					</tr>
+					
+					<tr>
+						<div id= "strengthBox">
+						<input type="text" id="pName" name="pName" value="${strPoints}" ><br>
+						<h1>${result}</h1>
+						<h1>${Speed}</h1>
+						</div>
+					</tr>
+					
+					<tr>
+						<div id= "SpeedBox">
+						<input type="text" id="pName" name="pName" value="${spdPoints}" ><br>
+						</div>
+					</tr>
+					
+					<tr>
+						<div id= "ConstitutionBox">
+						<input type="text" id="pName" name="pName" value="${conPoints}" ><br>
+						</div>
+					</tr>
+					
+					<tr>
+						<div id= "charismaBox">
+						<input type="text" id="pName" name="pName" value="${chrPoints}" ><br>
+						</div>
+					</tr>
+					
+				</form>
 			</div>
 			
 			<div id= "submitButton">
@@ -106,10 +119,16 @@
 				
 				<div class="subsection">Inventory/Utility</div>
 				
-				<div class="subsection">Health</div>
+				<div class="subsection">
+					<div class="stats">
+						<h1>Stats</h1>
+						<td class="statsLabel">Strength:</td>
+						<h1>${Speed}</h1>
+					</div>
+				</div>
 				
 				<div class="subsection">Timer</div>
-				
+				<h1>${result}</h1>
 			</div>
 		
 		</div></div>
