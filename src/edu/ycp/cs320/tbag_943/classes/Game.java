@@ -5,16 +5,15 @@ import java.util.ArrayList;
 
 public class Game {
 	private int difficulty; 
-	private String saveFile; 
 	private ArrayList<String> outputLog; 
 	private Timer timer; 
 	private Map map; 
 	private Player player; 
-	
-	
+	private Combat currentCombat; 
+	private boolean inCombat, playerTurnTaken; 
+
 	public Game() {
 		this.difficulty = 1; 
-		this.saveFile = null; 
 		this.outputLog = new ArrayList<String>(); 
 		this.timer = null; 
 		this.map = null; 
@@ -22,21 +21,36 @@ public class Game {
 	}
 	
 	public Game(int difficulty, Map map, Player player) {
-		this.difficulty = difficulty; 
-		this.saveFile = null; 
+		this.difficulty = difficulty;  
 		this.outputLog = new ArrayList<String>(); 
 		this.timer = new Timer(); 
 		this.map = map; 
-		this.player = player; 
+		this.player = player;
+		this.inCombat = false; 
+		this.playerTurnTaken = false; 
 	}
 	
+	
+	public boolean isInCombat() {
+		return inCombat;
+	}
+
+	public void setInCombat(boolean inCombat) {
+		this.inCombat = inCombat;
+	}
+
+	public boolean isPlayerTurnTaken() {
+		return playerTurnTaken;
+	}
+
+	public void setPlayerTurnTaken(boolean playerTurnTaken) {
+		this.playerTurnTaken = playerTurnTaken;
+	}
+
 	public int getDifficulty() {
 		return difficulty;
 	}
-	
-	public String getSaveFile() {
-		return saveFile;
-	}
+
 	
 	public ArrayList<String> getOutputLog() {
 		return outputLog;
@@ -70,8 +84,12 @@ public class Game {
 		this.difficulty = difficulty;
 	}
 	
-	public void setSaveFile(String saveFile) {
-		this.saveFile = saveFile;
+	public Combat getCurrentCombat() {
+		return currentCombat;
+	}
+
+	public void setCurrentCombat(Combat currentCombat) {
+		this.currentCombat = currentCombat;
 	}
 	
 	public void setOutputLog(ArrayList<String> outputLog) {

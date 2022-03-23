@@ -5,7 +5,8 @@ import java.util.HashMap;
 
 
 public class Location {
-	private String name; 
+	private String name, description; 
+	private boolean hidden; 
 	private ArrayList<Puzzle> puzzles; 
 	private ArrayList<Combat> combats;
 	private Loot treasure;
@@ -35,7 +36,22 @@ public class Location {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	public String getDescription() {
+		return description;
+	}
 
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public boolean isHidden() {
+		return hidden;
+	}
+
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
+	}
 
 	public ArrayList<Puzzle> getPuzzles() {
 		return puzzles;
@@ -76,5 +92,13 @@ public class Location {
 		this.npcs = npcs;
 	}
 	
+	public void setNPCs(ArrayList<NPC> npcs) {
+		HashMap<String, NPC> npc = new HashMap<String, NPC>();
+		for(NPC n : npcs) {
+			String key = n.getName().toLowerCase(); 
+			npc.put(key, n); 
+		}
+		this.npcs = npc; 
+	}
 
 }

@@ -1,6 +1,6 @@
 package edu.ycp.cs320.tbag_943.classes;
 
-public class Stat {
+public class Stat implements Comparable {
 
 	private int rank;
 	private String name; 
@@ -27,6 +27,21 @@ public class Stat {
 	
 	public void addToRank(int add) {
 		rank = rank + add;
+	}
+
+	@Override
+	public int compareTo(Object stat) {
+
+		// We will assume a Stat object is passed. 
+		Stat s = (Stat) stat; 
+		
+		if(this.rank > s.getRank()) {
+			return 1; 
+		} else if (this.rank < s.getRank()) {
+			return -1; 
+		} else {
+			return 0; 
+		}
 	}
 	
 }

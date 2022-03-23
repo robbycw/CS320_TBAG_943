@@ -10,7 +10,7 @@ public class Player {
 	private HashMap<String, Item> inventory; 
 	private Location location; 
 	private HashMap<String, Stat> stats; 
-	
+	private String weapon; 
 	
 	public Player() { 
 		this.name = "John Johnson"; 
@@ -22,8 +22,37 @@ public class Player {
 		this.name = name; 
 		this.icon = "path"; 
 		this.location = location; 
+		this.location.setHidden(false);
 		this.inventory = new HashMap<String, Item>(); 
 		this.stats = new HashMap<String, Stat>();
+		Item dagger = new Item("dagger", 3); 
+		this.inventory.put("dagger", dagger); 
+		this.weapon = "dagger"; 
+	}
+	
+	public Player(String name, Location location, int health, int armor, int strength, int speed) { 
+		this.name = name; 
+		this.icon = "path"; 
+		this.location = location; 
+		this.location.setHidden(false);
+		this.inventory = new HashMap<String, Item>(); 
+		this.stats = new HashMap<String, Stat>();
+		Item dagger = new Item("dagger", 3); 
+		this.inventory.put("dagger", dagger); 
+		this.weapon = "dagger"; 
+		
+		// Generate stats 
+		Stat h = new Stat("health", health); 
+		Stat a = new Stat("armor", armor); 
+		Stat st = new Stat("strength", strength); 
+		Stat sp = new Stat("speed", speed); 
+		
+		HashMap<String, Stat> stat = new HashMap<String, Stat>(); 
+		stat.put("health", h);
+		stat.put("armor", a);
+		stat.put("strength", st);
+		stat.put("speed", sp); 
+		this.stats = stat;
 	}
 	
 	public String getName() {
@@ -34,11 +63,21 @@ public class Player {
 		this.name = name; 
 	}
 
+	public String getWeapon() {
+		return weapon;
+	}
+
+	public void setWeapon(String weapon) {
+		this.weapon = weapon;
+	}
+
 	public Location getLocation() {
 		return location;
 	}
 
 	public void move(Location location) {
+		// Player discovers location; no longer hidden. 
+		location.setHidden(false);
 		this.location = location;
 	}
 
