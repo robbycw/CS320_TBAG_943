@@ -45,6 +45,10 @@ public class Speech {
 		speechOptions.add(add);
 	}
 	
+	public void addArrayListSpeech(ArrayList<String> add) {
+		speechOptions.addAll(add);
+	}
+	
 	public String getSpeech(int get) {
 		
 		return speechOptions.get(get);

@@ -130,7 +130,7 @@ public class GameServlet extends HttpServlet {
 		Item sword2 = new Item("Sword", 5);
 		Item sword3 = new Item("Sword", 5);
 		Item axe = new Item("Axe", 6);
-		Item gold = new Item ("Gold", 0); 
+		Item gold = new Item ("Gold", 0, 200); 
 		
 		// Create NPCs (add constructor to NPC for automatically making stats)
 		NPC dave = new NPC("Dave", true, sword1, 20, 6, 3, 3); 
