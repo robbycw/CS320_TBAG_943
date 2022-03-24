@@ -31,40 +31,41 @@
 					<tr>
 						<div id= "nameBox">
 							<input type="text" id="pName" name="pName" value="${name}">
+							
 						</div>
 					</tr>
 					
 					<tr>
 						<div id= "strengthBox">
-						<input type="text" id="pName" name="pName" value="${strPoints}" ><br>
-						<h1>${result}</h1>
-						<h1>${Speed}</h1>
+						<input type="text" id="strPoints" maxlength="2"><br>
+						
 						</div>
 					</tr>
 					
 					<tr>
 						<div id= "SpeedBox">
-						<input type="text" id="pName" name="pName" value="${spdPoints}" ><br>
+						<input type="text" id="spdPoints" maxlength="2"><br>
 						</div>
 					</tr>
 					
 					<tr>
 						<div id= "ConstitutionBox">
-						<input type="text" id="pName" name="pName" value="${conPoints}" ><br>
+						<input type="text" id="conPoints" maxlength="2"><br>
 						</div>
 					</tr>
 					
 					<tr>
 						<div id= "charismaBox">
-						<input type="text" id="pName" name="pName" value="${chrPoints}" ><br>
+						<input type="text" id="chrPoints" maxlength="2"><br>
 						</div>
 					</tr>
+					
 					
 				</form>
 			</div>
 			
 			<div id= "submitButton">
-			<input type="submit" id="pName" name="pName" value="Done" onclick="off()">
+			<input type="submit" id="chrDone" value="Done" onclick="off()">
 			</div>
 		</div>
 		
@@ -117,29 +118,51 @@
 			
 			<div class="column">
 				
-				<div class="subsection">Inventory/Utility</div>
+				<div class="subsection">Inventory/Utility
+				</div>
 				
-				<div class="subsection">
-					<div class="stats">
-						<h1>Stats</h1>
-						<td class="statsLabel">Strength:</td>
-						<h1>${Speed}</h1>
-					</div>
+				<div class="subsection">Stats<br>
+				<label for="strStat">Strength: </label>
+				<p class="output" id="strStat"></p>
+				<label for="spdStat">Strength: </label>
+				<p class="output" id="spdStat"></p>
+				<label for="chrStat">Strength: </label>
+				<p class="output" id="chrStat"></p>
 				</div>
 				
 				<div class="subsection">Timer</div>
-				<h1>${result}</h1>
 			</div>
 		
 		</div></div>
 		<script>
+		const playerName = document.getElementById('pName');
+		const strengthPoints = document.getElementById('strPoints');
+		const speedPoints = document.getElementById('spdPoints');
+		const charismaPoints = document.getElementById('chrPoints');
+		
+		const strengthStat = document.getElementById('strStat');
+		const speedStat = document.getElementById('spdStat');
+		const charismaStat = document.getElementById('chrStat');
+		
+		const btn1 = document.getElementById('chrDone');
+		
+		function translateStats(){
+			strengthStat.innerHTML = strengthPoints.value;
+			speedStat.innerHTML = speedPoints.value;
+			charismaStat.innerHTML = charismaPoints.value;	
+		}
+		
+		
 		function on() {
 		  	document.getElementById("overlay").style.display = "block";
 		}
 
 		function off() {
-  			document.getElementById("overlay").style.display = "none";
+			document.getElementById("overlay").style.display = "none";
+			translateStats();
 		}
+		
 		</script>
+		
 	</body>
 </html>

@@ -54,49 +54,6 @@ public class GameServlet extends HttpServlet {
 		System.out.println("GameServlet: doPost");
 		
 		
-		// We will want to use the resp.sendRedirect method as it will provide an easy way to send the user
-		// to the desired URL, which will consequently call the chosen servlet's doGet method.
-		Player player = new Player();
-		
-		String errorMessage = null;
-// to the desired URL, which will consequently call the chosen servlet's doGet method.
-		try {
-			String name = getInitParameter(req.getParameter("name"));
-			Integer strPoints= getDoubleFromParameter(req.getParameter("strPoints"));
-			Integer spdPoints = getDoubleFromParameter(req.getParameter("spdPoints"));
-			Integer conPoints = getDoubleFromParameter(req.getParameter("conPoints"));
-			Integer chrPoints = getDoubleFromParameter(req.getParameter("chrPoints"));
-			chrPoints = 100;
-			if (name == null || strPoints == null || spdPoints == null || conPoints == null || chrPoints == null) {
-				errorMessage = "There is a box that you left unfilled";
-			}else {
-				player.setName(name);
-				Stat statStr = new Stat("strength", strPoints);
-				Stat statSpd = new Stat("speed", spdPoints);
-				Stat statCon = new Stat("constitution", conPoints);
-				Stat statchr = new Stat("charisma", chrPoints);
-				
-				player.getStats().put("strength", statStr);
-				player.getStats().put("speed", statSpd);
-				player.getStats().put("constitution", statCon);
-				player.getStats().put("charisma", statchr);
-				
-				
-			}
-		} catch (NumberFormatException e) {
-			errorMessage = "Invalid Input";
-		}
-		req.setAttribute("name", req.getParameter("name"));
-		
-		req.setAttribute("strPoints", req.getParameter("strPoints"));
-		req.setAttribute("spdPoints", req.getParameter("spdPoints"));
-		req.setAttribute("conPoints", req.getParameter("conPoints"));
-		req.setAttribute("chrPoints", req.getParameter("chrPoints"));
-		
-		req.setAttribute("Strength", player.getStats().get("strength"));
-		req.setAttribute("Speed", 25);
-		req.setAttribute("Constitution", player.getStats().get("constitution"));
-		req.setAttribute("Charisma", player.getStats().get("charisma"));
 		
 		if(req.getParameter("title") != null) {
 			
