@@ -37,6 +37,23 @@
 		<c:if test="${! empty errorMessage}">
 			<div class="error">${errorMessage}</div>
 		</c:if>
+		<c:if test="${!winCondition.lost}">
+			<h2 style="color: red;font-size:400%;">
+				<center>
+					YOU LOST!
+				</center>
+			</h2>
+		</c:if>
+		<c:if test="${!winCondition.wonRooms}">
+			<center>
+				YOU MAY HAVE DEFEATED THE CLOCK, BUT YOU LEFT MUCH BEHIND!
+			</center>
+		</c:if>
+		<c:if test="${!winCondition.bestCase}">
+			<center>
+				CONGRATULATIONS!  YOU WON!
+			</center>
+		</c:if>
 	
 		<form action="${pageContext.servletContext.contextPath}/EndCredits" method="get">
 			<center>

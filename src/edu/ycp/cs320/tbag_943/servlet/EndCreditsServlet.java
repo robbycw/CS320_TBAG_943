@@ -6,6 +6,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import edu.ycp.cs320.tbag_943.classes.*;
+import edu.ycp.cs320.tbag_943.controller.*;
 
 
 public class EndCreditsServlet extends HttpServlet {
@@ -31,6 +33,22 @@ public class EndCreditsServlet extends HttpServlet {
 			System.out.println("Title Screen Servlet: ");
 			req.getRequestDispatcher("/servlet/TitleScreen.java").forward(req, resp);
 		}
+		
+		WinCondition model = new WinCondition();
+		//EndCreditsController controller = new EndCreditsController();
+		//controller.setModel(model);
+		
+		String condition = model.currentWinCondition();
+		
+		req.setAttribute("winCondition", model);
+		
+//		if(condition == "lost") {
+//			
+//		} else if(condition == "wonRooms") {
+//			
+//		} else if(condition == "bestCase") {
+//			
+//		}
 		
 		// Forward to view to render the result HTML document
 		req.getRequestDispatcher("/_view/EndCredits.jsp").forward(req, resp);
