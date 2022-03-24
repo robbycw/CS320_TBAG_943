@@ -92,6 +92,7 @@ public class GameController {
 			if(model.isInCombat()) {
 				// There should be an ongoing combat in this case, which will be referenced in model. 
 				// It must be the player's turn if this branch is accessed. 
+				
 				// We will first want to check if the player is still alive. 
 				if(model.getPlayer().getStats().get("health").getRank() <= 0) {
 					model.setInCombat(false);
@@ -125,6 +126,7 @@ public class GameController {
 					// We will need to find the combat that contains this target. 
 					ArrayList<Combat> combats = model.getPlayer().getLocation().getCombats(); 
 					
+					// Finds the combat that contains the target. 
 					for(Combat c : combats) {
 						if(c.getNpcs().containsKey(target)) {
 							model.setCurrentCombat(c);

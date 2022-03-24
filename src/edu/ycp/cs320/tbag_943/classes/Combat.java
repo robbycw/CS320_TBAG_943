@@ -126,12 +126,15 @@ public class Combat {
 		for(int i = turn; i < turnOrder.size(); i++) {
 			
 			NPC enemy = turnOrder.get(i); 
+			System.out.println(enemy.getName() + "'s turn"); 
 			// If the player's speed is greater than the current NPC's speed and the player
 			// has not gone, it will be the player's turn. 
 			if(playerSpeed.compareTo(turnOrder.get(i).getStats().get("speed")) > 0 && !playerTurnTaken) {
-				// The next NPC's turn after Player takes their turn. 
+				// The next NPC's turn after Player takes their turn.
+				System.out.println("Actually, player's speed is higher. They go first."); 
 				playerTurnTaken = true; 
 				turn = i; 
+				System.out.println("Turn: " + i);
 				String h = "It is now your turn!"; 
 				game.addOutput(h);
 				break; // We break out of the runCombat method to allow the player to take action. 
@@ -139,7 +142,7 @@ public class Combat {
 			
 			// Calculate and apply current Enemy's Attack
 			int roll = rng.nextInt(20) + 1; 
-			String s = null;
+			String s = "";
 			
 			if(roll >= player.getStats().get("armor").getRank()) {
 				// Attack hits
@@ -157,17 +160,21 @@ public class Combat {
 				s = s + enemy.getName() + " dealt " + Integer.toString(damage) + " damage with their " + enemy.getWeapon().getName(); 
 				game.addOutput(s);
 			} else {
+				// The attack missed. 
 				s = enemy.getName() + "'s attack missed!"; 
 				game.addOutput(s);
 			}
 			
 			// Goes back to start of turnOrder turn if at the end of list. 
 			if(i == turnOrder.size() - 1) {
-				i = 0; 
+				// We write that i = -1 because the increment will add one itself! 
+				i = -1; 
 				turn = 0; 
 				// Checks if Player goes last and let's player go if they have not gone yet. 
-				if(playerSpeed.compareTo(turnOrder.get(turnOrder.size() - 1).getStats().get("speed")) > 0 && !playerTurnTaken) {
-					playerTurnTaken = true; 
+				if(playerSpeed.compareTo(turnOrder.get(turnOrder.size() - 1).getStats().get("speed")) < 0) {
+					// The player's turn stays false because they are the last in the round. 
+					// Hence, they did not go yet for the next round. 
+					playerTurnTaken = false; 
 					String h = "It is now your turn!"; 
 					game.addOutput(h);
 					break;
