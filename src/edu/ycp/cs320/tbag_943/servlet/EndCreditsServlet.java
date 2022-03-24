@@ -19,6 +19,10 @@ public class EndCreditsServlet extends HttpServlet {
 
 		System.out.println("EndCredits Servlet: doGet");	
 		
+		// Creating the variable that the jsp will access
+		WinCondition model = new WinCondition();
+		String condition = model.currentWinCondition();
+		req.setAttribute("condition", condition);
 		// call JSP to generate empty form
 		req.getRequestDispatcher("/_view/EndCredits.jsp").forward(req, resp);
 	}
@@ -33,22 +37,6 @@ public class EndCreditsServlet extends HttpServlet {
 			System.out.println("Title Screen Servlet: ");
 			req.getRequestDispatcher("/servlet/TitleScreen.java").forward(req, resp);
 		}
-		
-		WinCondition model = new WinCondition();
-		//EndCreditsController controller = new EndCreditsController();
-		//controller.setModel(model);
-		
-		String condition = model.currentWinCondition();
-		
-		req.setAttribute("winCondition", model);
-		
-//		if(condition == "lost") {
-//			
-//		} else if(condition == "wonRooms") {
-//			
-//		} else if(condition == "bestCase") {
-//			
-//		}
 		
 		// Forward to view to render the result HTML document
 		req.getRequestDispatcher("/_view/EndCredits.jsp").forward(req, resp);

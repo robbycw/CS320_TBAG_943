@@ -3,17 +3,25 @@ package edu.ycp.cs320.tbag_943.classes;
 
 public class WinCondition {
 	// Fields
+	
+	// complete - Player beats a room
+	// lost - Player runs out of time
+	// wonRooms - Player beats all rooms
+	// bestCase - Player beats all rooms and solves mystery
+	// defaultCase - True until one of the other win conditions is triggered
 	private boolean complete;
 	private boolean lost;
 	private boolean wonRooms;
 	private boolean bestCase;
+	private boolean defaultCase;
 	
 	// Constructor
 	public WinCondition() {
 		complete = false;
-		lost = true;
+		lost = false;
 		wonRooms = false;
 		bestCase = false;
+		defaultCase = true;
 	}
 	
 	// Method
@@ -32,8 +40,10 @@ public class WinCondition {
 			return "wonRooms";
 		} else if(bestCase == true) {
 			return "bestCase";
-		} else {
+		} else if(lost == true){
 			return "lost";
+		} else {
+			return "defaultCase";
 		}
 	}
 	
@@ -54,6 +64,10 @@ public class WinCondition {
 		return bestCase;
 	}
 	
+	public boolean getDefaultCase() {
+		return defaultCase;
+	}
+	
 	// Setters
 	public void setComplete(boolean value) {
 		complete = value;
@@ -69,5 +83,9 @@ public class WinCondition {
 	
 	public void setBestCase(boolean value) {
 		bestCase = value;
+	}
+	
+	public void setDefaultCase(boolean value) {
+		defaultCase = value;
 	}
 }
