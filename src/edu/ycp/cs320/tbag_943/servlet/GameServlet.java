@@ -93,28 +93,35 @@ public class GameServlet extends HttpServlet {
 			
 			// The following switch-case will interpret the user's command and call the
 			// appropriate controller functions. 
-			
-			switch(input[0]) {
-			
-				case "move":
-					System.out.println(input[1]); 
-					controller.move(input[1]);
-					break; 
-				case "help":
-					controller.help(); 
-					break; 
-				case "attack":
-					controller.attack(input[1]);
-					break; 
-				case "talk":
-					controller.talk(input[1]);
-					break; 
-				case "collect":
-					controller.collect(input[1]);
-					break; 
-				default: 
-					model.addOutput("Unknown command.");
+			try {
+				switch(input[0]) {
+					case "move":
+						System.out.println(input[1]); 
+						controller.move(input[1]);
+						break; 
+					case "help":
+						controller.help(); 
+						break; 
+					case "attack":
+						controller.attack(input[1]);
+						break; 
+					case "talk":
+						controller.talk(input[1]);
+						break; 
+					case "collect":
+						controller.collect(input[1]);
+						break; 
+					default: 
+						model.addOutput("Unknown command.");
+				}
+			} catch (ArrayIndexOutOfBoundsException e) {
+				// In the event the user passes a command without a target, 
+				// this catch will handle the exception. 
+				// Ex: User inputs "attack" or "move "
+				
+				model.addOutput("Incorrect command syntax: Please specify a target.");
 			}
+			
 			
 			session.setAttribute("model", model);
 		}
