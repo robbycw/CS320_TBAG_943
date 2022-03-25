@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-
+<%@ page import = "edu.ycp.cs320.tbag_943.classes.*" %>
 <html>
 	<head>
 		<title>9:43</title>
@@ -65,7 +65,7 @@
 			</div>
 			
 			<div id= "submitButton">
-			<input type="submit" id="chrDone" value="Done" onclick="off()">
+			<input type="submit" id="chrDone" value="Done" onclick="translateStats()">
 			</div>
 		</div>
 		
@@ -121,13 +121,26 @@
 				<div class="subsection">Inventory/Utility
 				</div>
 				
-				<div class="subsection">Stats<br>
-				<label for="strStat">Strength: </label>
-				<p class="output" id="strStat"></p>
-				<label for="spdStat">Strength: </label>
-				<p class="output" id="spdStat"></p>
-				<label for="chrStat">Strength: </label>
-				<p class="output" id="chrStat"></p>
+				<div class="subsection"> Stats
+					<div id="statNameBox">
+						<div id="statsNames">
+						<td>Strength:</td>
+						</div>
+						
+						<div id="statsNames">
+						<td>Speed:</td>
+						</div>
+						
+						<div id="statsNames">
+						<td>Charisma:</td>
+						</div>
+						
+					</div>
+					<div id="statsBox">
+						<h1 class="output" id="strStat"></h1>	
+						<h1 class="output" id="spdStat"></h1>	
+						<h1 class="output" id="chrStat" style="margin-top: -1px"></h1>
+					</div>
 				</div>
 				
 				<div class="subsection">Timer</div>
@@ -149,7 +162,8 @@
 		function translateStats(){
 			strengthStat.innerHTML = strengthPoints.value;
 			speedStat.innerHTML = speedPoints.value;
-			charismaStat.innerHTML = charismaPoints.value;	
+			charismaStat.innerHTML = charismaPoints.value;
+			off();	
 		}
 		
 		
@@ -159,7 +173,6 @@
 
 		function off() {
 			document.getElementById("overlay").style.display = "none";
-			translateStats();
 		}
 		
 		</script>
