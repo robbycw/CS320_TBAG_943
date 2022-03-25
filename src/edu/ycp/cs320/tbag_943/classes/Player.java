@@ -12,10 +12,12 @@ public class Player {
 	private HashMap<String, Stat> stats; 
 	private String weapon; 
 	
+	public boolean playerCreated = false;
+	
 	public Player() { 
 		this.name = "John Johnson"; 
 		this.icon = "path"; 
-		this.location = null; 
+		this.location = null;
 	}
 	
 	public Player(String name, Location location) { 
@@ -53,8 +55,12 @@ public class Player {
 		stat.put("strength", st);
 		stat.put("speed", sp); 
 		this.stats = stat;
+		
+		playerCreated = true;
 	}
-	
+	public boolean getPlayerCreated() {
+		return playerCreated;
+	}
 	public String getName() {
 		return name;
 	}

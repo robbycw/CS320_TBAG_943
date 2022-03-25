@@ -95,15 +95,54 @@ html, body {
 
 .subsection {
 	clear: both; 
-	font-family: 'Encode Sans SC', sans-serif;
-	font-size: 30px; 
-	color: blue; 
-	text-align: center; 
+	font-family: 'Encode Sans SC', sans-serif; 
+	color: blue;
+	font-size: 20px; 
 	margin: 0.75%;
 	border-style: solid none solid none; 
 	border-color: blue;
 	border-width: medium;
 	background-color: black; 
-	float: center; 
 	height: 32.3%; 
+	text-align:middle;
+}
+h1{
+	font-size:20px;
+	margin-top: .25px;
+	color: blue;
+	text-align:middle;
+}
+#statsNames{
+	margin-top: 10px;
+	width: 100%;
+	height: 15%;
+	background: black;
+	font-size: 20px;
+	text-align: right;
+}
+#statNameBox{
+	width:22%;
+	height:85%;
+	background:black;
+}
+#statsBox{
+	background: black;
+	width: 100px;
+	height: 190px;
+	margin-left: 65px;
+	margin-top:-188px;
+	
+}
+td.statsLabel{
+	color: red;
+	text-align: left;
+	margin-left: 10px;
+	float: left;
+}
+
+td.playerStats{
+	color: purple;
+	float:left;
+	text-align: left;
+	font-size: 20px;
 }

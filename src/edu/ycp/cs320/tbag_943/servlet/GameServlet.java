@@ -22,6 +22,8 @@ public class GameServlet extends HttpServlet {
 		
 		HttpSession session = req.getSession(false); 
 		
+		req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
+		
 		if(session == null || session.getAttribute("model") == null) {
 			// need to make a new session. 
 			session = req.getSession(); 
@@ -51,9 +53,6 @@ public class GameServlet extends HttpServlet {
 		HttpSession session = req.getSession(); 
 		System.out.println("GameServlet: doPost");
 		
-		
-		// We will want to use the resp.sendRedirect method as it will provide an easy way to send the user
-		// to the desired URL, which will consequently call the chosen servlet's doGet method.
 		
 		
 		if(req.getParameter("title") != null) {
@@ -226,4 +225,15 @@ public class GameServlet extends HttpServlet {
 		
 		return game; 
 	}
+
+	private Integer getDoubleFromParameter(String s) {
+		if (s == null || s.equals("")) {
+			return null;
+		} else {
+			return Integer.parseInt(s);
+		}
+
+	}
+
+
 }
