@@ -6,10 +6,18 @@ public class Puzzle {
 	private String prompt;
 	private int requiredSkill, requiredItem;
 	private boolean result;
+	private String answer;
+	private Loot reward;
 	
-	// Constructor
+	// Constructors
 	public Puzzle() {
 		result = false;
+	}
+	
+	public Puzzle(String promptIn, String answerIn) {
+		result = false;
+		prompt = promptIn;
+		answer = answerIn;
 	}
 	
 	// Methods
@@ -42,6 +50,10 @@ public class Puzzle {
 		return prompt;
 	}
 	
+	public String getAnswer() {
+		return answer;
+	}
+	
 	public int getRequiredSkill() {
 		return requiredSkill;
 	}
@@ -54,9 +66,18 @@ public class Puzzle {
 		return result;
 	}
 	
+	public Loot getReward() {
+		return reward;
+	}
+	
 	//Setters
 	public void setPrompt(String newPrompt) {
 		prompt = newPrompt;
+	}
+	
+	public void setAnswer(String answerIn)
+	{
+		answer = answerIn;
 	}
 	
 	public void setRequiredSkill(int skill) {
@@ -69,5 +90,10 @@ public class Puzzle {
 	
 	public void setResult(boolean newResult) {
 		result = newResult;
+	}
+	
+	public void setReward(Loot rewardIn)
+	{
+		reward = rewardIn;
 	}
 }

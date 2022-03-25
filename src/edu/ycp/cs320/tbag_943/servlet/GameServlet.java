@@ -213,6 +213,13 @@ public class GameServlet extends HttpServlet {
 		// Create Player
 		Player player = new Player("Jorady", r3, 500, 10, 4, 10); 
 		
+		// Create Puzzle
+		String samplePuzzlePrompt = "I am down when the sun rises but up when the moon shines bright. What am I?";
+		Puzzle samplePuzzle = new Puzzle(samplePuzzlePrompt, "A minecraft piston attached to a daylight sensor and a not gate!");
+		HashMap<String,Item> puzzleReward = new HashMap<>();
+		puzzleReward.put("first",new Item("Spaghetti of Destiny",0));
+		samplePuzzle.setReward(new Loot(puzzleReward));
+		
 		// Create Game with proper parameters
 		Game game = new Game(1, map, player); 
 		
