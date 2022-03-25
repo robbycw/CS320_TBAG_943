@@ -16,9 +16,21 @@ public class WinConditionTest {
 	}
 	
 	@Test
-	public void testSetName() {
-		winCondition.setName("Edgar");
-		assertEquals("Edgar", winCondition.getName());
+	public void testSetLost() {
+		winCondition.setLost(true);
+		assertEquals(true, winCondition.getLost());
+	}
+	
+	@Test
+	public void testSetWonRooms() {
+		winCondition.setWonRooms(true);
+		assertEquals(true, winCondition.getWonRooms());
+	}
+	
+	@Test
+	public void testSetBestCase() {
+		winCondition.setBestCase(true);
+		assertEquals(true, winCondition.getBestCase());
 	}
 	
 	@Test
