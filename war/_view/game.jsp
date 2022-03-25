@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-
+<%@ page import = "edu.ycp.cs320.tbag_943.classes.*" %>
 <html>
 	<head>
 		<title>9:43</title>
@@ -27,31 +27,45 @@
 			</div >
 			
 			<div id="charCreationBoxes">
-				
-				<div id= "nameBox">
-				<input type="text" id="pName" name="pName" value="jimmy" ><br>
-				</div>
-				
-				<div id= "strengthBox">
-				<input type="text" id="pName" name="pName" value="Stronk" ><br>
-				</div>
-				
-				<div id= "SpeedBox">
-				<input type="text" id="pName" name="pName" value="GOTTA GO FAst" ><br>
-				</div>
-				
-				<div id= "ConstitutionBox">
-				<input type="text" id="pName" name="pName" value="How many nails do you eat?" ><br>
-				</div>
-				
-				<div id= "charismaBox">
-				<input type="text" id="pName" name="pName" value="MMM yes" ><br>
-				</div>
-				
+				<form action="${pageContext.servletContext.contextPath}/game" method="post">
+					<tr>
+						<div id= "nameBox">
+							<input type="text" id="pName" name="pName" value="${name}">
+							
+						</div>
+					</tr>
+					
+					<tr>
+						<div id= "strengthBox">
+						<input type="text" id="strPoints" maxlength="2"><br>
+						
+						</div>
+					</tr>
+					
+					<tr>
+						<div id= "SpeedBox">
+						<input type="text" id="spdPoints" maxlength="2"><br>
+						</div>
+					</tr>
+					
+					<tr>
+						<div id= "ConstitutionBox">
+						<input type="text" id="conPoints" maxlength="2"><br>
+						</div>
+					</tr>
+					
+					<tr>
+						<div id= "charismaBox">
+						<input type="text" id="chrPoints" maxlength="2"><br>
+						</div>
+					</tr>
+					
+					
+				</form>
 			</div>
 			
 			<div id= "submitButton">
-			<input type="submit" id="pName" name="pName" value="Done" onclick="off()">
+			<input type="submit" id="chrDone" value="Done" onclick="translateStats()">
 			</div>
 		</div>
 		
@@ -104,23 +118,64 @@
 			
 			<div class="column">
 				
-				<div class="subsection">Inventory/Utility</div>
+				<div class="subsection">Inventory/Utility
+				</div>
 				
-				<div class="subsection">Health</div>
+				<div class="subsection"> Stats
+					<div id="statNameBox">
+						<div id="statsNames">
+						<td>Strength:</td>
+						</div>
+						
+						<div id="statsNames">
+						<td>Speed:</td>
+						</div>
+						
+						<div id="statsNames">
+						<td>Charisma:</td>
+						</div>
+						
+					</div>
+					<div id="statsBox">
+						<h1 class="output" id="strStat"></h1>	
+						<h1 class="output" id="spdStat"></h1>	
+						<h1 class="output" id="chrStat" style="margin-top: -1px"></h1>
+					</div>
+				</div>
 				
 				<div class="subsection">Timer</div>
-				
 			</div>
 		
 		</div></div>
 		<script>
+		const playerName = document.getElementById('pName');
+		const strengthPoints = document.getElementById('strPoints');
+		const speedPoints = document.getElementById('spdPoints');
+		const charismaPoints = document.getElementById('chrPoints');
+		
+		const strengthStat = document.getElementById('strStat');
+		const speedStat = document.getElementById('spdStat');
+		const charismaStat = document.getElementById('chrStat');
+		
+		const btn1 = document.getElementById('chrDone');
+		
+		function translateStats(){
+			strengthStat.innerHTML = strengthPoints.value;
+			speedStat.innerHTML = speedPoints.value;
+			charismaStat.innerHTML = charismaPoints.value;
+			off();	
+		}
+		
+		
 		function on() {
 		  	document.getElementById("overlay").style.display = "block";
 		}
 
 		function off() {
-  			document.getElementById("overlay").style.display = "none";
+			document.getElementById("overlay").style.display = "none";
 		}
+		
 		</script>
+		
 	</body>
 </html>
