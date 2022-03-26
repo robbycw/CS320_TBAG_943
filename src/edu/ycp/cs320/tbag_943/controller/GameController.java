@@ -37,6 +37,12 @@ public class GameController {
 		Map map = model.getMap(); 
 		Player player = model.getPlayer(); 
 		
+		// The player cannot move if in combat. 
+		if(model.isInCombat()) { 
+			model.addOutput(GameController.inCombatMessage("move"));
+			return; 
+		}
+		
 		if(direction.equals("north")) {
 
 			GameController.doMove(model, map, player, 0);
@@ -194,6 +200,11 @@ public class GameController {
 	
 	public void puzzle()
 	{
+		// The player cannot access/solve a puzzle while in combat. 
+		if(model.isInCombat()) { 
+			model.addOutput(GameController.inCombatMessage("puzzle"));
+			return; 
+		}
 		Location loc = model.getPlayer().getLocation();
 			if(loc.getPuzzles().size() != 0)
 			{
@@ -201,6 +212,14 @@ public class GameController {
 				String s = puz.getPrompt();
 				model.addOutput(s);
 			}
+	}
+	
+	// Certain commands cannot be taken while in combat. This method is called in such a case
+	// when the player attempts certain actions while in combat to inform them that they cannot.
+	public static String inCombatMessage(String command) {
+		
+		return "The command " + command + " cannot be used in combat.";
+		
 	}
 	
 }
