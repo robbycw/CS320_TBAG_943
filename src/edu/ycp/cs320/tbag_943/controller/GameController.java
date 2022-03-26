@@ -191,4 +191,16 @@ public class GameController {
 		}
 	}
 	
+	
+	public void puzzle()
+	{
+		Location loc = model.getPlayer().getLocation();
+			if(loc.getPuzzles().size() != 0)
+			{
+				Puzzle puz = loc.getPuzzle(0);
+				String s = puz.getPrompt();
+				model.addOutput(s);
+			}
+	}
+	
 }

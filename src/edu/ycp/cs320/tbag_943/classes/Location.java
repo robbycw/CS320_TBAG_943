@@ -61,6 +61,16 @@ public class Location {
 	public void setPuzzles(ArrayList<Puzzle> puzzles) {
 		this.puzzles = puzzles;
 	}
+	
+	public Puzzle getPuzzle(int num)
+	{
+		return puzzles.get(num);
+	}
+	
+	public void addPuzzle(Puzzle puzzleIn)
+	{
+		puzzles.add(puzzleIn);
+	}
 
 
 	public ArrayList<Combat> getCombats() {
