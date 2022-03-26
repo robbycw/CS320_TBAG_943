@@ -111,6 +111,9 @@ public class GameServlet extends HttpServlet {
 				case "collect":
 					controller.collect(input[1]);
 					break; 
+				case "puzzle":
+					controller.puzzle();
+					break;
 				default: 
 					model.addOutput("Unknown command.");
 			}
@@ -129,7 +132,7 @@ public class GameServlet extends HttpServlet {
 		Item sword2 = new Item("Sword", 5);
 		Item sword3 = new Item("Sword", 5);
 		Item axe = new Item("Axe", 6);
-		Item gold = new Item ("Gold", 0); 
+		Item gold = new Item ("Gold", 0, 200); 
 		
 		// Create NPCs (add constructor to NPC for automatically making stats)
 		NPC dave = new NPC("Dave", true, sword1, 20, 6, 3, 3); 
@@ -212,6 +215,17 @@ public class GameServlet extends HttpServlet {
 		
 		// Create Player
 		Player player = new Player("Jorady", r3, 500, 10, 4, 10); 
+		
+		// Create Puzzle
+		String samplePuzzlePrompt = "I am down when the sun rises but up when the moon shines bright. What am I?";
+		Puzzle samplePuzzle = new Puzzle(samplePuzzlePrompt, "A minecraft piston attached to a daylight sensor and a 'not' gate!");
+		HashMap<String,Item> puzzleReward = new HashMap<>();
+		puzzleReward.put("first",new Item("Spaghetti of Destiny",0));
+		samplePuzzle.setReward(new Loot(puzzleReward));
+		r1.addPuzzle(samplePuzzle);
+		r2.addPuzzle(samplePuzzle);
+		r3.addPuzzle(samplePuzzle);
+		r4.addPuzzle(samplePuzzle);
 		
 		// Create Game with proper parameters
 		Game game = new Game(1, map, player); 

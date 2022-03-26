@@ -2,7 +2,7 @@ package edu.ycp.cs320.tbag_943.classes;
 
 public class Item {
 	private boolean consumable, isWeapon;
-	private int damage, healthGain, value;
+	private int damage, healthGain, value, amount;
 	private double acuracy;
 	private String name; 
 	
@@ -16,6 +16,12 @@ public class Item {
 	public Item(String name, int damage) {
 		this.name = name;
 		this.damage = damage; 
+	}
+	
+	public Item(String name, int damage, int amount) {
+		this.name = name;
+		this.damage = damage; 
+		this.amount = amount; 
 	}
 	
 	public void setIcon() {
