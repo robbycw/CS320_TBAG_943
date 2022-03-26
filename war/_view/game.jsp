@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ page import = "edu.ycp.cs320.tbag_943.classes.*" %>
+<%@ page import ="java.util.*" %>
 <html>
 	<head>
 		<title>9:43</title>
@@ -75,6 +76,31 @@
 		
 			<div class="column">
 				Map goes here. 
+
+				<%-- These divs below print out the map, namely the rooms connected to .--%> 
+					
+				 
+				<div style="background-color:gray; width: 95%; height: 25%;"> <%-- Row 1--%>
+				
+					<div style="background-color:gray; width: 33.3%; height: 100%; float: left;"></div><%-- Northwest --%>
+					<div style="background-color:${northc}; width: 33.3%; height: 100%; float: left;">${northr}</div><%-- North --%>
+					<div style="background-color:gray; width: 33.3%; height: 100%; float: left;"></div><%-- Northeast --%>
+				
+				</div>
+				<div style="background-color:gray; width: 95%; height: 25%;"> <%-- Row 2--%>
+				
+					<div style="background-color:${westc}; width: 33.3%; height: 100%; float: left;">${westr}</div><%-- West --%>
+					<div style="background-color:blue; width: 33.3%; height: 100%; float: left;">${currentr}</div><%-- Current --%>
+					<div style="background-color:${eastc}; width: 33.3%; height: 100%; float: left;">${eastr}</div><%-- East --%>
+				
+				</div>
+				<div style="background-color:gray; width: 95%; height: 25%;"> <%-- Row 3--%>
+				
+					<div style="background-color:gray; width: 33.3%; height: 100%; float: left;"></div><%-- Southwest --%>
+					<div style="background-color:${southc}; width: 33.3%; height: 100%; float: left;">${southr}</div><%-- South --%>
+					<div style="background-color:gray; width: 33.3%; height: 100%; float: left;"></div><%-- Southeast --%>
+				
+				</div>
 			</div>
 		
 		

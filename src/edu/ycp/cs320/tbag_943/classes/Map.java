@@ -65,5 +65,40 @@ public class Map {
 		}
 		
 	}
+	
+	// These methods are used for the front-end map display. 
+	// They set the color for each adjacent location on the map, as well
+	// as the current location. 
+	public String getDirectionColor(Location current, int direction) {
+		String roomName = connections.get(current.getName()).get(direction); 
+		if(roomName.equals("-1")) {
+			return "gray"; 
+		} else {
+			Location room = locations.get(roomName); 
+		
+			if(room.isHidden()) {
+				return "gray"; 
+			} else {
+				return "green"; 
+			}
+		}
+		
+	}
+	
+	public String getDirectionName(Location current, int direction) {
+		
+		String roomName = connections.get(current.getName()).get(direction); 
+		if(roomName.equals("-1")) {
+			return ""; 
+		} else {
+			Location room = locations.get(roomName); 
+		
+			if(room.isHidden()) {
+				return ""; 
+			} else {
+				return roomName; 
+			}
+		}
+	}
 
 }

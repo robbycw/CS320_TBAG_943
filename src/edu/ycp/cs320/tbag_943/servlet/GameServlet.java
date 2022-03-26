@@ -36,6 +36,18 @@ public class GameServlet extends HttpServlet {
 			// forth in Servlet and JSP.
 			session.setAttribute("model", game);
 			
+			// We will also set attributes for the Map colors and names of rooms. 
+			Location current = game.getPlayer().getLocation(); 
+			session.setAttribute("northc", game.getMap().getDirectionColor(current, 0));
+			session.setAttribute("northr", game.getMap().getDirectionName(current, 0));
+			session.setAttribute("eastc", game.getMap().getDirectionColor(current, 1));
+			session.setAttribute("eastr", game.getMap().getDirectionName(current, 1));
+			session.setAttribute("southc", game.getMap().getDirectionColor(current, 2));
+			session.setAttribute("southr", game.getMap().getDirectionName(current, 2));
+			session.setAttribute("westc", game.getMap().getDirectionColor(current, 3));
+			session.setAttribute("westr", game.getMap().getDirectionName(current, 3));
+			session.setAttribute("currentr", game.getPlayer().getLocation().getName());
+			
 		} 
 		
 		System.out.println("GameServlet: doGet");
@@ -86,7 +98,7 @@ public class GameServlet extends HttpServlet {
 			// multiple-word commands (ex: move north). 
 			
 			in = in.toLowerCase(); 
-			String[] input = in.split(" "); 
+			String[] input = in.split(" +"); 
 			
 			// The following switch-case will interpret the user's command and call the
 			// appropriate controller functions. 
@@ -121,6 +133,17 @@ public class GameServlet extends HttpServlet {
 				
 				model.addOutput("Incorrect command syntax: Please specify a target.");
 			}
+			// Update Map
+			Location current = model.getPlayer().getLocation(); 
+			session.setAttribute("northc", model.getMap().getDirectionColor(current, 0));
+			session.setAttribute("northr", model.getMap().getDirectionName(current, 0));
+			session.setAttribute("eastc", model.getMap().getDirectionColor(current, 1));
+			session.setAttribute("eastr", model.getMap().getDirectionName(current, 1));
+			session.setAttribute("southc", model.getMap().getDirectionColor(current, 2));
+			session.setAttribute("southr", model.getMap().getDirectionName(current, 2));
+			session.setAttribute("westc", model.getMap().getDirectionColor(current, 3));
+			session.setAttribute("westr", model.getMap().getDirectionName(current, 3));
+			session.setAttribute("currentr", model.getPlayer().getLocation().getName());
 			
 			// Put the updated model back in the HttpSession.
 			session.setAttribute("model", model);
