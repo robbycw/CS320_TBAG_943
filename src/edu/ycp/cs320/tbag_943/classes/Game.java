@@ -50,7 +50,6 @@ public class Game {
 	public int getDifficulty() {
 		return difficulty;
 	}
-
 	
 	public ArrayList<String> getOutputLog() {
 		return outputLog;
@@ -100,5 +99,7 @@ public class Game {
 		outputLog.add(s);
 	}
 	
-
+	public void determineEnding() {
+		// TODO
+	}
 }

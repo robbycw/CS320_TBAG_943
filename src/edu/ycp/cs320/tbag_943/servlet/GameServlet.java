@@ -22,8 +22,6 @@ public class GameServlet extends HttpServlet {
 		
 		HttpSession session = req.getSession(false); 
 		
-		req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
-		
 		if(session == null || session.getAttribute("model") == null) {
 			// need to make a new session. 
 			session = req.getSession(); 
@@ -92,32 +90,39 @@ public class GameServlet extends HttpServlet {
 			
 			// The following switch-case will interpret the user's command and call the
 			// appropriate controller functions. 
-			
-			switch(input[0]) {
-			
-				case "move":
-					System.out.println(input[1]); 
-					controller.move(input[1]);
-					break; 
-				case "help":
-					controller.help(); 
-					break; 
-				case "attack":
-					controller.attack(input[1]);
-					break; 
-				case "talk":
-					controller.talk(input[1]);
-					break; 
-				case "collect":
-					controller.collect(input[1]);
-					break; 
-				case "puzzle":
-					controller.puzzle();
-					break;
-				default: 
-					model.addOutput("Unknown command.");
+			try {
+				switch(input[0]) {
+					case "move":
+						System.out.println(input[1]); 
+						controller.move(input[1]);
+						break; 
+					case "help":
+						controller.help(); 
+						break; 
+					case "attack":
+						controller.attack(input[1]);
+						break; 
+					case "talk":
+						controller.talk(input[1]);
+						break; 
+					case "collect":
+						controller.collect(input[1]);
+						break; 
+					case "puzzle":
+						controller.puzzle();
+						break;
+					default: 
+						model.addOutput("Unknown command.");
+				}
+			} catch (ArrayIndexOutOfBoundsException e) {
+				// In the event the user passes a command without a target, 
+				// this catch will handle the exception. 
+				// Ex: User inputs "attack" or "move "
+				
+				model.addOutput("Incorrect command syntax: Please specify a target.");
 			}
 			
+			// Put the updated model back in the HttpSession.
 			session.setAttribute("model", model);
 		}
 		
