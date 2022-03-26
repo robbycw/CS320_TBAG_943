@@ -28,6 +28,7 @@ public class Location {
 		this.treasure = null; 
 		this.npcs = null; 
 		this.puzzles = new ArrayList<Puzzle>(); 
+		this.hidden = true; 
 	}
 	
 	public String getName() {
