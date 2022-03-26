@@ -111,6 +111,9 @@ public class GameServlet extends HttpServlet {
 				case "collect":
 					controller.collect(input[1]);
 					break; 
+				case "puzzle":
+					controller.puzzle();
+					break;
 				default: 
 					model.addOutput("Unknown command.");
 			}
@@ -215,10 +218,14 @@ public class GameServlet extends HttpServlet {
 		
 		// Create Puzzle
 		String samplePuzzlePrompt = "I am down when the sun rises but up when the moon shines bright. What am I?";
-		Puzzle samplePuzzle = new Puzzle(samplePuzzlePrompt, "A minecraft piston attached to a daylight sensor and a not gate!");
+		Puzzle samplePuzzle = new Puzzle(samplePuzzlePrompt, "A minecraft piston attached to a daylight sensor and a 'not' gate!");
 		HashMap<String,Item> puzzleReward = new HashMap<>();
 		puzzleReward.put("first",new Item("Spaghetti of Destiny",0));
 		samplePuzzle.setReward(new Loot(puzzleReward));
+		r1.addPuzzle(samplePuzzle);
+		r2.addPuzzle(samplePuzzle);
+		r3.addPuzzle(samplePuzzle);
+		r4.addPuzzle(samplePuzzle);
 		
 		// Create Game with proper parameters
 		Game game = new Game(1, map, player); 

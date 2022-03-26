@@ -8,24 +8,28 @@ public class Puzzle {
 	private boolean result;
 	private String answer;
 	private Loot reward;
+	private boolean canSolve;
+	private boolean solved;
 	
 	// Constructors
 	public Puzzle() {
 		result = false;
+		canSolve = true;
 	}
 	
 	public Puzzle(String promptIn, String answerIn) {
 		result = false;
+		canSolve = true;
 		prompt = promptIn;
 		answer = answerIn;
 	}
 	
 	// Methods
-	public boolean calculateResult() {
-		if(result == true) {
-			return true;
+	public void solve(String response) {
+		if(response == answer && canSolve == true) {
+			solved = true;
 		} else {
-			return false;
+			solved = false;
 		}
 	}
 	
