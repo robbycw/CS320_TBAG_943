@@ -86,7 +86,7 @@ public class GameServlet extends HttpServlet {
 			// multiple-word commands (ex: move north). 
 			
 			in = in.toLowerCase(); 
-			String[] input = in.split(" "); 
+			String[] input = in.split(" +"); 
 			
 			// The following switch-case will interpret the user's command and call the
 			// appropriate controller functions. 
