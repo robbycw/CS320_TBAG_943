@@ -100,5 +100,13 @@ public class Map {
 			}
 		}
 	}
+	
+	public void getLocationDescription(Location current, int direction) {
+		if(current.getName().equals("Room3")) {
+			System.out.println("Starting Area");
+		} else if(current.getName().equals("Room4")) {
+			System.out.println("Room 4");
+		}
+	}
 
 }

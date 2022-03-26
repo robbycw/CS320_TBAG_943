@@ -113,5 +113,15 @@ public class Location {
 		}
 		this.npcs = npc; 
 	}
+	
+	public void locationDescription() {
+		if(name == "Start") {
+				System.out.println("Starting Room");
+		} else if(name == "Room3") {
+			System.out.println("Room 3");
+		} else if(name == "Room4") {
+			System.out.println("Room 4");
+		}
+	}
 
 }

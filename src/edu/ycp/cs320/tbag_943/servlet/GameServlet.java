@@ -28,9 +28,11 @@ public class GameServlet extends HttpServlet {
 			// will also need to make a Game object for this new session! 
 			// Game created in static method below. 
 			Game game = GameServlet.gameMaker();  
-			game.addOutput("Welcome to 9:43!");
-			game.addOutput("This text was added as a test in the servlet.");
-			game.addOutput("Text was added to Game's outputLog, which was referenced by the JSP to post this all!");
+//			game.addOutput("You Enter Tired");
+//			game.addOutput("The clock reads 9:43...");
+//			game.addOutput("Many murders have occured here...");
+//			game.addOutput("You have two hours to investigate those murders...");
+//			game.addOutput("Time Starts Now!");
 			
 			// Game data will be stored in the session, allowing data to be exchanged back and
 			// forth in Servlet and JSP.

@@ -104,14 +104,27 @@
 			</div>
 		
 		
-			<div class="column"> Console goes here.
+			<div class="column"> 
 				
 				<div id="output" style="height: 200px; overflow: auto">
-					
+			
 					<table>
-
-						<c:forEach items="${model.outputLog}" var="str">
-
+						<center>
+							You Enter Tired...
+						</center>
+						<center>
+							The clock reads 9:43...	
+						</center>
+						<center>
+							Many murders have occured here...	
+						</center>
+						<center>
+							You have two hours to investigate those murders...	
+						</center>
+						<center>
+							Time Starts Now!	
+						</center>
+							<c:forEach items="${model.outputLog}" var="str">
 							<tr>
 								<td>${str}</td>
 							</tr>

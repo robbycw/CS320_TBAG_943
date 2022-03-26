@@ -2,7 +2,6 @@ package edu.ycp.cs320.tbag_943.classes;
 
 import java.util.ArrayList; 
 
-
 public class Game {
 	private int difficulty; 
 	private ArrayList<String> outputLog; 
@@ -100,6 +99,8 @@ public class Game {
 	}
 	
 	public void determineEnding() {
-		// TODO
+		WinCondition test = new WinCondition();
+		String winCondition = test.currentWinCondition();
+		System.out.println(winCondition);
 	}
 }
