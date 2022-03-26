@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Random; 
 
 public class Combat {
-	private Double hitChance;
 	private int damage, turn, difficulty;
 	private boolean dead;
 	private ArrayList<NPC> turnOrder; 
@@ -40,14 +39,6 @@ public class Combat {
 	
 	public void calculateTurnOrder() {
 		Collections.sort(turnOrder);
-	}
-	
-	public double calculateAccuracy() {
-		return hitChance;
-	}
-	
-	public void doesHit() {
-		
 	}
 	
 	public static int calculateDamage(NPC npc) {

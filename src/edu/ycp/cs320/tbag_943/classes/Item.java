@@ -3,7 +3,7 @@ package edu.ycp.cs320.tbag_943.classes;
 public class Item {
 	private boolean consumable, isWeapon;
 	private int damage, healthGain, value, amount;
-	private double acuracy;
+	private double accuracy;
 	private String name; 
 	
 	public Item() {
@@ -55,8 +55,8 @@ public class Item {
 	public void setDamage(int damage) {
 		this.damage = damage;
 	}
-	public void setAcuracy(double acuracy) {
-		this.acuracy = acuracy;
+	public void setAccuracy(double accuracy) {
+		this.accuracy = accuracy;
 	}
 	
 	
@@ -83,15 +83,15 @@ public class Item {
 	public int getDamage() {
 		return damage;
 	}
-	public double getAcuracy() {
-		return acuracy;
+	public double getAccuracy() {
+		return accuracy;
 	}
 	
 								/// big boy methods///
 	public void useItem() {
 		
 	}
-	public boolean isItemCompatable() {
+	public boolean isItemCompatible() {
 		return false;
 	}
 }

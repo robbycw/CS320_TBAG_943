@@ -16,22 +16,25 @@ public class GameController {
 	 * 	output: Player moved east into the Dining Hall. *Insert Dining Hall Description*
 	 */
 
-	//fields
+	// Fields
 	private Game model; 
 	
-	//constructor
+	// Constructor
 	public GameController(Game model) {
 		this.model = model;  
 	}
 
+	// Getters
 	public Game getModel() {
 		return model;
 	}
-
+	
+	// Setters
 	public void setModel(Game model) {
 		this.model = model;
 	}
 
+	// Methods
 	
 	public void move(String direction) {
 		Map map = model.getMap(); 

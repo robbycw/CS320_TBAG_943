@@ -22,8 +22,6 @@ public class GameServlet extends HttpServlet {
 		
 		HttpSession session = req.getSession(false); 
 		
-		req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
-		
 		if(session == null || session.getAttribute("model") == null) {
 			// need to make a new session. 
 			session = req.getSession(); 
