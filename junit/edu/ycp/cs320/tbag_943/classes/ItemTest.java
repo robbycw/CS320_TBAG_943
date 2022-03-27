@@ -26,7 +26,7 @@ public class ItemTest {
 		modelSword.isConsumable(false);
 		modelSword.isWeapon(true);
 		modelSword.setValue(125);
-		modelSword.setAcuracy((double)0.69);
+		modelSword.setAccuracy((double)0.69);
 		modelSword.setDamage(21);
 	
 		
@@ -70,7 +70,7 @@ public class ItemTest {
 
 	@Test
 	public void testGetAcuracy() {
-		assertEquals((double)0.69, modelSword.getAcuracy());
+		assertEquals((double)0.69, modelSword.getAccuracy());
 	}
 
 

@@ -16,26 +16,35 @@ public class GameController {
 	 * 	output: Player moved east into the Dining Hall. *Insert Dining Hall Description*
 	 */
 
-	//fields
+	// Fields
 	private Game model; 
 	
-	//constructor
+	// Constructor
 	public GameController(Game model) {
 		this.model = model;  
 	}
 
+	// Getters
 	public Game getModel() {
 		return model;
 	}
-
+	
+	// Setters
 	public void setModel(Game model) {
 		this.model = model;
 	}
 
+	// Methods
 	
 	public void move(String direction) {
 		Map map = model.getMap(); 
 		Player player = model.getPlayer(); 
+		
+		// The player cannot move if in combat. 
+		if(model.isInCombat()) { 
+			model.addOutput(GameController.inCombatMessage("move"));
+			return; 
+		}
 		
 		if(direction.equals("north")) {
 
@@ -92,6 +101,7 @@ public class GameController {
 			if(model.isInCombat()) {
 				// There should be an ongoing combat in this case, which will be referenced in model. 
 				// It must be the player's turn if this branch is accessed. 
+				
 				// We will first want to check if the player is still alive. 
 				if(model.getPlayer().getStats().get("health").getRank() <= 0) {
 					model.setInCombat(false);
@@ -125,6 +135,7 @@ public class GameController {
 					// We will need to find the combat that contains this target. 
 					ArrayList<Combat> combats = model.getPlayer().getLocation().getCombats(); 
 					
+					// Finds the combat that contains the target. 
 					for(Combat c : combats) {
 						if(c.getNpcs().containsKey(target)) {
 							model.setCurrentCombat(c);
@@ -192,6 +203,11 @@ public class GameController {
 	
 	public void puzzle(String input)
 	{
+		// The player cannot access/solve a puzzle while in combat. 
+		if(model.isInCombat()) { 
+			model.addOutput(GameController.inCombatMessage("puzzle"));
+			return; 
+		}
 		Location loc = model.getPlayer().getLocation();
 		if(input.equalsIgnoreCase("cheat") && loc.getPuzzles().size() != 0)
 		{
@@ -244,6 +260,14 @@ public class GameController {
 					
 					model.addOutput(s);
 			}
+	}
+	
+	// Certain commands cannot be taken while in combat. This method is called in such a case
+	// when the player attempts certain actions while in combat to inform them that they cannot.
+	public static String inCombatMessage(String command) {
+		
+		return "The command " + command + " cannot be used in combat.";
+		
 	}
 	
 }

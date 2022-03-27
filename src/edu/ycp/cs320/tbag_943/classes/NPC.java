@@ -25,14 +25,14 @@ public class NPC implements Comparable {
 		st.put("speed", sp); 
 		this.stats = st; 
 		this.name = name; 
-		this.speech = speech;
+		this.speech = new Speech("Example speech");
 	}
 	
 	public NPC(String name, boolean combat, Item weapon, int health, int armor, int strength, int speed) {
 		this.name = name;
 		this.combat = combat; 
 		this.weapon = weapon; 
-		this.speech = speech;
+		this.speech = new Speech("Example speech");
 		
 		// Generate Stats
 		Stat h = new Stat("health", health); 

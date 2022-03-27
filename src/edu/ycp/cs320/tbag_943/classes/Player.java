@@ -11,7 +11,6 @@ public class Player {
 	private Location location; 
 	private HashMap<String, Stat> stats; 
 	private String weapon; 
-	
 	public boolean playerCreated = false;
 	
 	public Player() { 
@@ -58,6 +57,7 @@ public class Player {
 		
 		playerCreated = true;
 	}
+	
 	public boolean getPlayerCreated() {
 		return playerCreated;
 	}
@@ -116,10 +116,6 @@ public class Player {
 	}
 	
 	public void interactWithObject() {
-		//TODO
-	}
-	
-	public void attackEntity() {
 		//TODO
 	}
 	

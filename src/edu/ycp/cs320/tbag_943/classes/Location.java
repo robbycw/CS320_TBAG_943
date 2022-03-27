@@ -18,6 +18,7 @@ public class Location {
 		this.combats = null; 
 		this.treasure = null; 
 		this.npcs = null; 
+		this.puzzles = new ArrayList<Puzzle>();
 	}
 	
 	public Location(String name) {
@@ -26,6 +27,8 @@ public class Location {
 		this.combats = null; 
 		this.treasure = null; 
 		this.npcs = null; 
+		this.puzzles = new ArrayList<Puzzle>(); 
+		this.hidden = true; 
 	}
 	
 	public String getName() {
@@ -110,5 +113,4 @@ public class Location {
 		}
 		this.npcs = npc; 
 	}
-
 }
