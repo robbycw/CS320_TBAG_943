@@ -6,6 +6,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import edu.ycp.cs320.tbag_943.classes.*;
+import edu.ycp.cs320.tbag_943.controller.*;
 
 
 public class EndCreditsServlet extends HttpServlet {
@@ -17,6 +19,10 @@ public class EndCreditsServlet extends HttpServlet {
 
 		System.out.println("EndCredits Servlet: doGet");	
 		
+		// Creating the variable that the jsp will access
+		WinCondition model = new WinCondition();
+		String condition = model.currentWinCondition();
+		req.setAttribute("condition", condition);
 		// call JSP to generate empty form
 		req.getRequestDispatcher("/_view/EndCredits.jsp").forward(req, resp);
 	}

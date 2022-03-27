@@ -14,18 +14,21 @@ public class Location {
 	
 	public Location() {
 		this.name = "Start"; 
-		this.puzzles = null; 
+		this.puzzles = new ArrayList<Puzzle>(); 
 		this.combats = null; 
 		this.treasure = null; 
 		this.npcs = null; 
+		this.puzzles = new ArrayList<Puzzle>();
 	}
 	
 	public Location(String name) {
 		this.name = name; 
-		this.puzzles = null; 
+		this.puzzles = new ArrayList<Puzzle>(); 
 		this.combats = null; 
 		this.treasure = null; 
 		this.npcs = null; 
+		this.puzzles = new ArrayList<Puzzle>(); 
+		this.hidden = true; 
 	}
 	
 	public String getName() {
@@ -60,6 +63,16 @@ public class Location {
 
 	public void setPuzzles(ArrayList<Puzzle> puzzles) {
 		this.puzzles = puzzles;
+	}
+	
+	public Puzzle getPuzzle(int num)
+	{
+		return puzzles.get(num);
+	}
+	
+	public void addPuzzle(Puzzle puzzleIn)
+	{
+		puzzles.add(puzzleIn);
 	}
 
 
@@ -100,5 +113,4 @@ public class Location {
 		}
 		this.npcs = npc; 
 	}
-
 }

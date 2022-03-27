@@ -75,11 +75,8 @@ public class GameControllerTest {
 		
 		sword = new Item("sword"); 
 		shield = new Item("shield");
-		items = new HashMap<String, Item>(); 
-		items.put("sword", sword); 
-		items.put("shield", shield); 
 		
-		loot = new Loot(items); 
+		loot = new Loot(sword); 
 		
 		r1.setTreasure(loot); 
 		
@@ -136,8 +133,7 @@ public class GameControllerTest {
 		assertTrue(p.getInventory().containsValue(sword));
 		
 		// Ensures sword is removed from the Loot in Room1
-		assertFalse(r1.getTreasure().getItems().containsKey("sword")); 
-		assertFalse(r1.getTreasure().getItems().containsValue(sword));
+		assertFalse(r1.getTreasure().isCollected());
 		
 	}
 	

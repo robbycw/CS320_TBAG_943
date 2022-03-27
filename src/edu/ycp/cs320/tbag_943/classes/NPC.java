@@ -10,6 +10,7 @@ public class NPC implements Comparable {
 	private boolean combat;
 	private HashMap<String, Stat> stats; 
 	private Item weapon; 
+	private Speech speech;
 	
 	public NPC(String name, int health, boolean combat, HashMap<String, Stat> stats) {
 		this.combat = combat;
@@ -24,12 +25,14 @@ public class NPC implements Comparable {
 		st.put("speed", sp); 
 		this.stats = st; 
 		this.name = name; 
+		this.speech = new Speech("Example speech");
 	}
 	
 	public NPC(String name, boolean combat, Item weapon, int health, int armor, int strength, int speed) {
 		this.name = name;
 		this.combat = combat; 
 		this.weapon = weapon; 
+		this.speech = new Speech("Example speech");
 		
 		// Generate Stats
 		Stat h = new Stat("health", health); 
@@ -58,8 +61,16 @@ public class NPC implements Comparable {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setName(String string) {
+		name = string;
+	}
+	
+	public Speech getSpeech() {
+		return speech;
+	}
+
+	public void setSpeech(ArrayList<String> add) {
+		speech.addArrayListSpeech(add);
 	}
 
 	public String getAttackMove(int get) {

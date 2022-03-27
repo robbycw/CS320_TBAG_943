@@ -2,8 +2,8 @@ package edu.ycp.cs320.tbag_943.classes;
 
 public class Item {
 	private boolean consumable, isWeapon;
-	private int damage, healthGain, value;
-	private double acuracy;
+	private int damage, healthGain, value, amount;
+	private double accuracy;
 	private String name; 
 	
 	public Item() {
@@ -16,6 +16,12 @@ public class Item {
 	public Item(String name, int damage) {
 		this.name = name;
 		this.damage = damage; 
+	}
+	
+	public Item(String name, int damage, int amount) {
+		this.name = name;
+		this.damage = damage; 
+		this.amount = amount; 
 	}
 	
 	public void setIcon() {
@@ -49,8 +55,8 @@ public class Item {
 	public void setDamage(int damage) {
 		this.damage = damage;
 	}
-	public void setAcuracy(double acuracy) {
-		this.acuracy = acuracy;
+	public void setAccuracy(double accuracy) {
+		this.accuracy = accuracy;
 	}
 	
 	
@@ -77,15 +83,15 @@ public class Item {
 	public int getDamage() {
 		return damage;
 	}
-	public double getAcuracy() {
-		return acuracy;
+	public double getAccuracy() {
+		return accuracy;
 	}
 	
 								/// big boy methods///
 	public void useItem() {
 		
 	}
-	public boolean isItemCompatable() {
+	public boolean isItemCompatible() {
 		return false;
 	}
 }
