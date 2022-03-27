@@ -201,7 +201,7 @@ public class GameController {
 	}
 	
 	
-	public void puzzle()
+	public void puzzle(String input)
 	{
 		// The player cannot access/solve a puzzle while in combat. 
 		if(model.isInCombat()) { 
@@ -209,11 +209,56 @@ public class GameController {
 			return; 
 		}
 		Location loc = model.getPlayer().getLocation();
-			if(loc.getPuzzles().size() != 0)
+		if(input.equalsIgnoreCase("cheat") && loc.getPuzzles().size() != 0)
+		{
+			for(int i = 0; i < loc.getPuzzles().size();i++)
 			{
 				Puzzle puz = loc.getPuzzle(0);
-				String s = puz.getPrompt();
+				String s = "Puzzle " + (i+1) + " : " + puz.getAnswer();
 				model.addOutput(s);
+			}
+			
+		}
+		else if(loc.getPuzzles().size() != 0)
+			{
+				for(int i = 0; i < loc.getPuzzles().size();i++)
+				{
+					Puzzle puz = loc.getPuzzle(0);
+					String s = "Puzzle " + (i+1) + " : " + puz.getPrompt();
+					model.addOutput(s);
+				}
+			}
+	}
+	
+	public void puzzle() {
+		puzzle("No input");
+	}
+	
+	public void solve(String response)
+	{
+		Location loc = model.getPlayer().getLocation();
+			if(loc.getPuzzles().size() != 0)
+			{
+					Puzzle puz = loc.getPuzzle(0);
+					String s = "Uninit";
+					if(!puz.isSolved()) 
+					{
+						if(puz.solve(response))
+						{
+						s = "Correct! You now have a " + puz.getReward().getName();
+						puz.getLoot().giveItems(model.getPlayer());
+						}
+						else
+						{
+							s = "your answer of: '" + response + "' is incorrect";
+						}
+					}
+					else if(puz.isSolved())
+					{
+						s = "You already solved this puzzle";
+					}
+					
+					model.addOutput(s);
 			}
 	}
 	

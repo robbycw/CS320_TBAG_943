@@ -124,7 +124,23 @@ public class GameServlet extends HttpServlet {
 						controller.collect(input[1]);
 						break; 
 					case "puzzle":
-						controller.puzzle();
+						if(input.length>1)
+						{
+							controller.puzzle(input[1]);
+							break;
+						}
+						else
+						{
+							controller.puzzle();
+							break;
+						}
+					case "solve":
+						String response = input[1];
+						for(int i = 2; i < input.length; i++) 
+						{
+							response = response + " " + input[i];
+						}
+						controller.solve(response);
 						break;
 					default: 
 						model.addOutput("Unknown command.");
@@ -135,6 +151,7 @@ public class GameServlet extends HttpServlet {
 				// Ex: User inputs "attack" or "move "
 				
 				model.addOutput("Incorrect command syntax: Please specify a target.");
+
 			}
 			// Update Map
 			Location current = model.getPlayer().getLocation(); 
@@ -181,11 +198,7 @@ public class GameServlet extends HttpServlet {
 		combats.add(c1); 
 		
 		// Create Loots
-		HashMap<String, Item> items = new HashMap<String, Item>(); 
-		items.put("gold", gold); 
-		items.put("axe", axe); 
-		
-		Loot loot = new Loot(items);  
+		Loot loot = new Loot(new Item("Axe", 12));  
 		
 		// Sets up for adding connections and rooms to the map. 
 		String room1, room2, room3, room4, room5, room6, room7, room8; 
@@ -288,26 +301,33 @@ public class GameServlet extends HttpServlet {
 		// Create Player
 		Player player = new Player("Jorady", r3, 500, 10, 4, 10); 
 		
-		// Create Puzzle
-		String samplePuzzlePrompt = "I am down when the sun rises but up when the moon shines bright. What am I?";
-		Puzzle samplePuzzle = new Puzzle(samplePuzzlePrompt, "A minecraft piston attached to a daylight sensor and a 'not' gate!");
-		HashMap<String,Item> puzzleReward = new HashMap<>();
-		puzzleReward.put("first",new Item("Spaghetti of Destiny",0));
-		samplePuzzle.setReward(new Loot(puzzleReward));
-		r1.addPuzzle(samplePuzzle);
-		r2.addPuzzle(samplePuzzle);
-		r3.addPuzzle(samplePuzzle);
-		r4.addPuzzle(samplePuzzle);
+		// Create Puzzles
+		String samplePuzzlePrompt1 = "I am down when the sun rises but up when the moon shines bright. What am I?";
+		Puzzle samplePuzzle1 = new Puzzle(samplePuzzlePrompt1, "The Moon");
+		samplePuzzle1.setLoot(new Loot(new Item("Moon Shaped Key",0)));
+		r1.addPuzzle(samplePuzzle1);
+		
+		String samplePuzzlePrompt2 = "I am a horse that races around my track for hours, but I've never drawn a breath. What am I?";
+		Puzzle samplePuzzle2 = new Puzzle(samplePuzzlePrompt2, "Carousel");
+		samplePuzzle2.setLoot(new Loot(new Item("Knife Hilt",1)));
+		r2.addPuzzle(samplePuzzle2);
+		
+		String samplePuzzlePrompt3 = "I will diminish your numbers exponentially from my home under a tree. What am I?";
+		Puzzle samplePuzzle3 = new Puzzle(samplePuzzlePrompt3, "Roots");
+		samplePuzzle3.setLoot(new Loot(new Item("Taco of Terror",0)));
+		r3.addPuzzle(samplePuzzle3);
+		
+		String samplePuzzlePrompt4 = "Is Tesla great?";
+		Puzzle samplePuzzle4 = new Puzzle(samplePuzzlePrompt4, "Totally");
+		samplePuzzle4.setLoot(new Loot(new Item("Death of Death", 1000)));
+		r4.addPuzzle(samplePuzzle4);
 		
 		// Creating Location Descriptions
 		r1.setDescription("You find yourself in a lobby.  There are doors in all directions.  Choose Carefully...");
-		r2.setDescription(samplePuzzle.getPrompt());
 		r3.setDescription("Investigate...There are doors to the North, South, and West...");
 		r4.setDescription("A dark figure is standing in front of you.  There are doors to the West and South...");
 		r5.setDescription("You find yourself in a dark room.  There are doors to the South and East...");
-		r6.setDescription(samplePuzzle.getPrompt());
 		r7.setDescription("A mysterious figure is staring at you.  There are doors to the North and East...");
-		r8.setDescription(samplePuzzle.getPrompt());
 		
 		// Create Game with proper parameters
 		Game game = new Game(1, map, player); 
