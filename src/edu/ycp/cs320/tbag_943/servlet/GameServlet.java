@@ -267,15 +267,26 @@ public class GameServlet extends HttpServlet {
 		// Create Player
 		Player player = new Player("Jorady", r3, 500, 10, 4, 10); 
 		
-		// Create Puzzle
+		// Create Puzzles
 		String samplePuzzlePrompt1 = "I am down when the sun rises but up when the moon shines bright. What am I?";
 		Puzzle samplePuzzle1 = new Puzzle(samplePuzzlePrompt1, "The Moon");
-		samplePuzzle1.setLoot(new Loot(new Item("Spagety of Destiny",0)));
+		samplePuzzle1.setLoot(new Loot(new Item("Moon Shaped Key",0)));
 		r1.addPuzzle(samplePuzzle1);
 		
-		r2.addPuzzle(samplePuzzle1);
-		r3.addPuzzle(samplePuzzle1);
-		r4.addPuzzle(samplePuzzle1);
+		String samplePuzzlePrompt2 = "I am a horse that races around my track for hours, but I've never drawn a breath. What am I?";
+		Puzzle samplePuzzle2 = new Puzzle(samplePuzzlePrompt2, "Carousel");
+		samplePuzzle2.setLoot(new Loot(new Item("Knife Hilt",1)));
+		r2.addPuzzle(samplePuzzle2);
+		
+		String samplePuzzlePrompt3 = "I will diminish your numbers exponentially from my home under a tree. What am I?";
+		Puzzle samplePuzzle3 = new Puzzle(samplePuzzlePrompt3, "Roots");
+		samplePuzzle3.setLoot(new Loot(new Item("Taco of Terror",0)));
+		r3.addPuzzle(samplePuzzle3);
+		
+		String samplePuzzlePrompt4 = "Is Tesla great?";
+		Puzzle samplePuzzle4 = new Puzzle(samplePuzzlePrompt4, "Totally");
+		samplePuzzle4.setLoot(new Loot(new Item("Death of Death", 1000)));
+		r4.addPuzzle(samplePuzzle4);
 		
 		// Create Game with proper parameters
 		Game game = new Game(1, map, player); 
