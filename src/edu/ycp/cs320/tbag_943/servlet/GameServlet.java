@@ -324,13 +324,10 @@ public class GameServlet extends HttpServlet {
 		
 		// Creating Location Descriptions
 		r1.setDescription("You find yourself in a lobby.  There are doors in all directions.  Choose Carefully...");
-		r2.setDescription(samplePuzzle.getPrompt());
 		r3.setDescription("Investigate...There are doors to the North, South, and West...");
 		r4.setDescription("A dark figure is standing in front of you.  There are doors to the West and South...");
 		r5.setDescription("You find yourself in a dark room.  There are doors to the South and East...");
-		r6.setDescription(samplePuzzle.getPrompt());
 		r7.setDescription("A mysterious figure is staring at you.  There are doors to the North and East...");
-		r8.setDescription(samplePuzzle.getPrompt());
 		
 		// Create Game with proper parameters
 		Game game = new Game(1, map, player); 
