@@ -28,11 +28,7 @@ public class GameServlet extends HttpServlet {
 			// will also need to make a Game object for this new session! 
 			// Game created in static method below. 
 			Game game = GameServlet.gameMaker();  
-//			game.addOutput("You Enter Tired");
-//			game.addOutput("The clock reads 9:43...");
-//			game.addOutput("Many murders have occured here...");
-//			game.addOutput("You have two hours to investigate those murders...");
-//			game.addOutput("Time Starts Now!");
+
 			
 			// Game data will be stored in the session, allowing data to be exchanged back and
 			// forth in Servlet and JSP.
@@ -192,30 +188,34 @@ public class GameServlet extends HttpServlet {
 		Loot loot = new Loot(items);  
 		
 		// Sets up for adding connections and rooms to the map. 
-		String room1, room2, room3, room4; 
+		String room1, room2, room3, room4, room5, room6, room7, room8; 
 		HashMap<String, ArrayList<String>> connections = new HashMap<String, ArrayList<String>>();
-		ArrayList<String> room1Con, room2Con, room3Con, room4Con; 
+		ArrayList<String> room1Con, room2Con, room3Con, room4Con, room5Con, room6Con, room7Con, room8Con; 
 		room1 = "Room1"; 
 		room2 = "Room2"; 
 		room3 = "Room3";
 		room4 = "Room4"; 
+		room5 = "Room5";
+		room6 = "Room6";
+		room7 = "Room7";
+		room8 = "Room8";
 		
 		room1Con = new ArrayList<String>(); 
 		room1Con.add(room2); // north
 		room1Con.add(room3); // east
-		room1Con.add("-1"); // south
-		room1Con.add("-1"); // west
+		room1Con.add(room7); // south
+		room1Con.add(room6); // west
 		
 		room2Con = new ArrayList<String>(); 
 		room2Con.add("-1"); // north
 		room2Con.add(room4); // east
 		room2Con.add(room1); // south
-		room2Con.add("-1"); // west
+		room2Con.add(room5); // west
 		
 		room3Con = new ArrayList<String>(); 
 		room3Con.add(room4); // north
 		room3Con.add("-1"); // east
-		room3Con.add("-1"); // south
+		room3Con.add(room8); // south
 		room3Con.add(room1); // west
 		
 		room4Con = new ArrayList<String>(); 
@@ -224,25 +224,58 @@ public class GameServlet extends HttpServlet {
 		room4Con.add(room3); // south
 		room4Con.add(room2); // west
 		
+		room5Con = new ArrayList<String>();
+		room5Con.add("-1"); // north
+		room5Con.add(room2); // east
+		room5Con.add(room6); // south
+		room5Con.add("-1"); // west
+		
+		room6Con = new ArrayList<String>();
+		room6Con.add(room5); // north
+		room6Con.add(room1); // east
+		room6Con.add("-1"); // south
+		room6Con.add("-1"); // west
+		
+		room7Con = new ArrayList<String>();
+		room7Con.add(room1); // north
+		room7Con.add(room8); // east
+		room7Con.add("-1"); // south
+		room7Con.add("-1"); // west
+		
+		room8Con = new ArrayList<String>();
+		room8Con.add(room3); // north
+		room8Con.add("-1"); // east
+		room8Con.add("-1"); // south
+		room8Con.add(room7); // west
+		
 		connections.put(room1, room1Con); 
 		connections.put(room2, room2Con); 
 		connections.put(room3, room3Con); 
 		connections.put(room4, room4Con); 
+		connections.put(room5, room5Con );
+		connections.put(room6, room6Con);
+		connections.put(room7, room7Con);
+		connections.put(room8, room8Con);
 		
 		HashMap<String, Location> locations = new HashMap<String, Location>(); 
-		Location r1, r2, r3, r4; 
+		Location r1, r2, r3, r4, r5, r6, r7, r8; 
+//		Puzzle prompt = new Puzzle();
 		r1 = new Location(room1); 
 		r2 = new Location(room2); 
 		r3 = new Location(room3); 
 		r4 = new Location(room4); 
+		r5 = new Location(room5);
+		r6 = new Location(room6);
+		r7 = new Location(room7);
+		r8 = new Location(room8);
 		locations.put(room1, r1); 
 		locations.put(room2, r2); 
 		locations.put(room3,r3); 
 		locations.put(room4,r4);
-		r1.setDescription("You find yourself in a lobby");
-		r2.setDescription("You find yourself in a dark room");
-		r3.setDescription("Investigate");
-		r4.setDescription("A dark figure is standing in front of you");
+		locations.put(room5,  r5);
+		locations.put(room6,  r6);
+		locations.put(room7, r7);
+		locations.put(room8,  r8);
 		
 		// Set NPCs, Loot and Combat in rooms. 
 		r1.setTreasure(loot);
@@ -265,6 +298,16 @@ public class GameServlet extends HttpServlet {
 		r2.addPuzzle(samplePuzzle);
 		r3.addPuzzle(samplePuzzle);
 		r4.addPuzzle(samplePuzzle);
+		
+		// Creating Location Descriptions
+		r1.setDescription("You find yourself in a lobby.  There are doors in all directions.  Choose Carefully...");
+		r2.setDescription(samplePuzzle.getPrompt());
+		r3.setDescription("Investigate...There are doors to the North, South, and West...");
+		r4.setDescription("A dark figure is standing in front of you.  There are doors to the West and South...");
+		r5.setDescription("You find yourself in a dark room.  There are doors to the South and East...");
+		r6.setDescription(samplePuzzle.getPrompt());
+		r7.setDescription("A mysterious figure is staring at you.  There are doors to the North and East...");
+		r8.setDescription(samplePuzzle.getPrompt());
 		
 		// Create Game with proper parameters
 		Game game = new Game(1, map, player); 
