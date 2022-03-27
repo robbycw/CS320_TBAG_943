@@ -22,7 +22,7 @@ public class GameServlet extends HttpServlet {
 		
 		HttpSession session = req.getSession(false); 
 		
-		req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
+		
 		
 		if(session == null || session.getAttribute("model") == null) {
 			// need to make a new session. 
@@ -36,13 +36,15 @@ public class GameServlet extends HttpServlet {
 			
 			// Game data will be stored in the session, allowing data to be exchanged back and
 			// forth in Servlet and JSP.
+			game.setPlayerCreated(true);
 			session.setAttribute("model", game);
+			
+			
 			
 		} 
 		
 		System.out.println("GameServlet: doGet");
-		
-		
+
 		req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
 	}
 	
@@ -52,8 +54,31 @@ public class GameServlet extends HttpServlet {
 		
 		HttpSession session = req.getSession(); 
 		System.out.println("GameServlet: doPost");
+
 		
 		
+		if(req.getParameter("characterSubmit") != null) {
+			Game model = (Game) session.getAttribute("model"); 
+			String playerName =req.getParameter("playerName");
+			int strengthStat = getIntegerFromParameter(req.getParameter("strengthStat"));
+			int speedStat = getIntegerFromParameter(req.getParameter("speedStat"));
+			int vitalityStat = getIntegerFromParameter(req.getParameter("vitalityStat"));
+			int charismaStat = getIntegerFromParameter(req.getParameter("charismaStat"));
+			
+			session.setAttribute("playerName", playerName);
+			session.setAttribute("strengthStat", strengthStat);
+			session.setAttribute("speedStat", speedStat);
+			session.setAttribute("vitalityStat", vitalityStat);
+			session.setAttribute("charismaStat", charismaStat);
+			
+			
+			Player player = new Player(playerName, model.getPlayer().getLocation(), (10 + vitalityStat), 10, strengthStat, speedStat);
+			model.setPlayer(player);
+			session.setAttribute("health", player.getStats().get("health").getRank());
+			
+			model.setPlayerCreated(false);
+			session.setAttribute("model", model);
+		}
 		
 		if(req.getParameter("title") != null) {
 			
@@ -80,6 +105,10 @@ public class GameServlet extends HttpServlet {
 			String in = req.getParameter("user"); 
 			Game model = (Game) session.getAttribute("model"); 
 			GameController controller = new GameController(model); 
+			
+			
+			
+			
 			
 			model.addOutput(in); // The user's command is added to the output 
 			
@@ -116,6 +145,7 @@ public class GameServlet extends HttpServlet {
 			}
 			
 			session.setAttribute("model", model);
+			session.setAttribute("health", model.getPlayer().getStats().get("health").getRank());
 		}
 		
 		req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
@@ -212,14 +242,13 @@ public class GameServlet extends HttpServlet {
 		
 		// Create Player
 		Player player = new Player("Jorady", r3, 500, 10, 4, 10); 
-		
 		// Create Game with proper parameters
 		Game game = new Game(1, map, player); 
 		
 		return game; 
 	}
 
-	private Integer getDoubleFromParameter(String s) {
+	private Integer getIntegerFromParameter(String s) {
 		if (s == null || s.equals("")) {
 			return null;
 		} else {

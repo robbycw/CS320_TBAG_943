@@ -11,6 +11,7 @@ public class Game {
 	private Player player; 
 	private Combat currentCombat; 
 	private boolean inCombat, playerTurnTaken; 
+	private boolean playerNotCreated;
 
 	public Game() {
 		this.difficulty = 1; 
@@ -37,6 +38,9 @@ public class Game {
 
 	public void setInCombat(boolean inCombat) {
 		this.inCombat = inCombat;
+	}
+	public void setPlayerCreated(boolean created) {
+		this.playerNotCreated = created;
 	}
 
 	public boolean isPlayerTurnTaken() {
@@ -87,7 +91,9 @@ public class Game {
 	public Combat getCurrentCombat() {
 		return currentCombat;
 	}
-
+	public boolean getPlayerNotCreated() {
+		return playerNotCreated;
+	}
 	public void setCurrentCombat(Combat currentCombat) {
 		this.currentCombat = currentCombat;
 	}
