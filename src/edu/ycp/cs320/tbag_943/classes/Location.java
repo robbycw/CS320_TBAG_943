@@ -14,7 +14,7 @@ public class Location {
 	
 	public Location() {
 		this.name = "Start"; 
-		this.puzzles = null; 
+		this.puzzles = new ArrayList<Puzzle>(); 
 		this.combats = null; 
 		this.treasure = null; 
 		this.npcs = null; 
@@ -22,7 +22,7 @@ public class Location {
 	
 	public Location(String name) {
 		this.name = name; 
-		this.puzzles = null; 
+		this.puzzles = new ArrayList<Puzzle>(); 
 		this.combats = null; 
 		this.treasure = null; 
 		this.npcs = null; 

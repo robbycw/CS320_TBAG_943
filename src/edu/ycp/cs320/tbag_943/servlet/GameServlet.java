@@ -96,24 +96,79 @@ public class GameServlet extends HttpServlet {
 			switch(input[0]) {
 			
 				case "move":
-					System.out.println(input[1]); 
-					controller.move(input[1]);
-					break; 
+					if(input.length>1)
+					{
+						System.out.println(input[1]); 
+						controller.move(input[1]);
+						break; 
+					}
+					else
+					{
+						model.addOutput("Add a direction");
+						break;
+					}
 				case "help":
 					controller.help(); 
 					break; 
 				case "attack":
-					controller.attack(input[1]);
-					break; 
+					if(input.length>1)
+					{
+						controller.attack(input[1]);
+						break; 
+					}
+					else
+					{
+						model.addOutput("Add a target");
+						break;
+					}
 				case "talk":
-					controller.talk(input[1]);
-					break; 
+					if(input.length>1)
+					{
+						controller.talk(input[1]);
+						break; 
+					}
+					else
+					{
+						model.addOutput("Add a target");
+						break;
+					}
 				case "collect":
-					controller.collect(input[1]);
-					break; 
+					if(input.length>1)
+					{
+						controller.collect(input[1]);
+						break; 
+					}
+					else
+					{
+						model.addOutput("Add a target");
+						break;
+					}
 				case "puzzle":
-					controller.puzzle();
-					break;
+					if(input.length>1)
+					{
+						controller.puzzle(input[1]);
+						break;
+					}
+					else
+					{
+						controller.puzzle();
+						break;
+					}
+				case "solve":
+					if(input.length>1){
+						String response = input[1];
+						for(int i = 2; i < input.length; i++) 
+						{
+							response = response + " " + input[i];
+						}
+						controller.solve(response);
+						break;
+					}
+					else
+					{
+						model.addOutput("Add an answer");
+						break;
+					}
 				default: 
 					model.addOutput("Unknown command.");
 			}
@@ -150,11 +205,7 @@ public class GameServlet extends HttpServlet {
 		combats.add(c1); 
 		
 		// Create Loots
-		HashMap<String, Item> items = new HashMap<String, Item>(); 
-		items.put("gold", gold); 
-		items.put("axe", axe); 
-		
-		Loot loot = new Loot(items);  
+		Loot loot = new Loot(new Item("Axe", 12));  
 		
 		// Sets up for adding connections and rooms to the map. 
 		String room1, room2, room3, room4; 
@@ -217,15 +268,14 @@ public class GameServlet extends HttpServlet {
 		Player player = new Player("Jorady", r3, 500, 10, 4, 10); 
 		
 		// Create Puzzle
-		String samplePuzzlePrompt = "I am down when the sun rises but up when the moon shines bright. What am I?";
-		Puzzle samplePuzzle = new Puzzle(samplePuzzlePrompt, "A minecraft piston attached to a daylight sensor and a 'not' gate!");
-		HashMap<String,Item> puzzleReward = new HashMap<>();
-		puzzleReward.put("first",new Item("Spaghetti of Destiny",0));
-		samplePuzzle.setReward(new Loot(puzzleReward));
-		r1.addPuzzle(samplePuzzle);
-		r2.addPuzzle(samplePuzzle);
-		r3.addPuzzle(samplePuzzle);
-		r4.addPuzzle(samplePuzzle);
+		String samplePuzzlePrompt1 = "I am down when the sun rises but up when the moon shines bright. What am I?";
+		Puzzle samplePuzzle1 = new Puzzle(samplePuzzlePrompt1, "The Moon");
+		samplePuzzle1.setLoot(new Loot(new Item("Spagety of Destiny",0)));
+		r1.addPuzzle(samplePuzzle1);
+		
+		r2.addPuzzle(samplePuzzle1);
+		r3.addPuzzle(samplePuzzle1);
+		r4.addPuzzle(samplePuzzle1);
 		
 		// Create Game with proper parameters
 		Game game = new Game(1, map, player); 

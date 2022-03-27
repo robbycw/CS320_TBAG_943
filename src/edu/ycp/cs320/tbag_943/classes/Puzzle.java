@@ -7,7 +7,7 @@ public class Puzzle {
 	private int requiredSkill, requiredItem;
 	private boolean result;
 	private String answer;
-	private Loot reward;
+	private Loot loot;
 	private boolean canSolve;
 	private boolean solved;
 	
@@ -25,11 +25,13 @@ public class Puzzle {
 	}
 	
 	// Methods
-	public void solve(String response) {
-		if(response == answer && canSolve == true) {
+	public boolean solve(String response) {
+		if(response.equalsIgnoreCase(answer) && canSolve == true) {
 			solved = true;
+			return true;
 		} else {
 			solved = false;
+			return false;
 		}
 	}
 	
@@ -70,8 +72,16 @@ public class Puzzle {
 		return result;
 	}
 	
-	public Loot getReward() {
-		return reward;
+	public Item getReward() {
+		return loot.getItem();
+	}
+	
+	public Loot getLoot() {
+		return loot;
+	}
+	
+	public boolean isSolved() {
+		return solved;
 	}
 	
 	//Setters
@@ -96,8 +106,8 @@ public class Puzzle {
 		result = newResult;
 	}
 	
-	public void setReward(Loot rewardIn)
+	public void setLoot(Loot lootIn)
 	{
-		reward = rewardIn;
+		loot = lootIn;
 	}
 }
