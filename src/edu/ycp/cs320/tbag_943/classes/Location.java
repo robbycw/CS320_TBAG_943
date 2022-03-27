@@ -113,5 +113,4 @@ public class Location {
 		}
 		this.npcs = npc; 
 	}
-
 }

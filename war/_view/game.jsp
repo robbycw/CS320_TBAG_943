@@ -104,20 +104,37 @@
 			</div>
 		
 		
-			<div class="column"> Console goes here.
+			<div class="column"> Console
 				
 				<div id="output" style="height: 200px; overflow: auto">
-					
-					<table>
+			
+					<table align=center>
+						<center>
+							You Enter Tired...
+						</center>
+						<center>
+							The clock reads 9:43...	
+						</center>
+						<center>
+							Many murders have occured here...	
+						</center>
+						<center>
+							You have two hours to investigate those murders...	
+						</center>
+						<center>
+							Time Starts Now!	
+						</center>
 
-						<c:forEach items="${model.outputLog}" var="str">
+						<div align=center>
+							${description}	
+						</div>
 
-							<tr>
-								<td>${str}</td>
-							</tr>
+						<c:forEach items="${model.outputLog}" var="str" >
+						<tr>
+							<td>${str}</td>
+						</tr>
 
 						</c:forEach>
-
 
 					</table>
 
@@ -128,6 +145,7 @@
 					var myDiv = document.getElementById("output");
 					myDiv.scrollTop = myDiv.scrollHeight; 
 				</script>
+				
 
 				<form action="${pageContext.servletContext.contextPath}/game" method="post">
 					<input type="text" id="user" name="user"><br>
