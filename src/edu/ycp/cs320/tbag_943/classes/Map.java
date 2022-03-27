@@ -101,12 +101,18 @@ public class Map {
 		}
 	}
 	
-	public void getLocationDescription(Location current, int direction) {
-		if(current.getName().equals("Room3")) {
-			System.out.println("Starting Area");
-		} else if(current.getName().equals("Room4")) {
-			System.out.println("Room 4");
-		}
-	}
+//	public void getLocationDescription(Location current, int direction) {
+//		
+//		String roomName = connections.get(current.getName()).get(direction);
+//		Location loc = new Location();
+//		
+//		if(current.getName().equals("Room3")) {
+//			System.out.println("Starting Area");
+//			loc.setDescription("You find yourself in a lobby/n\" + \r\n" + 
+//								"\"The lobby is completely dark ha/n");
+//		} else if(current.getName().equals("Room4")) {
+//			System.out.println("Room 4");
+//		}
+//	}
 
 }

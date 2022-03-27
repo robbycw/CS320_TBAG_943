@@ -50,7 +50,12 @@ public class GameServlet extends HttpServlet {
 			session.setAttribute("westr", game.getMap().getDirectionName(current, 3));
 			session.setAttribute("currentr", game.getPlayer().getLocation().getName());
 			
+			// Location Description
+				Location loc = new Location();
+				String desc = loc.getDescription();
+				req.setAttribute("description", desc);
 		} 
+		
 		
 		System.out.println("GameServlet: doGet");
 		
@@ -234,6 +239,10 @@ public class GameServlet extends HttpServlet {
 		locations.put(room2, r2); 
 		locations.put(room3,r3); 
 		locations.put(room4,r4);
+		r1.setDescription("You find yourself in a lobby");
+		r2.setDescription("You find yourself in a dark room");
+		r3.setDescription("Investigate");
+		r4.setDescription("A dark figure is standing in front of you");
 		
 		// Set NPCs, Loot and Combat in rooms. 
 		r1.setTreasure(loot);

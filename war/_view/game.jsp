@@ -104,11 +104,11 @@
 			</div>
 		
 		
-			<div class="column"> 
+			<div class="column"> Console
 				
 				<div id="output" style="height: 200px; overflow: auto">
 			
-					<table>
+					<table align=center>
 						<center>
 							You Enter Tired...
 						</center>
@@ -124,13 +124,17 @@
 						<center>
 							Time Starts Now!	
 						</center>
-							<c:forEach items="${model.outputLog}" var="str">
-							<tr>
-								<td>${str}</td>
-							</tr>
+
+						<div align=center>
+							${description}	
+						</div>
+
+						<c:forEach items="${model.outputLog}" var="str" >
+						<tr>
+							<td>${str}</td>
+						</tr>
 
 						</c:forEach>
-
 
 					</table>
 
@@ -141,6 +145,7 @@
 					var myDiv = document.getElementById("output");
 					myDiv.scrollTop = myDiv.scrollHeight; 
 				</script>
+				
 
 				<form action="${pageContext.servletContext.contextPath}/game" method="post">
 					<input type="text" id="user" name="user"><br>

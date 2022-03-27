@@ -114,14 +114,18 @@ public class Location {
 		this.npcs = npc; 
 	}
 	
-	public void locationDescription() {
-		if(name == "Start") {
-				System.out.println("Starting Room");
-		} else if(name == "Room3") {
-			System.out.println("Room 3");
-		} else if(name == "Room4") {
-			System.out.println("Room 4");
-		}
-	}
+//	public void locationDescription() {
+//		if(name == "Start") {
+//				System.out.println("Starting Room");
+//				description = "You find yourself in a lobby/n" + 
+//								"The lobby is completely dark/n";
+//		} else if(name == "Room3") {
+//			System.out.println("Room 3");
+//		} else if(name == "Room4") {
+//			System.out.println("Room 4");
+//			description = "You travel to the next room/n" + 
+//							"A tall figure stands at the south exit";
+//		}
+//	}
 
 }
