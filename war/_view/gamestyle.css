@@ -127,11 +127,37 @@ h1{
 }
 #statsBox{
 	background: black;
-	width: 100px;
-	height: 190px;
-	margin-left: 65px;
+	width: 50px;
+	height: 160px;
+	margin-left: 85px;
 	margin-top:-188px;
+	float: left;
 	
+}
+#healthBox{
+	background:black;
+	width: 80px;
+	height: 30px;
+	margin-left: 185px;
+	margin-top:-40px;
+	float: left;
+}
+#playerHealth{
+	background:black;
+	width: 25px;
+	height: 30px;
+	margin-left: 265px;
+	margin-top:-40px;
+	float: left;
+}
+#playerNameBox{
+	background:black;
+	width: 100px;
+	height: 30px;
+	margin-left: 185px;
+	margin-top:-220px;
+	text-align: left;
+	float:left;
 }
 td.statsLabel{
 	color: red;
