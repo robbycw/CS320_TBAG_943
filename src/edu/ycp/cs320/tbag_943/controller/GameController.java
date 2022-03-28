@@ -2,6 +2,7 @@ package edu.ycp.cs320.tbag_943.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 import edu.ycp.cs320.tbag_943.classes.*;
 
 public class GameController {
@@ -180,12 +181,144 @@ public class GameController {
 		}
 	}
 	
-	public void talk(String NPC) {
-		
+	//Gets talk targets
+	public void talk() {
+		String s = "";
+		if(!model.getPlayer().getLocation().getNPCs().isEmpty())
+		{
+			s = "You can talk to: ";
+			Set<String> set = model.getPlayer().getLocation().getNPCs().keySet();
+			for(String key : set) 
+			{
+				String NPCName = model.getPlayer().getLocation().getNPCs().get(key).getName();
+				s = s + NPCName + ", ";
+			}
+			s = s.substring(0,s.length()-2);
+		}
+		else
+		{
+			s = "There is no one here";
+		}
+		model.addOutput(s);
+	}
+	
+	//Gets talk options
+	public void talk(String NPCName) 
+	{
+		if(model.getPlayer().getLocation().getNPCs().containsKey(NPCName))
+		{
+			
+			ArrayList<String> speeches = model.getPlayer().getLocation().getNPCs().get(NPCName).getSpeech().getSpeeches();
+			if(!speeches.isEmpty() 
+					|| model.getPlayer().getLocation().getNPCs().get(NPCName).canIntimidate()
+					|| model.getPlayer().getLocation().getNPCs().get(NPCName).canPersuade()) 
+			{
+				String s = "You can say the following: ";
+				model.addOutput(s);
+				for(int i = 0; i < speeches.size();i++)
+				{
+					String op = (i+1) +". " + speeches.get(i) + "\n";
+					model.addOutput(op);
+				}
+				if(model.getPlayer().getLocation().getNPCs().get(NPCName).canIntimidate()){
+					model.addOutput(model.getPlayer().getLocation().getNPCs().get(NPCName).getSpeech().getIntimOp() + " [INTIMIDATION]\n");
+				}
+				if(model.getPlayer().getLocation().getNPCs().get(NPCName).canPersuade()) {
+					model.addOutput(model.getPlayer().getLocation().getNPCs().get(NPCName).getSpeech().getPersOp() + " [PERSUASION]\n");
+				}
+				
+				s ="Type a number:";
+				model.addOutput(s);
+			}
+			else{
+				model.addOutput("'I have nothing to say to you.'");
+			}
+		}
+		else{
+			model.addOutput("There is no NPC by that name here...");
+		}
+	}
+	
+	//gets talk response
+	public void talk(String NPCName, String option) {
+		int choice = Integer.parseInt(option);
+		if(model.getPlayer().getLocation().getNPCs().containsKey(NPCName)){
+			if(model.getPlayer().getLocation().getNPCs().get(NPCName).getSpeech().getResponses().size()>choice-1){
+				model.addOutput("Response: " + model.getPlayer().getLocation().getNPCs().get(NPCName).getSpeech().getResponse(choice-1));
+			}
+			else{
+				model.addOutput("That is not a valid response.");
+			}
+		}
+		else{
+			model.addOutput("There is no NPC by that name here...");
+		}
+	}
+	
+	public void intimidate(String NPCName)
+	{
+		if(model.getPlayer().getLocation().getNPCs().containsKey(NPCName)){
+			if(model.getPlayer().getLocation().getNPCs().get(NPCName).isIntimidated()){
+				model.addOutput("[SUCCESS] " + model.getPlayer().getLocation().getNPCs().get(NPCName).getSpeech().getIntimRes());
+			}
+			else if(!model.getPlayer().getLocation().getNPCs().get(NPCName).canIntimidate()){
+				model.addOutput("This target cannot be intimidated");
+			}
+			else if(model.getPlayer().getLocation().getNPCs().get(NPCName).canIntimidate() 
+					&& !model.getPlayer().getLocation().getNPCs().get(NPCName).isIntimidated()){
+				model.addOutput("[FAILURE] " + model.getPlayer().getLocation().getNPCs().get(NPCName).getSpeech().getIntimResFail());
+			}
+		}
+		else{
+			model.addOutput("There is no NPC by that name here...");
+		}
+	}
+	
+	public void persuade(String NPCName)
+	{
+		if(model.getPlayer().getLocation().getNPCs().containsKey(NPCName)){
+			if(model.getPlayer().getLocation().getNPCs().get(NPCName).isPersuaded()){
+				model.addOutput("[SUCCESS] " + model.getPlayer().getLocation().getNPCs().get(NPCName).getSpeech().getPersRes());
+			}
+			else if(!model.getPlayer().getLocation().getNPCs().get(NPCName).canPersuade()){
+				model.addOutput("This target cannot be intimidated");
+			}
+			else if(model.getPlayer().getLocation().getNPCs().get(NPCName).canPersuade() 
+					&& !model.getPlayer().getLocation().getNPCs().get(NPCName).isPersuaded()){
+				model.addOutput("[FAILURE] " + model.getPlayer().getLocation().getNPCs().get(NPCName).getSpeech().getPersResFail());
+			}
+		}
+		else{
+			model.addOutput("There is no NPC by that name here...");
+		}
+	}
+	
+	public void win(){
+		model.getPlayer().getWinCondition().setComplete(true);
 	}
 	
 	public void inventory() {
-		
+		String s = "";
+		Set<String> set = model.getPlayer().getInventory().keySet();
+		if(!set.isEmpty()) 
+		{
+			for(String key : set) 
+			{
+				String itemName = model.getPlayer().getInventory().get(key).getName();
+				s = s + itemName + ", ";
+			}
+			s = s.substring(0,s.length()-2);
+			model.addOutput("You currently have: " + s);
+		}
+		else
+		{
+			model.addOutput("Your inventory is empty");
+		}
+	}
+	
+	public void look()
+	{
+		model.addOutput(model.getPlayer().getLocation().getDescription());
 	}
 	
 	public void equip(String item) {
@@ -209,21 +342,19 @@ public class GameController {
 			return; 
 		}
 		Location loc = model.getPlayer().getLocation();
-		if(input.equalsIgnoreCase("cheat") && loc.getPuzzles().size() != 0)
-		{
+		if(input.equalsIgnoreCase("cheat") && loc.getPuzzles().size() != 0){
 			for(int i = 0; i < loc.getPuzzles().size();i++)
 			{
-				Puzzle puz = loc.getPuzzle(0);
-				String s = "Puzzle " + (i+1) + " : " + puz.getAnswer();
+				Puzzle puz = loc.getPuzzle(i);
+				String s = "Answer: Puzzle " + (i+1) + " : " + puz.getAnswer();
 				model.addOutput(s);
 			}
 			
 		}
-		else if(loc.getPuzzles().size() != 0)
-			{
+		else if(loc.getPuzzles().size() != 0){
 				for(int i = 0; i < loc.getPuzzles().size();i++)
 				{
-					Puzzle puz = loc.getPuzzle(0);
+					Puzzle puz = loc.getPuzzle(i);
 					String s = "Puzzle " + (i+1) + " : " + puz.getPrompt();
 					model.addOutput(s);
 				}
@@ -234,14 +365,17 @@ public class GameController {
 		puzzle("No input");
 	}
 	
-	public void solve(String response)
+	public void solve(String input,String response)
 	{
+		int choice = Integer.parseInt(input) - 1;
 		Location loc = model.getPlayer().getLocation();
 			if(loc.getPuzzles().size() != 0)
 			{
-					Puzzle puz = loc.getPuzzle(0);
+					Puzzle puz = loc.getPuzzle(choice);
 					String s = "Uninit";
-					if(!puz.isSolved()) 
+					if(!puz.isSolved() 
+							&& !puz.getBreakable()
+							&& !puz.getJumpable()) 
 					{
 						if(puz.solve(response))
 						{
@@ -251,6 +385,44 @@ public class GameController {
 						else
 						{
 							s = "your answer of: '" + response + "' is incorrect";
+						}
+					}
+					else if(!puz.isSolved() 
+							&& puz.getBreakable()
+							&& !puz.getJumpable()) 
+					{
+						if(puz.solve(response) && puz.checkRequiredSkill(model.getPlayer().getStats().get("strength")))
+						{
+						s = "You smashed right through!";
+						}
+						else if(puz.solve(response) && !puz.checkRequiredSkill(model.getPlayer().getStats().get("strength")))
+						{
+						s = "You are far too weak for this task. Your strength is "
+								+ model.getPlayer().getStats().get("speed").getRank() 
+								+ " and must be " + puz.getRequiredSkill().getRank();
+						}
+						else
+						{
+							s = "your answer of: '" + response + "' is not what you do here.";
+						}
+					}
+					else if(!puz.isSolved() 
+							&& !puz.getBreakable()
+							&& puz.getJumpable()) 
+					{
+						if(puz.solve(response) && puz.checkRequiredSkill(model.getPlayer().getStats().get("speed")))
+						{
+						s = "You jumped right on over it!";
+						}
+						else if(puz.solve(response) && !puz.checkRequiredSkill(model.getPlayer().getStats().get("speed")))
+						{
+						s = "You are far too slow for this task. Your speed is " 
+								+ model.getPlayer().getStats().get("speed").getRank() 
+								+ " and must be " + puz.getRequiredSkill().getRank();
+						}
+						else
+						{
+							s = "your answer of: '" + response + "' is not what you do here.";
 						}
 					}
 					else if(puz.isSolved())

@@ -17,7 +17,7 @@ public class Location {
 		this.puzzles = new ArrayList<Puzzle>(); 
 		this.combats = null; 
 		this.treasure = null; 
-		this.npcs = null; 
+		this.npcs = new HashMap<>(); 
 		this.puzzles = new ArrayList<Puzzle>();
 	}
 	
@@ -26,7 +26,7 @@ public class Location {
 		this.puzzles = new ArrayList<Puzzle>(); 
 		this.combats = null; 
 		this.treasure = null; 
-		this.npcs = null; 
+		this.npcs = new HashMap<>(); 
 		this.puzzles = new ArrayList<Puzzle>(); 
 		this.hidden = true; 
 	}
