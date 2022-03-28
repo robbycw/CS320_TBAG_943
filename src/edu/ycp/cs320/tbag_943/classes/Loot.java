@@ -42,7 +42,7 @@ public class Loot {
 	}
 	
 	public boolean pickUpItem(Player player, String itemName) {
-		if(item.getName() == itemName && !collected) {
+		if(item.getName().equalsIgnoreCase(itemName) && !collected) {
 			player.collect(item);
 			collected = true;
 			return true; 
