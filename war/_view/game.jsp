@@ -3,6 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ page import = "edu.ycp.cs320.tbag_943.classes.*" %>
 <%@ page import ="java.util.*" %>
+
 <html>
 	<head>
 		<title>9:43</title>
@@ -18,57 +19,64 @@
 	</head>
 
 	<body>
-		<div id="overlay">
-			<div id="charCreationTxt">
-			<p>Name:</p>
-			<p>Strength:</p>
-			<p>Speed:</p>
-			<p>Constitution:</p>
-			<p>Charisma:</p>
-			</div >
+		<c:if test= "${model.playerNotCreated}">
+			<div id="overlay">
+				<div id="charCreationTxt">
+					<p>Name:</p>
+					<p>Strength:</p>
+					<p>Speed:</p>
+					<p>Vitality:</p>
+					<p>Charisma:</p>
+				</div>
 			
-			<div id="charCreationBoxes">
+			
+			
+		
 				<form action="${pageContext.servletContext.contextPath}/game" method="post">
-					<tr>
-						<div id= "nameBox">
-							<input type="text" id="pName" name="pName" value="${name}">
-							
-						</div>
-					</tr>
-					
-					<tr>
-						<div id= "strengthBox">
-						<input type="text" id="strPoints" maxlength="2"><br>
+					<div id="charCreationBoxes">
 						
-						</div>
-					</tr>
+							<tr>
+								<div id= "nameBox">
+									<input type="text" name="playerName">
+									
+								</div>
+							</tr>
+							
+							<tr>
+								<div id= "strengthBox">
+									<input type="text" maxlength="2" name="strengthStat"><br>
+								
+								</div>
+							</tr>
+							
+							<tr>
+								<div id= "SpeedBox">
+									<input type="text" maxlength="2" name="speedStat"><br>
+								</div>
+							</tr>
+							
+							<tr>
+								<div id= "ConstitutionBox">
+									<input type="text" maxlength="2" name="vitalityStat"><br>
+								</div>
+							</tr>
+							
+							<tr>
+								<div id= "charismaBox">
+									<input type="text" maxlength="2" name="charismaStat"><br>
+								</div>
+							</tr>
+							
+							
+					</div>
 					
-					<tr>
-						<div id= "SpeedBox">
-						<input type="text" id="spdPoints" maxlength="2"><br>
-						</div>
-					</tr>
-					
-					<tr>
-						<div id= "ConstitutionBox">
-						<input type="text" id="conPoints" maxlength="2"><br>
-						</div>
-					</tr>
-					
-					<tr>
-						<div id= "charismaBox">
-						<input type="text" id="chrPoints" maxlength="2"><br>
-						</div>
-					</tr>
-					
+					<div id= "submitButton">
+						<input type="submit" id="chrDone" value="Done" onclick="off()" name= "characterSubmit">
+					</div>
 					
 				</form>
-			</div>
-			
-			<div id= "submitButton">
-			<input type="submit" id="chrDone" value="Done" onclick="translateStats()">
-			</div>
-		</div>
+			</div >
+		</c:if>
 		
 		
 		<div id="entire"><div id="row">
@@ -137,7 +145,8 @@
 						</c:forEach>
 
 					</table>
-
+					<p>
+					</p>
 				</div>
 
 				<!-- This script was found at https://www.codegrepper.com/code-examples/javascript/javascript+scroll+to+bottom+of+table -->
@@ -149,7 +158,7 @@
 
 				<form action="${pageContext.servletContext.contextPath}/game" method="post">
 					<input type="text" id="user" name="user"><br>
-					<input type="submit" value="Enter"><br>
+					<input type="submit" value="Enter" id="enterButton"><br>
 				</form>
 
 				<form action="${pageContext.servletContext.contextPath}/game" method="post">
@@ -165,7 +174,7 @@
 				<div class="subsection">Inventory/Utility
 				</div>
 				
-				<div class="subsection"> Stats
+				<div class="subsection"> <br>
 					<div id="statNameBox">
 						<div id="statsNames">
 						<td>Strength:</td>
@@ -176,14 +185,39 @@
 						</div>
 						
 						<div id="statsNames">
+						<td>Vitality:</td>
+						</div>
+						
+						<div id="statsNames">
 						<td>Charisma:</td>
 						</div>
 						
 					</div>
 					<div id="statsBox">
-						<h1 class="output" id="strStat"></h1>	
-						<h1 class="output" id="spdStat"></h1>	
-						<h1 class="output" id="chrStat" style="margin-top: -1px"></h1>
+						<h1>${strengthStat}</h1>	
+						<h1>${speedStat}</h1>	
+						<h1 style="margin-top: -1px">${vitalityStat}</h1>
+						<h1 style="margin-top: -1px">${charismaStat}</h1>
+					</div>
+					
+					<div id="healthBox">
+						<h1>health:</h1>
+					</div>
+					
+					<div id= "playerHealth">
+						<h1>${health}</h>
+					</div>
+					
+					<div id="playerNameBox">
+					<h1 >${playerName}</h1>
+					</div>
+					
+					<div id="armorBox">
+						<h1>Armor:</h1>
+					</div>
+					
+					<div id="armorStat">
+						<h1>${armor}</h1>
 					</div>
 				</div>
 				
@@ -192,33 +226,13 @@
 		
 		</div></div>
 		<script>
-		const playerName = document.getElementById('pName');
-		const strengthPoints = document.getElementById('strPoints');
-		const speedPoints = document.getElementById('spdPoints');
-		const charismaPoints = document.getElementById('chrPoints');
-		
-		const strengthStat = document.getElementById('strStat');
-		const speedStat = document.getElementById('spdStat');
-		const charismaStat = document.getElementById('chrStat');
-		
-		const btn1 = document.getElementById('chrDone');
-		
-		function translateStats(){
-			strengthStat.innerHTML = strengthPoints.value;
-			speedStat.innerHTML = speedPoints.value;
-			charismaStat.innerHTML = charismaPoints.value;
-			off();	
-		}
-		
-		
-		function on() {
-		  	document.getElementById("overlay").style.display = "block";
-		}
-
-		function off() {
-			document.getElementById("overlay").style.display = "none";
-		}
-		
+			function on() {
+			  	document.getElementById("overlay").style.display = "block";
+			}
+	
+			function off() {
+				document.getElementById("overlay").style.display = "none";
+			}
 		</script>
 		
 	</body>

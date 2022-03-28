@@ -22,6 +22,7 @@ public class GameServlet extends HttpServlet {
 		
 		HttpSession session = req.getSession(false); 
 		
+
 		if(session == null || session.getAttribute("model") == null) {
 			// need to make a new session. 
 			session = req.getSession(); 
@@ -32,8 +33,10 @@ public class GameServlet extends HttpServlet {
 			
 			// Game data will be stored in the session, allowing data to be exchanged back and
 			// forth in Servlet and JSP.
+			game.setPlayerCreated(true);
 			session.setAttribute("model", game);
 			
+
 			// We will also set attributes for the Map colors and names of rooms. 
 			Location current = game.getPlayer().getLocation(); 
 			session.setAttribute("northc", game.getMap().getDirectionColor(current, 0));
@@ -50,12 +53,12 @@ public class GameServlet extends HttpServlet {
 				Location loc = new Location();
 				String desc = loc.getDescription();
 				req.setAttribute("description", desc);
+
 		} 
 		
 		
 		System.out.println("GameServlet: doGet");
-		
-		
+
 		req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
 	}
 	
@@ -65,8 +68,33 @@ public class GameServlet extends HttpServlet {
 		
 		HttpSession session = req.getSession(); 
 		System.out.println("GameServlet: doPost");
+
 		
 		
+		if(req.getParameter("characterSubmit") != null) {
+			Game model = (Game) session.getAttribute("model"); 
+			String playerName =req.getParameter("playerName");
+			int strengthStat = getIntegerFromParameter(req.getParameter("strengthStat"));
+			int speedStat = getIntegerFromParameter(req.getParameter("speedStat"));
+			int vitalityStat = getIntegerFromParameter(req.getParameter("vitalityStat"));
+			int charismaStat = getIntegerFromParameter(req.getParameter("charismaStat"));
+			
+			session.setAttribute("playerName", playerName);
+			session.setAttribute("strengthStat", strengthStat);
+			session.setAttribute("speedStat", speedStat);
+			session.setAttribute("vitalityStat", vitalityStat);
+			session.setAttribute("charismaStat", charismaStat);
+			
+			
+			Player player = new Player(playerName, model.getPlayer().getLocation(), (10 + vitalityStat), 10, strengthStat, speedStat);
+			model.setPlayer(player);
+			
+			session.setAttribute("health", player.getStats().get("health").getRank());
+			session.setAttribute("armor", player.getStats().get("armor").getRank());
+			
+			model.setPlayerCreated(false);
+			session.setAttribute("model", model);
+		}
 		
 		if(req.getParameter("title") != null) {
 			
@@ -93,6 +121,10 @@ public class GameServlet extends HttpServlet {
 			String in = req.getParameter("user"); 
 			Game model = (Game) session.getAttribute("model"); 
 			GameController controller = new GameController(model); 
+			
+			
+			
+			
 			
 			model.addOutput(in); // The user's command is added to the output 
 			
@@ -199,6 +231,7 @@ public class GameServlet extends HttpServlet {
 			
 			// Put the updated model back in the HttpSession.
 			session.setAttribute("model", model);
+			session.setAttribute("health", model.getPlayer().getStats().get("health").getRank());
 		}
 		
 		req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
@@ -387,6 +420,7 @@ public class GameServlet extends HttpServlet {
 		
 		// Create Player
 		Player player = new Player("Jorady", r3, 500, 10, 4, 10); 
+
 		
 		// Create Puzzles
 		String samplePuzzlePrompt1 = "I am down when the sun rises but up when the moon shines bright. What am I?";
@@ -428,13 +462,14 @@ public class GameServlet extends HttpServlet {
 		r5.setDescription("You find yourself in a dark room.  There are doors to the South and East...");
 		r7.setDescription("A mysterious figure is staring at you.  There are doors to the North and East...");
 		
+
 		// Create Game with proper parameters
 		Game game = new Game(1, map, player); 
 		
 		return game; 
 	}
 
-	private Integer getDoubleFromParameter(String s) {
+	private Integer getIntegerFromParameter(String s) {
 		if (s == null || s.equals("")) {
 			return null;
 		} else {
