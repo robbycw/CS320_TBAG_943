@@ -129,6 +129,9 @@
 						<center>
 							You have two hours to investigate those murders...	
 						</center>
+						<center> 
+							You are in a room with three people...	
+						</center>
 						<center>
 							Time Starts Now!	
 						</center>

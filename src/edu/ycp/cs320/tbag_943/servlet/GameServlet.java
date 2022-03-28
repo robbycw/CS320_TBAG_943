@@ -50,9 +50,9 @@ public class GameServlet extends HttpServlet {
 			session.setAttribute("currentr", game.getPlayer().getLocation().getName());
 			
 			// Location Description
-				Location loc = new Location();
-				String desc = loc.getDescription();
-				req.setAttribute("description", desc);
+			Location loc = new Location();
+			String desc = loc.getDescription();
+			req.setAttribute("description", desc);
 
 		} 
 		
@@ -354,12 +354,22 @@ public class GameServlet extends HttpServlet {
 		samplePuzzle4.setLoot(new Loot(new Item("Death of Death", 1000)));
 		r4.addPuzzle(samplePuzzle4);
 		
-		// Creating Location Descriptions
-		r1.setDescription("You find yourself in a lobby.  There are doors in all directions.  Choose Carefully...");
-		r3.setDescription("Investigate...There are doors to the North, South, and West...");
-		r4.setDescription("A dark figure is standing in front of you.  There are doors to the West and South...");
+		// Creating Items for the locations
+		Loot locLoot1 = new Loot(sword1);
+		locLoot1.setItems(sword1);
+		
+		Loot locLoot4 = new Loot(gold);
+		locLoot4.setItems(gold);
+		
+		// Creating Location Description
+		r1.setDescription("You find yourself in a lobby.  There are doors in all directions.  Choose Carefully..." + locLoot1.getItem().getName());
+		r2.setDescription("There are doors to the East, West, and South...");
+		r3.setDescription("Investigate...There are doors to the North, South, and West..." + npcs.get(0).getName() + ", " + npcs.get(1).getName() + ", and " + npcs.get(2).getName() + " are with you...");
+		r4.setDescription("A dark figure is standing in front of you.  There are doors to the West and South..." + locLoot4.getItem().getName());
 		r5.setDescription("You find yourself in a dark room.  There are doors to the South and East...");
+		r6.setDescription("There are doors to the North and East...");
 		r7.setDescription("A mysterious figure is staring at you.  There are doors to the North and East...");
+		r8.setDescription("There are doors to the North and West...");
 		
 
 		// Create Game with proper parameters
