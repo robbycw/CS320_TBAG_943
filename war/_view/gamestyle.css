@@ -138,7 +138,7 @@ h1{
 	background:black;
 	width: 80px;
 	height: 30px;
-	margin-left: 185px;
+	margin-left: 145px;
 	margin-top:-40px;
 	float: left;
 }
@@ -146,7 +146,7 @@ h1{
 	background:black;
 	width: 25px;
 	height: 30px;
-	margin-left: 265px;
+	margin-left: 220px;
 	margin-top:-40px;
 	float: left;
 }
@@ -158,6 +158,22 @@ h1{
 	margin-top:-220px;
 	text-align: left;
 	float:left;
+}
+#armorBox{
+	background:black;
+	width: 80px;
+	height: 30px;
+	margin-left: 270px;
+	margin-top:-40px;
+	float: left;
+}
+#armorStat{
+	background: black;
+	width: 20px;
+	height: 30px;
+	margin-left: 350px;
+	margin-top:-40px;
+	float: left;
 }
 td.statsLabel{
 	color: red;

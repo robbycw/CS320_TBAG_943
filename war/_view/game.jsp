@@ -211,6 +211,14 @@
 					<div id="playerNameBox">
 					<h1 >${playerName}</h1>
 					</div>
+					
+					<div id="armorBox">
+						<h1>Armor:</h1>
+					</div>
+					
+					<div id="armorStat">
+						<h1>${armor}</h1>
+					</div>
 				</div>
 				
 				<div class="subsection">Timer</div>
