@@ -88,4 +88,11 @@ public class WinCondition {
 	public void setDefaultCase(boolean value) {
 		defaultCase = value;
 	}
+	
+	public void setAllGood(boolean value) {
+		defaultCase = value;
+		bestCase = value;
+		wonRooms = value;
+		complete = value;
+	}
 }

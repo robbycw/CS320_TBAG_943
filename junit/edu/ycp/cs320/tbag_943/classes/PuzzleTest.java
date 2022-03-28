@@ -23,14 +23,14 @@ public class PuzzleTest {
 	
 	@Test
 	public void testSetRequiredSkill() {
-		puzzle.setRequiredSkill(5);
-		assertEquals(5, puzzle.getRequiredSkill());
+		puzzle.setRequiredSkill(new Stat("strength",20));
+		assertEquals(new Stat("strength",20), puzzle.getRequiredSkill());
 	}
 	
 	@Test
 	public void testSetRequiredItem() {
-		puzzle.setRequiredItem(10);
-		assertEquals(10, puzzle.getRequiredItem());
+		puzzle.setRequiredItem(new Item("Milk dud"));
+		assertEquals(new Item("Milk dud"), puzzle.getRequiredItem());
 	}
 	
 	@Test

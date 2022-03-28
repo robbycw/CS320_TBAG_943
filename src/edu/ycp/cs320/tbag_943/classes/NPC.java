@@ -11,6 +11,14 @@ public class NPC implements Comparable {
 	private HashMap<String, Stat> stats; 
 	private Item weapon; 
 	private Speech speech;
+	private boolean isIntimidated;
+	private boolean canIntimidate;
+	private int intimidationThreshold;
+	private boolean isPersuaded;
+	private boolean canPersuade;
+	private int persuasionThreshold;
+	
+	
 	
 	public NPC(String name, int health, boolean combat, HashMap<String, Stat> stats) {
 		this.combat = combat;
@@ -25,14 +33,14 @@ public class NPC implements Comparable {
 		st.put("speed", sp); 
 		this.stats = st; 
 		this.name = name; 
-		this.speech = new Speech("Example speech");
+		this.speech = new Speech();
 	}
 	
 	public NPC(String name, boolean combat, Item weapon, int health, int armor, int strength, int speed) {
 		this.name = name;
 		this.combat = combat; 
 		this.weapon = weapon; 
-		this.speech = new Speech("Example speech");
+		this.speech = new Speech();
 		
 		// Generate Stats
 		Stat h = new Stat("health", health); 
@@ -69,8 +77,56 @@ public class NPC implements Comparable {
 		return speech;
 	}
 
-	public void setSpeech(ArrayList<String> add) {
-		speech.addArrayListSpeech(add);
+	public void setSpeech(Speech set) {
+		speech = set;
+	}
+	
+	public boolean isIntimidated() {
+		return isIntimidated;
+	}
+
+	public void setIntimidated(boolean bool) {
+		isIntimidated = bool;
+	}
+	
+	public int getIntimidationThreshold() {
+		return intimidationThreshold;
+	}
+
+	public void setIntimidationThreshold(int in) {
+		intimidationThreshold = in;
+	}
+	
+	public boolean isPersuaded() {
+		return isPersuaded;
+	}
+
+	public void setPersuaded(boolean bool) {
+		isPersuaded = bool;
+	}
+	
+	public boolean canIntimidate() {
+		return canIntimidate;
+	}
+
+	public void setCanIntimidate(boolean bool) {
+		canIntimidate = bool;
+	}
+	
+	public boolean canPersuade() {
+		return canPersuade;
+	}
+
+	public void setCanPersuade(boolean bool) {
+		canPersuade = bool;
+	}
+	
+	public int getPersuasionThreshold() {
+		return persuasionThreshold;
+	}
+
+	public void setPersuasionThreshold(int in) {
+		persuasionThreshold = in;
 	}
 
 	public String getAttackMove(int get) {
