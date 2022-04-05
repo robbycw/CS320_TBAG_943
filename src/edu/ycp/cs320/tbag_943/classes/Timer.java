@@ -1,13 +1,12 @@
 package edu.ycp.cs320.tbag_943.classes;
 
-
 public class Timer {
 	// Fields
 	private int timeRemaining, timerRate;
 	
 	// Constructor
 	public Timer() {
-		timeRemaining = 120;
+		timeRemaining = 120*60;
 		timerRate = 1;
 	}
 	

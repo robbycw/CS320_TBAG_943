@@ -122,9 +122,10 @@ public class GameServlet extends HttpServlet {
 			Game model = (Game) session.getAttribute("model"); 
 			GameController controller = new GameController(model); 
 			
-			
-			
-			
+			// Get current time after post, then set the time of the Timer. 
+			String time = req.getParameter("t"); 
+			int timeInt = Integer.parseInt(time); 
+			model.getTimer().setTime(timeInt);
 			
 			model.addOutput(in); // The user's command is added to the output 
 			
