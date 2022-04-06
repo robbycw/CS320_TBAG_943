@@ -139,77 +139,84 @@ public class GameServlet extends HttpServlet {
 			// The following switch-case will interpret the user's command and call the
 			// appropriate controller functions. 
 			try {
-				switch(input[0]) {
-					case "move":
-						System.out.println(input[1]); 
-						controller.move(input[1]);
-						break; 
-					case "help":
-						controller.help(); 
-						break; 
-					case "attack":
-						controller.attack(input[1]);
-						break; 
-					case "win":
-						controller.win();
-						break;
-					case "talk":
-						if(input.length>1)
-						{
-							if(input.length>2)
+				// The player should only be able to enter commands if they are alive. 
+				if(model.getPlayer().getStats().get("health").getRank() > 0) {
+					switch(input[0]) {
+						case "move":
+							System.out.println(input[1]); 
+							controller.move(input[1]);
+							break; 
+						case "help":
+							controller.help(); 
+							break; 
+						case "attack":
+							controller.attack(input[1]);
+							break; 
+						case "win":
+							controller.win();
+							break;
+						case "talk":
+							if(input.length>1)
 							{
-								controller.talk(input[1],input[2]);
-								break; 
+								if(input.length>2)
+								{
+									controller.talk(input[1],input[2]);
+									break; 
+								}
+								else
+								{
+									controller.talk(input[1]);
+									break;
+								}
 							}
 							else
 							{
-								controller.talk(input[1]);
+								controller.talk();
 								break;
 							}
-						}
-						else
-						{
-							controller.talk();
+						case "intimidate":
+							controller.intimidate(input[1]);
 							break;
-						}
-					case "intimidate":
-						controller.intimidate(input[1]);
-						break;
-					case "persuade":
-						controller.persuade(input[1]);
-						break;
-					case "collect":
-						controller.collect(input[1]);
-						break; 
-					case "look":
-						controller.look();
-						break;
-					case "inventory":
-					case "items":
-						controller.inventory();
-						break;
-					case "puzzle":
-						if(input.length>1)
-						{
-							controller.puzzle(input[1]);
+						case "persuade":
+							controller.persuade(input[1]);
 							break;
-						}
-						else
-						{
-							controller.puzzle();
+						case "collect":
+							controller.collect(input[1]);
+							break; 
+						case "look":
+							controller.look();
 							break;
-						}
-					case "solve":
-						String response = input[2];
-						for(int i = 3; i < input.length; i++) 
-						{
-							response = response + " " + input[i];
-						}
-						controller.solve(input[1],response);
-						break;
-					default: 
-						model.addOutput("Unknown command.");
+						case "inventory":
+						case "items":
+							controller.inventory();
+							break;
+						case "puzzle":
+							if(input.length>1)
+							{
+								controller.puzzle(input[1]);
+								break;
+							}
+							else
+							{
+								controller.puzzle();
+								break;
+							}
+						case "solve":
+							String response = input[2];
+							for(int i = 3; i < input.length; i++) 
+							{
+								response = response + " " + input[i];
+							}
+							controller.solve(input[1],response);
+							break;
+						default: 
+							model.addOutput("Unknown command.");
+					}
+				} else {
+					String dead = "You cannot enter commands, as " + model.getPlayer().getName() + " is dead."; 
+					model.addOutput(dead);
 				}
+				
 			} catch (ArrayIndexOutOfBoundsException e) {
 				// In the event the user passes a command without a target, 
 				// this catch will handle the exception. 
@@ -413,7 +420,7 @@ public class GameServlet extends HttpServlet {
 		
 		// Set NPCs, Loot and Combat in rooms. 
 		r1.setTreasure(loot);
-		r2.setCombats(combats);
+		r3.setCombats(combats);
 		r3.setNPCs(npcs);
 		
 		// Create map
