@@ -36,23 +36,13 @@ public class GameServlet extends HttpServlet {
 			game.setPlayerCreated(true);
 			session.setAttribute("model", game);
 			
-
-			// We will also set attributes for the Map colors and names of rooms. 
-			Location current = game.getPlayer().getLocation(); 
-			session.setAttribute("northc", game.getMap().getDirectionColor(current, 0));
-			session.setAttribute("northr", game.getMap().getDirectionName(current, 0));
-			session.setAttribute("eastc", game.getMap().getDirectionColor(current, 1));
-			session.setAttribute("eastr", game.getMap().getDirectionName(current, 1));
-			session.setAttribute("southc", game.getMap().getDirectionColor(current, 2));
-			session.setAttribute("southr", game.getMap().getDirectionName(current, 2));
-			session.setAttribute("westc", game.getMap().getDirectionColor(current, 3));
-			session.setAttribute("westr", game.getMap().getDirectionName(current, 3));
-			session.setAttribute("currentr", game.getPlayer().getLocation().getName());
+			// Make the map attributes. 
+			GameServlet.mapMaker(session, game);
 			
 			// Location Description
-				Location loc = new Location();
-				String desc = loc.getDescription();
-				req.setAttribute("description", desc);
+			Location loc = new Location();
+			String desc = loc.getDescription();
+			req.setAttribute("description", desc);
 
 		} 
 		
@@ -225,17 +215,9 @@ public class GameServlet extends HttpServlet {
 				model.addOutput("Incorrect command syntax: Please specify a target.");
 
 			}
+			
 			// Update Map
-			Location current = model.getPlayer().getLocation(); 
-			session.setAttribute("northc", model.getMap().getDirectionColor(current, 0));
-			session.setAttribute("northr", model.getMap().getDirectionName(current, 0));
-			session.setAttribute("eastc", model.getMap().getDirectionColor(current, 1));
-			session.setAttribute("eastr", model.getMap().getDirectionName(current, 1));
-			session.setAttribute("southc", model.getMap().getDirectionColor(current, 2));
-			session.setAttribute("southr", model.getMap().getDirectionName(current, 2));
-			session.setAttribute("westc", model.getMap().getDirectionColor(current, 3));
-			session.setAttribute("westr", model.getMap().getDirectionName(current, 3));
-			session.setAttribute("currentr", model.getPlayer().getLocation().getName());
+			GameServlet.mapMaker(session, model);
 			
 			// Put the updated model back in the HttpSession.
 			session.setAttribute("model", model);
@@ -243,6 +225,85 @@ public class GameServlet extends HttpServlet {
 		}
 		
 		req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
+	}
+	
+	// A static function that can set the attributes for the map. 
+	public static void mapMaker(HttpSession session, Game game) {
+		// We will also set attributes for the Map colors and names of rooms. 
+		Location current = game.getPlayer().getLocation(); 
+		
+		// North Room Name and Color
+		session.setAttribute("northc", game.getMap().getDirectionColor(current, 0));
+		session.setAttribute("northr", game.getMap().getDirectionName(current, 0));
+		
+		// East Room Name and Color
+		session.setAttribute("eastc", game.getMap().getDirectionColor(current, 1));
+		session.setAttribute("eastr", game.getMap().getDirectionName(current, 1));
+		
+		// South Room Name and Color
+		session.setAttribute("southc", game.getMap().getDirectionColor(current, 2));
+		session.setAttribute("southr", game.getMap().getDirectionName(current, 2));
+		
+		// West Room Name and Color
+		session.setAttribute("westc", game.getMap().getDirectionColor(current, 3));
+		session.setAttribute("westr", game.getMap().getDirectionName(current, 3));
+		
+		// Current Room Name
+		session.setAttribute("currentr", game.getPlayer().getLocation().getName());
+		
+		// We want to color the NE, NW, SW, and SE rooms if they are discovered. 
+		// This requires us to ensure that the N, S, E, and W rooms exist first. 
+		// Note that the current method assumes all adjacent rooms are connected! 
+		
+		// Default these directions to gray and empty names.
+		session.setAttribute("nwr", "");
+		session.setAttribute("nwc", "gray");
+		session.setAttribute("ner", "");
+		session.setAttribute("nec", "gray");
+		session.setAttribute("swr", "");
+		session.setAttribute("swc", "gray");
+		session.setAttribute("ser", "");
+		session.setAttribute("sec", "gray");
+		
+		// If Room to the North exists...
+		if(!game.getMap().getConnections().get(current.getName()).get(0).equals("-1")) {
+			
+			// Try to color and name rooms to the east and west of the Northern room, if connected.
+			
+			String north = game.getMap().getConnections().get(current.getName()).get(0);
+			// Northeast
+			if(!game.getMap().getConnections().get(north).get(1).equals("-1")) {
+				Location n = game.getMap().getLocations().get(north);
+				session.setAttribute("nec", game.getMap().getDirectionColor(n, 1));
+				session.setAttribute("ner", game.getMap().getDirectionName(n, 1));
+			}
+			// Northwest
+			if(!game.getMap().getConnections().get(north).get(3).equals("-1")) {
+				Location n = game.getMap().getLocations().get(north);
+				session.setAttribute("nwc", game.getMap().getDirectionColor(n, 3));
+				session.setAttribute("nwr", game.getMap().getDirectionName(n, 3));
+			}
+		}
+		
+		// If Room to the South exists...
+		if(!game.getMap().getConnections().get(current.getName()).get(2).equals("-1")) {
+			
+			// Try to color and name rooms to the east and west of the Southern room, if connected.
+			String south = game.getMap().getConnections().get(current.getName()).get(2);
+			// Southeast
+			if(!game.getMap().getConnections().get(south).get(1).equals("-1")) {
+				Location n = game.getMap().getLocations().get(south);
+				session.setAttribute("sec", game.getMap().getDirectionColor(n, 1));
+				session.setAttribute("ser", game.getMap().getDirectionName(n, 1));
+			}
+			// Southwest
+			if(!game.getMap().getConnections().get(south).get(3).equals("-1")) {
+				Location n = game.getMap().getLocations().get(south);
+				session.setAttribute("swc", game.getMap().getDirectionColor(n, 3));
+				session.setAttribute("swr", game.getMap().getDirectionName(n, 3));
+			}
+		}
+		
 	}
 	
 	// A static function for generating the demo Game upon loading the session. 

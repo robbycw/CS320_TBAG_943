@@ -116,9 +116,9 @@
 				 
 				<div style="background-color:gray; width: 95%; height: 25%;"> <%-- Row 1--%>
 				
-					<div style="background-color:gray; width: 33.3%; height: 100%; float: left;"></div><%-- Northwest --%>
+					<div style="background-color:${nwc}; width: 33.3%; height: 100%; float: left;">${nwr}</div><%-- Northwest --%>
 					<div style="background-color:${northc}; width: 33.3%; height: 100%; float: left;">${northr}</div><%-- North --%>
-					<div style="background-color:gray; width: 33.3%; height: 100%; float: left;"></div><%-- Northeast --%>
+					<div style="background-color:${nec}; width: 33.3%; height: 100%; float: left;">${ner}</div><%-- Northeast --%>
 				
 				</div>
 				<div style="background-color:gray; width: 95%; height: 25%;"> <%-- Row 2--%>
@@ -130,9 +130,9 @@
 				</div>
 				<div style="background-color:gray; width: 95%; height: 25%;"> <%-- Row 3--%>
 				
-					<div style="background-color:gray; width: 33.3%; height: 100%; float: left;"></div><%-- Southwest --%>
+					<div style="background-color:${swc}; width: 33.3%; height: 100%; float: left;">${swr}</div><%-- Southwest --%>
 					<div style="background-color:${southc}; width: 33.3%; height: 100%; float: left;">${southr}</div><%-- South --%>
-					<div style="background-color:gray; width: 33.3%; height: 100%; float: left;"></div><%-- Southeast --%>
+					<div style="background-color:${sec}; width: 33.3%; height: 100%; float: left;">${ser}</div><%-- Southeast --%>
 				
 				</div>
 			</div>
