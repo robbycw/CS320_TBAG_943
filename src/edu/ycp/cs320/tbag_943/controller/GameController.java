@@ -104,29 +104,21 @@ public class GameController {
 				// There should be an ongoing combat in this case, which will be referenced in model. 
 				// It must be the player's turn if this branch is accessed. 
 				
-				// We will first want to check if the player is still alive. 
-				if(model.getPlayer().getStats().get("health").getRank() <= 0) {
-					model.setInCombat(false);
-					String x = "You have died. GAME OVER."; 
+				Combat c = model.getCurrentCombat(); 
+				
+				// Calculate and apply player's attack. 
+				c.playerAttack(model, model.getPlayer(), target);
+				
+				// Continue the NPCs turns if combat isn't over! 
+				if(c.isDead()) { 
+					// Combat is complete! 
+					model.setInCombat(false); 
+					String x = "All enemies have been slain!"; 
 					model.addOutput(x);
 				} else {
-					// The Player is still alive! 
-					Combat c = model.getCurrentCombat(); 
-					
-					// Calculate and apply player's attack. 
-					c.playerAttack(model, model.getPlayer(), target);
-					
-					// Continue the NPCs turns if combat isn't over! 
-					if(c.isDead()) { 
-						// Combat is complete! 
-						model.setInCombat(false); 
-						String x = "All enemies have been slain!"; 
-						model.addOutput(x);
-					} else {
-						// Combat is not over
-						model.setPlayerTurnTaken(true);
-						c.runCombat(model, model.getPlayer(), model.isPlayerTurnTaken());
-					}
+					// Combat is not over
+					model.setPlayerTurnTaken(true);
+					c.runCombat(model, model.getPlayer(), model.isPlayerTurnTaken());
 				}
 				
 			} else {
@@ -136,6 +128,13 @@ public class GameController {
 					model.setInCombat(true);
 					// We will need to find the combat that contains this target. 
 					ArrayList<Combat> combats = model.getPlayer().getLocation().getCombats(); 
+					
+					if(combats.isEmpty()) {
+						// There are no combats in this location, so they can't fight the NPC here. 
+						model.addOutput("You cannot fight this enemy here.");
+						model.setInCombat(false);
+						return; 
+					}
 					
 					// Finds the combat that contains the target. 
 					for(Combat c : combats) {
@@ -365,6 +364,7 @@ public class GameController {
 		{
 			model.addOutput("There are no people in this room");
 		}
+
 	}
 	
 	public void equip(String item) {
@@ -441,6 +441,7 @@ public class GameController {
 						{
 						s = "You smashed right through!";
 						//puz connections
+
 						}
 						else if(puz.solve(response) && !puz.checkRequiredSkill(model.getPlayer().getStats().get("strength")))
 						{
@@ -460,7 +461,9 @@ public class GameController {
 						if(puz.solve(response) && puz.checkRequiredSkill(model.getPlayer().getStats().get("speed")))
 						{
 						s = "You jumped right on over it!";
+              
 						//puz connections
+
 						}
 						else if(puz.solve(response) && !puz.checkRequiredSkill(model.getPlayer().getStats().get("speed")))
 						{
