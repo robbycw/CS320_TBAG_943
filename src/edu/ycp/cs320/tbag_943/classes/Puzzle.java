@@ -4,12 +4,15 @@ package edu.ycp.cs320.tbag_943.classes;
 public class Puzzle {
 	// Fields
 	private String prompt;
-	private int requiredSkill, requiredItem;
+	private Stat requiredSkill;
+	private Item requiredItem;
 	private boolean result;
 	private String answer;
 	private Loot loot;
 	private boolean canSolve;
 	private boolean solved;
+	private boolean breakable;
+	private boolean jumpable;
 	
 	// Constructors
 	public Puzzle() {
@@ -35,16 +38,16 @@ public class Puzzle {
 		}
 	}
 	
-	public boolean checkRequiredSkill(int skillValue) {
-		if(requiredSkill >= skillValue) {
+	public boolean checkRequiredSkill(Stat skill) {
+		if(requiredSkill.getRank() <= skill.getRank()) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 	
-	public boolean checkRequiredItem(int itemValue) {
-		if(requiredItem >= itemValue) {
+	public boolean checkRequiredItem(Item item) {
+		if(requiredItem.equals(item)) {
 			return true;
 		} else {
 			return false;
@@ -60,11 +63,11 @@ public class Puzzle {
 		return answer;
 	}
 	
-	public int getRequiredSkill() {
+	public Stat getRequiredSkill() {
 		return requiredSkill;
 	}
 	
-	public int getRequiredItem() {
+	public Item getRequiredItem() {
 		return requiredItem;
 	}
 	
@@ -94,11 +97,11 @@ public class Puzzle {
 		answer = answerIn;
 	}
 	
-	public void setRequiredSkill(int skill) {
+	public void setRequiredSkill(Stat skill) {
 		requiredSkill = skill;
 	}
 	
-	public void setRequiredItem(int item) {
+	public void setRequiredItem(Item item) {
 		requiredItem = item;
 	}
 	
@@ -109,5 +112,25 @@ public class Puzzle {
 	public void setLoot(Loot lootIn)
 	{
 		loot = lootIn;
+	}
+	
+	public boolean getBreakable()
+	{
+		return breakable;
+	}
+	
+	public void setBreakable(boolean bool)
+	{
+		breakable = bool;
+	}
+	
+	public boolean getJumpable()
+	{
+		return jumpable;
+	}
+	
+	public void setJumpable(boolean bool)
+	{
+		jumpable = bool;
 	}
 }

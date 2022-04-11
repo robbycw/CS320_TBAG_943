@@ -69,7 +69,7 @@ public class Combat {
 		
 		// Calculate and apply Player's Attack
 		int roll = rng.nextInt(20) + 1; 
-		String s = null;
+		String s = "";
 		
 		if(roll >= tar.getStats().get("armor").getRank()) {
 			// Attack hits
@@ -150,6 +150,16 @@ public class Combat {
 				
 				s = s + enemy.getName() + " dealt " + Integer.toString(damage) + " damage with their " + enemy.getWeapon().getName(); 
 				game.addOutput(s);
+				
+				// Check if the attack killed the player. 
+				if(player.getStats().get("health").getRank() <= 0) {
+					// Player is dead. End the combat. 
+					// Also set the player's health to 0. 
+					String end = player.getName() + " has been slain! Better luck next time. GAME OVER."; 
+					game.addOutput(end);
+					player.getStats().get("health").setRank(0);
+					return; 
+				}
 			} else {
 				// The attack missed. 
 				s = enemy.getName() + "'s attack missed!"; 

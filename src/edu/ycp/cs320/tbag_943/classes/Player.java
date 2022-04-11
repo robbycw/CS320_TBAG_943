@@ -11,12 +11,14 @@ public class Player {
 	private Location location; 
 	private HashMap<String, Stat> stats; 
 	private String weapon; 
-	public boolean playerCreated = false;
+	private boolean playerCreated = false;
+	private WinCondition winCondition;
 	
 	public Player() { 
 		this.name = "John Johnson"; 
 		this.icon = "path"; 
 		this.location = null;
+		winCondition = new WinCondition();
 	}
 	
 	public Player(String name, Location location) { 
@@ -29,6 +31,7 @@ public class Player {
 		Item dagger = new Item("dagger", 3); 
 		this.inventory.put("dagger", dagger); 
 		this.weapon = "dagger"; 
+		winCondition = new WinCondition();
 	}
 	
 	public Player(String name, Location location, int health, int armor, int strength, int speed) { 
@@ -56,6 +59,7 @@ public class Player {
 		this.stats = stat;
 		
 		playerCreated = true;
+		winCondition = new WinCondition();
 	}
 	
 	public boolean getPlayerCreated() {
@@ -93,6 +97,14 @@ public class Player {
 	
 	public void setIcon(String icon) {
 		this.icon = icon;
+	}
+	
+	public WinCondition getWinCondition() {
+		return winCondition;
+	}
+	
+	public void setWinCondition(WinCondition winConditionIn) {
+		this.winCondition = winConditionIn;
 	}
 	
 	public HashMap<String, Item> getInventory() {
