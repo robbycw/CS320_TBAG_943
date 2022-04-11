@@ -55,6 +55,11 @@ public class Map {
 		this.connections = connections;
 	}
 	
+	public void addConenctions(Player player, String s) {
+		ArrayList<String> roomCon = new ArrayList<>();
+		connections.put(s,roomCon);
+	}
+	
 	public boolean isConnected(Location start, Location end) {
 		ArrayList<String> startConnections = connections.get(start.getName()); 
 		
