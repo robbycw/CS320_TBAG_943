@@ -64,6 +64,27 @@ public class GameController {
 			GameController.doMove(model, map, player, 3);
 			
 		} else {
+			// Check if the player has input the name of a room. 
+			// Also check if that room is discovered. This is legal
+			// thanks to short-circuiting booleans! 
+			if(map.getLocations().keySet().contains(direction) && 
+					!map.getLocations().get(direction).isHidden()) {
+				
+				String start = player.getLocation().getName(); 
+				
+				// Move the player to this location. 
+				Location end = map.getLocations().get(direction); 
+				player.move(end);
+				
+				String move = "Player has moved from " + start + " to " + end.getName(); 
+				model.addOutput(move);
+				
+				return; 
+			}
+			
+			 
+			
+			// Since the room exists and is discovered, move the player to that room. 
 			String err = "Invalid move."; 
 			model.addOutput(err);
 		}
@@ -71,12 +92,12 @@ public class GameController {
 	
 	public static void doMove(Game model, Map map, Player player, int direction) {
 		String start = player.getLocation().getName();
-		ArrayList<String> connections = map.getConnections().get(start); 
-		// The player can move here. 
-		System.out.println("Printing null string:" + connections.get(direction)); 
+		ArrayList<String> connections = map.getConnections().get(start.toLowerCase()); 
+		
+		// The player can move here.  
 		if(!connections.get(direction).equals("-1")) { 
 			
-			Location end = map.getLocations().get(connections.get(direction)); 
+			Location end = map.getLocations().get(connections.get(direction).toLowerCase()); 
 			player.move(end); 
 			
 			String desc = player.getName() + " has moved from " + start + " to " + end.getName(); 
