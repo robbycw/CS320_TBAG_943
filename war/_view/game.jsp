@@ -219,6 +219,7 @@
 					<div id="armorStat">
 						<h1>${armor}</h1>
 					</div>
+					
 				</div>
 				
 				<div class="subsection">Timer</div>

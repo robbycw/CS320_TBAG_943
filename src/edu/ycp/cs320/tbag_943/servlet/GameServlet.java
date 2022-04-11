@@ -86,14 +86,16 @@ public class GameServlet extends HttpServlet {
 			session.setAttribute("charismaStat", charismaStat);
 			
 			
-			Player player = new Player(playerName, model.getPlayer().getLocation(), (10 + vitalityStat), 10, strengthStat, speedStat);
-			model.setPlayer(player);
+				Player player = new Player(playerName, model.getPlayer().getLocation(), (10 + vitalityStat), 10, strengthStat, speedStat);
+				model.setPlayer(player);
+				
+				session.setAttribute("health", player.getStats().get("health").getRank());
+				session.setAttribute("armor", player.getStats().get("armor").getRank());
+				
+				model.setPlayerCreated(false);
+				session.setAttribute("model", model);
 			
-			session.setAttribute("health", player.getStats().get("health").getRank());
-			session.setAttribute("armor", player.getStats().get("armor").getRank());
 			
-			model.setPlayerCreated(false);
-			session.setAttribute("model", model);
 		}
 		
 		if(req.getParameter("title") != null) {
