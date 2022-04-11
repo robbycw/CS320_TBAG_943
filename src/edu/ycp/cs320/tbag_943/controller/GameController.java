@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 import edu.ycp.cs320.tbag_943.classes.*;
+import java.math.*;
 
 public class GameController {
 	/*
@@ -240,7 +241,17 @@ public class GameController {
 	
 	//gets talk response
 	public void talk(String NPCName, String option) {
-		int choice = Integer.parseInt(option);
+		
+		int choice = 100;
+		try {
+		choice = Integer.parseInt(option);
+		Math.abs(choice);
+		}
+		catch(Exception ie) {
+			model.addOutput("Incorrect Syntax: talk [target name] [option #]");
+			return;
+		}
+		
 		if(model.getPlayer().getLocation().getNPCs().containsKey(NPCName)){
 			if(model.getPlayer().getLocation().getNPCs().get(NPCName).getSpeech().getResponses().size()>choice-1){
 				model.addOutput("Response: " + model.getPlayer().getLocation().getNPCs().get(NPCName).getSpeech().getResponse(choice-1));
@@ -317,7 +328,43 @@ public class GameController {
 	
 	public void look()
 	{
-		model.addOutput(model.getPlayer().getLocation().getDescription());
+		model.addOutput("Description:");
+		model.addOutput(model.getPlayer().getLocation().getLongDescription());
+		
+		try
+		{
+			String itemName = model.getPlayer().getLocation().getTreasure().getItem().getName();
+			if(!itemName.equals(""))
+			{
+				model.addOutput("Item: " + model.getPlayer().getLocation().getTreasure().getItem().getDes());
+			}
+		}
+		catch(Exception ie){
+			model.addOutput("There are no items here.");
+		}
+		
+		Set<String> npcNames = model.getPlayer().getLocation().getNPCs().keySet();
+		if(!npcNames.isEmpty())
+		{
+			String s = "";
+			for(String key : npcNames)
+			{
+				String i = model.getPlayer().getLocation().getNPCs().get(key).getName();
+				s = s + i + ", ";
+			}
+			s = s.substring(0, s.length()-2);
+			if(npcNames.size() == 1) {
+			model.addOutput("NPC: " + s + " is in this room.");
+			}
+			else if(npcNames.size()>1) {
+			model.addOutput("NPC's: " + s + " are in this room.");
+			}
+		}
+		else if(npcNames.isEmpty())
+		{
+			model.addOutput("There are no people in this room");
+		}
+
 	}
 	
 	public void equip(String item) {
@@ -393,6 +440,8 @@ public class GameController {
 						if(puz.solve(response) && puz.checkRequiredSkill(model.getPlayer().getStats().get("strength")))
 						{
 						s = "You smashed right through!";
+						//puz connections
+
 						}
 						else if(puz.solve(response) && !puz.checkRequiredSkill(model.getPlayer().getStats().get("strength")))
 						{
@@ -412,6 +461,9 @@ public class GameController {
 						if(puz.solve(response) && puz.checkRequiredSkill(model.getPlayer().getStats().get("speed")))
 						{
 						s = "You jumped right on over it!";
+              
+						//puz connections
+
 						}
 						else if(puz.solve(response) && !puz.checkRequiredSkill(model.getPlayer().getStats().get("speed")))
 						{
