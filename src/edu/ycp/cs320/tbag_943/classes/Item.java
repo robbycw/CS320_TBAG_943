@@ -4,24 +4,29 @@ public class Item {
 	private boolean consumable, isWeapon;
 	private int damage, healthGain, value, amount;
 	private double accuracy;
-	private String name; 
+	private String name, description; 
 	
 	public Item() {
+		this.name = "";
+		this.description = "";
 	}
 	
 	public Item(String name) {
 		this.name = name; 
+		this.description = "";
 	}
 	
 	public Item(String name, int damage) {
 		this.name = name;
 		this.damage = damage; 
+		this.description = "";
 	}
 	
 	public Item(String name, int damage, int amount) {
 		this.name = name;
 		this.damage = damage; 
 		this.amount = amount; 
+		this.description = "";
 	}
 	
 	public void setIcon() {
@@ -38,6 +43,14 @@ public class Item {
 	
 	public void setName(String name) {
 		this.name = name; 
+	}
+	
+	public String getDes() {
+		return description; 
+	}
+	
+	public void setDes(String des) {
+		this.description = des; 
 	}
 								///consumable setter stuff//
 	public void isConsumable(boolean consumable) {
