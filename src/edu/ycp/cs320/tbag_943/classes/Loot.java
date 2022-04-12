@@ -8,6 +8,12 @@ public class Loot {
 	private Item item; 
 	private boolean collected;
 
+	public Loot()
+	{
+		this.item = new Item();
+		collected = false;
+	}
+	
 	public Loot(Item item) {
 		this.item = item; 
 		collected = false;
@@ -42,7 +48,7 @@ public class Loot {
 	}
 	
 	public boolean pickUpItem(Player player, String itemName) {
-		if(item.getName() == itemName && !collected) {
+		if(item.getName().equalsIgnoreCase(itemName) && !collected) {
 			player.collect(item);
 			collected = true;
 			return true; 

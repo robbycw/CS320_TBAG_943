@@ -19,6 +19,32 @@
 	</head>
 
 	<body>
+	
+		<%-- Based this script off of a tutorial from W3Schools. Link: https://www.w3schools.com/howto/howto_js_countdown.asp --%>
+		<script> 
+		// This script is for the game's countdown timer. 
+		// Get the current time stored in the Game's timer. 
+		var start = ${model.timer.time};
+		
+		// Use the setInterval to call a function that decrements the timer by the decrement every second. 
+		var x = setInterval(function(){
+			// Decrease seconds by 1
+			start = start - 1; 
+
+			// Calculate hours, minutes, and seconds remaining. 
+			var h = Math.floor(start / 3600); 
+			var m = Math.floor((start - (h * 3600)) / 60); 
+			var s = (start - (h * 3600)) - (m * 60);
+
+			// Store the results into the paragraph element for the timer. 
+			document.getElementById("time").innerHTML = String(h) + "h " + String(m) + "m " + String(s) + "s"; 
+
+			// Timer will be tracked independently on Servlet. 
+			document.getElementById("timeLeft2").value = String(start);  
+		}, 1000);  
+
+		</script>
+
 		<c:if test= "${model.playerNotCreated}">
 			<div id="overlay">
 				<div id="charCreationTxt">
@@ -90,9 +116,9 @@
 				 
 				<div style="background-color:gray; width: 95%; height: 25%;"> <%-- Row 1--%>
 				
-					<div style="background-color:gray; width: 33.3%; height: 100%; float: left;"></div><%-- Northwest --%>
+					<div style="background-color:${nwc}; width: 33.3%; height: 100%; float: left;">${nwr}</div><%-- Northwest --%>
 					<div style="background-color:${northc}; width: 33.3%; height: 100%; float: left;">${northr}</div><%-- North --%>
-					<div style="background-color:gray; width: 33.3%; height: 100%; float: left;"></div><%-- Northeast --%>
+					<div style="background-color:${nec}; width: 33.3%; height: 100%; float: left;">${ner}</div><%-- Northeast --%>
 				
 				</div>
 				<div style="background-color:gray; width: 95%; height: 25%;"> <%-- Row 2--%>
@@ -104,9 +130,9 @@
 				</div>
 				<div style="background-color:gray; width: 95%; height: 25%;"> <%-- Row 3--%>
 				
-					<div style="background-color:gray; width: 33.3%; height: 100%; float: left;"></div><%-- Southwest --%>
+					<div style="background-color:${swc}; width: 33.3%; height: 100%; float: left;">${swr}</div><%-- Southwest --%>
 					<div style="background-color:${southc}; width: 33.3%; height: 100%; float: left;">${southr}</div><%-- South --%>
-					<div style="background-color:gray; width: 33.3%; height: 100%; float: left;"></div><%-- Southeast --%>
+					<div style="background-color:${sec}; width: 33.3%; height: 100%; float: left;">${ser}</div><%-- Southeast --%>
 				
 				</div>
 			</div>
@@ -161,7 +187,9 @@
 
 				<form action="${pageContext.servletContext.contextPath}/game" method="post">
 					<input type="text" id="user" name="user"><br>
+					<input type="hidden" id="timeLeft2" name="t" value="">
 					<input type="submit" value="Enter" id="enterButton"><br>
+
 				</form>
 
 				<form action="${pageContext.servletContext.contextPath}/game" method="post">
@@ -214,9 +242,21 @@
 					<div id="playerNameBox">
 					<h1 >${playerName}</h1>
 					</div>
+					
+					<div id="armorBox">
+						<h1>Armor:</h1>
+					</div>
+					
+					<div id="armorStat">
+						<h1>${armor}</h1>
+					</div>
 				</div>
 				
-				<div class="subsection">Timer</div>
+				<div class="subsection">Timer<br>
+					
+					<p id="time"></p>
+
+				</div>
 			</div>
 		
 		</div></div>

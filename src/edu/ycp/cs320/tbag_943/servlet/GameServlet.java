@@ -36,18 +36,8 @@ public class GameServlet extends HttpServlet {
 			game.setPlayerCreated(true);
 			session.setAttribute("model", game);
 			
-
-			// We will also set attributes for the Map colors and names of rooms. 
-			Location current = game.getPlayer().getLocation(); 
-			session.setAttribute("northc", game.getMap().getDirectionColor(current, 0));
-			session.setAttribute("northr", game.getMap().getDirectionName(current, 0));
-			session.setAttribute("eastc", game.getMap().getDirectionColor(current, 1));
-			session.setAttribute("eastr", game.getMap().getDirectionName(current, 1));
-			session.setAttribute("southc", game.getMap().getDirectionColor(current, 2));
-			session.setAttribute("southr", game.getMap().getDirectionName(current, 2));
-			session.setAttribute("westc", game.getMap().getDirectionColor(current, 3));
-			session.setAttribute("westr", game.getMap().getDirectionName(current, 3));
-			session.setAttribute("currentr", game.getPlayer().getLocation().getName());
+			// Make the map attributes. 
+			GameServlet.mapMaker(session, game);
 			
 			// Location Description
 			Location loc = new Location();
@@ -88,7 +78,9 @@ public class GameServlet extends HttpServlet {
 			
 			Player player = new Player(playerName, model.getPlayer().getLocation(), (10 + vitalityStat), 10, strengthStat, speedStat);
 			model.setPlayer(player);
+			
 			session.setAttribute("health", player.getStats().get("health").getRank());
+			session.setAttribute("armor", player.getStats().get("armor").getRank());
 			
 			model.setPlayerCreated(false);
 			session.setAttribute("model", model);
@@ -120,9 +112,10 @@ public class GameServlet extends HttpServlet {
 			Game model = (Game) session.getAttribute("model"); 
 			GameController controller = new GameController(model); 
 			
-			
-			
-			
+			// Get current time after post, then set the time of the Timer. 
+			String time = req.getParameter("t"); 
+			int timeInt = Integer.parseInt(time); 
+			model.getTimer().setTime(timeInt);
 			
 			model.addOutput(in); // The user's command is added to the output 
 			
@@ -133,67 +126,106 @@ public class GameServlet extends HttpServlet {
 			in = in.toLowerCase(); 
 			String[] input = in.split(" +"); 
 			
+			// Generate the personalized error
+			String error = "";
+			
 			// The following switch-case will interpret the user's command and call the
 			// appropriate controller functions. 
+			
 			try {
-				switch(input[0]) {
-					case "move":
-						System.out.println(input[1]); 
-						controller.move(input[1]);
-						break; 
-					case "help":
-						controller.help(); 
-						break; 
-					case "attack":
-						controller.attack(input[1]);
-						break; 
-					case "talk":
-						controller.talk(input[1]);
-						break; 
-					case "collect":
-						controller.collect(input[1]);
-						break; 
-					case "puzzle":
-						if(input.length>1)
-						{
-							controller.puzzle(input[1]);
+
+				// The player should only be able to enter commands if they are alive. 
+				if(model.getPlayer().getStats().get("health").getRank() > 0) {
+					switch(input[0]) {
+						case "move":
+							System.out.println(input[1]); 
+							controller.move(input[1]);
+							break; 
+						case "help":
+							controller.help(); 
+							break; 
+						case "attack":
+							controller.attack(input[1]);
+							break; 
+						case "win":
+							controller.win();
+							break;
+						case "talk":
+							if(input.length>1)
+							{
+								if(input.length>2)
+								{
+									controller.talk(input[1],input[2]);
+									break; 
+								}
+								else
+								{
+									controller.talk(input[1]);
+									break;
+								}
+							}
+							else
+							{
+								controller.talk();
+								break;
+							}
+						case "intimidate":
+							controller.intimidate(input[1]);
+							break;
+						case "persuade":
+							controller.persuade(input[1]);
+							break;
+						case "collect":
+							controller.collect(input[1]);
+							break; 
+						case "look":
+							controller.look();
+							break;
+						case "inventory":
+						case "items":
+							controller.inventory();
 							break;
 						}
-						else
-						{
-							controller.puzzle();
-							break;
-						}
-					case "solve":
-						String response = input[1];
-						for(int i = 2; i < input.length; i++) 
-						{
-							response = response + " " + input[i];
-						}
-						controller.solve(response);
-						break;
-					default: 
-						model.addOutput("Unknown command.");
+					  case "solve":
+					  case "answer":
+              error = "Incorrect Syntax: solve [target #] [answer]";
+              String response = input[2];
+              for(int i = 3; i < input.length; i++) {
+                response = response + " " + input[i];
+              }
+              controller.solve(input[1],response);
+              break;
+					  case "puzzle":
+							if(input.length>1)
+							{
+								controller.puzzle(input[1]);
+								break;
+							}
+							else
+							{
+								controller.puzzle();
+								break;
+							}
+						
+						default: 
+							model.addOutput("Unknown command.");
+					}
+				} else {
+					String dead = "You cannot enter commands, as " + model.getPlayer().getName() + " is dead."; 
+					model.addOutput(dead);
 				}
+				
 			} catch (ArrayIndexOutOfBoundsException e) {
 				// In the event the user passes a command without a target, 
 				// this catch will handle the exception. 
 				// Ex: User inputs "attack" or "move "
-				
-				model.addOutput("Incorrect command syntax: Please specify a target.");
+				model.addOutput(error);
+				model.addOutput("Please enter another command:");
 
 			}
+			
 			// Update Map
-			Location current = model.getPlayer().getLocation(); 
-			session.setAttribute("northc", model.getMap().getDirectionColor(current, 0));
-			session.setAttribute("northr", model.getMap().getDirectionName(current, 0));
-			session.setAttribute("eastc", model.getMap().getDirectionColor(current, 1));
-			session.setAttribute("eastr", model.getMap().getDirectionName(current, 1));
-			session.setAttribute("southc", model.getMap().getDirectionColor(current, 2));
-			session.setAttribute("southr", model.getMap().getDirectionName(current, 2));
-			session.setAttribute("westc", model.getMap().getDirectionColor(current, 3));
-			session.setAttribute("westr", model.getMap().getDirectionName(current, 3));
-			session.setAttribute("currentr", model.getPlayer().getLocation().getName());
+			GameServlet.mapMaker(session, model);
 			
 			// Put the updated model back in the HttpSession.
 			session.setAttribute("model", model);
@@ -201,6 +233,85 @@ public class GameServlet extends HttpServlet {
 		}
 		
 		req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
+	}
+	
+	// A static function that can set the attributes for the map. 
+	public static void mapMaker(HttpSession session, Game game) {
+		// We will also set attributes for the Map colors and names of rooms. 
+		Location current = game.getPlayer().getLocation(); 
+		
+		// North Room Name and Color
+		session.setAttribute("northc", game.getMap().getDirectionColor(current, 0));
+		session.setAttribute("northr", game.getMap().getDirectionName(current, 0));
+		
+		// East Room Name and Color
+		session.setAttribute("eastc", game.getMap().getDirectionColor(current, 1));
+		session.setAttribute("eastr", game.getMap().getDirectionName(current, 1));
+		
+		// South Room Name and Color
+		session.setAttribute("southc", game.getMap().getDirectionColor(current, 2));
+		session.setAttribute("southr", game.getMap().getDirectionName(current, 2));
+		
+		// West Room Name and Color
+		session.setAttribute("westc", game.getMap().getDirectionColor(current, 3));
+		session.setAttribute("westr", game.getMap().getDirectionName(current, 3));
+		
+		// Current Room Name
+		session.setAttribute("currentr", game.getPlayer().getLocation().getName());
+		
+		// We want to color the NE, NW, SW, and SE rooms if they are discovered. 
+		// This requires us to ensure that the N, S, E, and W rooms exist first. 
+		// Note that the current method assumes all adjacent rooms are connected! 
+		
+		// Default these directions to gray and empty names.
+		session.setAttribute("nwr", "");
+		session.setAttribute("nwc", "gray");
+		session.setAttribute("ner", "");
+		session.setAttribute("nec", "gray");
+		session.setAttribute("swr", "");
+		session.setAttribute("swc", "gray");
+		session.setAttribute("ser", "");
+		session.setAttribute("sec", "gray");
+		
+		// If Room to the North exists...
+		if(!game.getMap().getConnections().get(current.getName()).get(0).equals("-1")) {
+			
+			// Try to color and name rooms to the east and west of the Northern room, if connected.
+			
+			String north = game.getMap().getConnections().get(current.getName()).get(0);
+			// Northeast
+			if(!game.getMap().getConnections().get(north).get(1).equals("-1")) {
+				Location n = game.getMap().getLocations().get(north);
+				session.setAttribute("nec", game.getMap().getDirectionColor(n, 1));
+				session.setAttribute("ner", game.getMap().getDirectionName(n, 1));
+			}
+			// Northwest
+			if(!game.getMap().getConnections().get(north).get(3).equals("-1")) {
+				Location n = game.getMap().getLocations().get(north);
+				session.setAttribute("nwc", game.getMap().getDirectionColor(n, 3));
+				session.setAttribute("nwr", game.getMap().getDirectionName(n, 3));
+			}
+		}
+		
+		// If Room to the South exists...
+		if(!game.getMap().getConnections().get(current.getName()).get(2).equals("-1")) {
+			
+			// Try to color and name rooms to the east and west of the Southern room, if connected.
+			String south = game.getMap().getConnections().get(current.getName()).get(2);
+			// Southeast
+			if(!game.getMap().getConnections().get(south).get(1).equals("-1")) {
+				Location n = game.getMap().getLocations().get(south);
+				session.setAttribute("sec", game.getMap().getDirectionColor(n, 1));
+				session.setAttribute("ser", game.getMap().getDirectionName(n, 1));
+			}
+			// Southwest
+			if(!game.getMap().getConnections().get(south).get(3).equals("-1")) {
+				Location n = game.getMap().getLocations().get(south);
+				session.setAttribute("swc", game.getMap().getDirectionColor(n, 3));
+				session.setAttribute("swr", game.getMap().getDirectionName(n, 3));
+			}
+		}
+		
 	}
 	
 	// A static function for generating the demo Game upon loading the session. 
@@ -217,19 +328,76 @@ public class GameServlet extends HttpServlet {
 		NPC dave = new NPC("Dave", true, sword1, 20, 6, 3, 3); 
 		NPC steve = new NPC("Steve", true, sword2, 20, 8, 5, 2);
 		NPC earl = new NPC("Earl", true, sword3, 20, 10, 1, 6);
+		NPC shadowFigure = new NPC("???",true, new Item("The largest pile of gold you have ever seen"), 20, 6, 4, 3);
 		
 		ArrayList<NPC> npcs = new ArrayList<NPC>(); 
 		npcs.add(dave); 
 		npcs.add(steve);
 		npcs.add(earl);
+		npcs.add(shadowFigure);
 		
 		// Create Combats: remember that Map keys need to be all lowercase
 		Combat c1 = new Combat(npcs); 
 		ArrayList<Combat> combats = new ArrayList<Combat>();
 		combats.add(c1); 
 		
+		//Create Speeches
+		ArrayList<String> speeches1 = new ArrayList<String>();
+		speeches1.add("I will murder you.");
+		ArrayList<String> responses1 = new ArrayList<String>();
+		responses1.add("HELP ME!");
+		Speech speech1 =  new Speech(speeches1, responses1);
+		speech1.setIntimOp("Your head would look nice on a pike.");
+		speech1.setIntimRes("PLEASE NO!");
+		speech1.setIntimResFail("Is that supposed to scare me?");
+		speech1.setPersOp("Would you please give me everything you have?");
+		speech1.setPersRes("Why of course! Here are my belongings and personal information!");
+		speech1.setPersResFail("Get lost.");
+		dave.setSpeech(speech1);
+		
+		ArrayList<String> speeches2 = new ArrayList<String>();
+		speeches2.add("Have you seen anything suspicious lately?");
+		speeches2.add("I saw a ghost!");
+		speeches2.add("Got anything for sale?");
+		ArrayList<String> responses2 = new ArrayList<String>();
+		responses2.add("No, nothing.");
+		responses2.add("That can't be true!");
+		responses2.add("Not for you.");
+		Speech speech2 =  new Speech(speeches2, responses2);
+		speech2.setIntimOp("Your head would look nice on a pike.");
+		speech2.setIntimRes("PLEASE NO!");
+		speech2.setIntimResFail("Is that supposed to scare me?");
+		speech2.setPersOp("Would you please give me everything you have?");
+		speech2.setPersRes("Why of course! Here are my belongings and personal information!");
+		speech2.setPersResFail("Get lost.");
+		earl.setSpeech(speech2);
+		
+		Speech speech3 =  new Speech();
+		speech3.setPersOp("Got anything for me?");
+		speech3.setPersRes("Take this. Tell no one.");
+		speech3.setPersResFail("Only death.");
+		shadowFigure.setSpeech(speech3);
+		
+		//earl can be persuaded and intimidated, but isn't intimidated by you
+		earl.setCanPersuade(true);
+		earl.setCanIntimidate(true);
+		earl.setPersuaded(true);
+		earl.setIntimidated(false);
+		//dave can be intimidated and persuaded, but isn't persuaded by you
+		dave.setCanPersuade(true);
+		dave.setCanIntimidate(true);
+		dave.setPersuaded(false);
+		dave.setIntimidated(true);
+		//the shadowy figure can only be persuaded, not spoken to
+		shadowFigure.setCanPersuade(true);
+		shadowFigure.setPersuaded(true);
+		
+		
+		
 		// Create Loots
-		Loot loot = new Loot(new Item("Axe", 12));  
+		Item lootAxe = new Item("Axe", 12);
+		lootAxe.setDes("A rusty axe with a blade coated in a blue liquid rests on a table...");
+		Loot loot = new Loot(lootAxe);  
 		
 		// Sets up for adding connections and rooms to the map. 
 		String room1, room2, room3, room4, room5, room6, room7, room8; 
@@ -323,8 +491,8 @@ public class GameServlet extends HttpServlet {
 		
 		// Set NPCs, Loot and Combat in rooms. 
 		r1.setTreasure(loot);
-		r2.setCombats(combats);
-		r2.setNPCs(npcs);
+		r3.setCombats(combats);
+		r3.setNPCs(npcs);
 		
 		// Create map
 		Map map = new Map(locations, connections); 
@@ -354,24 +522,39 @@ public class GameServlet extends HttpServlet {
 		samplePuzzle4.setLoot(new Loot(new Item("Death of Death", 1000)));
 		r4.addPuzzle(samplePuzzle4);
 		
-		// Creating Items for the locations
-		Loot locLoot1 = new Loot(sword1);
-		locLoot1.setItems(sword1);
-		
-		Loot locLoot4 = new Loot(gold);
-		locLoot4.setItems(gold);
-		
-		// Creating Location Description
-		r1.setDescription("You find yourself in a lobby.  There are doors in all directions.  Choose Carefully..." + locLoot1.getItem().getName());
-		r2.setDescription("There are doors to the East, West, and South...");
-		r3.setDescription("Investigate...There are doors to the North, South, and West..." + npcs.get(0).getName() + ", " + npcs.get(1).getName() + ", and " + npcs.get(2).getName() + " are with you...");
-		r4.setDescription("A dark figure is standing in front of you.  There are doors to the West and South..." + locLoot4.getItem().getName());
-		r5.setDescription("You find yourself in a dark room.  There are doors to the South and East...");
-		r6.setDescription("There are doors to the North and East...");
-		r7.setDescription("A mysterious figure is staring at you.  There are doors to the North and East...");
-		r8.setDescription("There are doors to the North and West...");
-		
 
+		String samplePuzzlePrompt5 = "There is a large, metal door that lies in front of you, but maybe it can be broken...";
+		Puzzle samplePuzzle5 = new Puzzle(samplePuzzlePrompt5, "break");
+		samplePuzzle5.setBreakable(true);
+		samplePuzzle5.setRequiredSkill(new Stat("strength",2));
+		r5.addPuzzle(samplePuzzle5);
+		
+		String samplePuzzlePrompt6 = "A box that stretches 6 feet high blocks the way forward, maybe it can be jumped over...";
+		Puzzle samplePuzzle6 = new Puzzle(samplePuzzlePrompt6, "jump");
+		samplePuzzle6.setJumpable(true);
+		samplePuzzle6.setRequiredSkill(new Stat("speed",5));
+		r5.addPuzzle(samplePuzzle6);
+		
+		// Creating Location Descriptions
+		r1.setDescription("You find yourself in a lobby.  There are doors in all directions.  Choose Carefully...");
+		r2.setDescription("You have come to a room. There is a door to the West, South, and East...");
+		r3.setDescription("Investigate...There are doors to the North, South, and West...");
+		r4.setDescription("A dark figure is standing in front of you.  There are doors to the West and South...");
+		r5.setDescription("You find yourself in a dark room.  There are doors to the South and East...");
+		r6.setDescription("You have come to a room. There is a door to the North and East...");
+		r7.setDescription("A mysterious figure is staring at you.  There are doors to the North and East...");
+		r8.setDescription("You have come to a room. There is a door to the West and North...");
+		
+		r1.setLongDescription("You find yourself in a lobby.  There are doors in all directions.  Choose Carefully...");
+		r2.setLongDescription("You have come to a room. There is a door to the West, South, and East...");
+		r3.setLongDescription("Investigate...There are doors to the North, South, and West...");
+		r4.setLongDescription("A dark figure is standing in front of you.  There are doors to the West and South...");
+		r5.setLongDescription("You find yourself in a dark room.  There are doors to the South and East...");
+		r6.setLongDescription("You have come to a room. There is a door to the North and East...");
+		r7.setLongDescription("A mysterious figure is staring at you.  There are doors to the North and East...");
+		r8.setLongDescription("You have come to a room. There is a door to the West and North...");
+
+		
 		// Create Game with proper parameters
 		Game game = new Game(1, map, player); 
 		
