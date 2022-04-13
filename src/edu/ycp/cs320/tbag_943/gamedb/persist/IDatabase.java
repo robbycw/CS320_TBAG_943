@@ -3,11 +3,6 @@ package edu.ycp.cs320.tbag_943.gamedb.persist;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import edu.ycp.cs320.booksdb.model.Author;
-import edu.ycp.cs320.booksdb.model.Book;
-import edu.ycp.cs320.booksdb.model.Pair;
-
 import edu.ycp.cs320.tbag_943.classes.*;
 
 //Code comes from CS320 Library Example. 
@@ -54,7 +49,7 @@ public interface IDatabase {
 	public boolean removeGameByGameID(int gameID); 
 	
 	
-	// Library Example: 
+	/* Library Example: 
 	// Finds
 	public List<Pair<Author, Book>> findAuthorAndBookByTitle(String title);
 	public List<Pair<Author, Book>> findAuthorAndBookByAuthorLastName(String lastName);
@@ -67,5 +62,6 @@ public interface IDatabase {
 	
 	
 	// Removals
-	public List<Author> removeBookByTitle(String title);		
+	public List<Author> removeBookByTitle(String title);	
+	*/ 	
 }
