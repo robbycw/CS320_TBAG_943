@@ -17,9 +17,10 @@ public class NPC implements Comparable {
 	private boolean isPersuaded;
 	private boolean canPersuade;
 	private int persuasionThreshold;
+	private int id; 
+
 	
-	
-	
+	// Constructors
 	public NPC(String name, int health, boolean combat, HashMap<String, Stat> stats) {
 		this.combat = combat;
 		this.name = name;
@@ -55,6 +56,16 @@ public class NPC implements Comparable {
 		stat.put("speed", sp); 
 		this.stats = stat; 
 		
+	}
+	
+	// Methods
+	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 	
 	public Item getWeapon() {

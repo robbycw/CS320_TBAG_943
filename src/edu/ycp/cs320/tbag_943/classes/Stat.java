@@ -4,6 +4,7 @@ public class Stat implements Comparable {
 
 	private int rank;
 	private String name; 
+	private int id; 
 	
 	public Stat(String name) {
 		
@@ -17,6 +18,14 @@ public class Stat implements Comparable {
 		this.rank = rank;
 	}
 	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public int getRank() {
 		return rank;
 	}

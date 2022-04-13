@@ -11,7 +11,10 @@ public class Combat {
 	private ArrayList<NPC> turnOrder; 
 	private HashMap<String, NPC> npcs; 
 	private Random rng; 
+	private int id; 
 
+	// Constructors 
+	
 	public Combat() {
 		this.turn = 0; 
 		rng = new Random(); 
@@ -33,9 +36,8 @@ public class Combat {
 		this.npcs = npc; 
 	}
 	
-	public int getDifficulty() {
-		return difficulty;
-	}
+	
+	// Methods
 	
 	public void calculateTurnOrder() {
 		Collections.sort(turnOrder);
@@ -101,17 +103,9 @@ public class Combat {
 		}
 	}
 	
-	public HashMap<String, NPC> getNpcs() {
-		return npcs;
-	}
-
-	public void setNpcs(HashMap<String, NPC> npcs) {
-		this.npcs = npcs;
-	}
-	
 	// Loops through the turn order and has NPCs take attacks on the player. 
 	public void runCombat(Game game, Player player, boolean playerTurnTaken) {
-		
+			
 		Stat playerSpeed = player.getStats().get("speed");
 		
 		for(int i = turn; i < turnOrder.size(); i++) {
@@ -187,8 +181,34 @@ public class Combat {
 		}
 	}
 	
+
 	public void endCombat() {
 		
+	}
+		
+	// Getters 
+	
+	public HashMap<String, NPC> getNpcs() {
+		return npcs;
+	}
+	
+	public int getDifficulty() {
+		return difficulty;
+	}
+	
+	public int getId() {
+		return id;
+	}
+
+
+	// Setters 
+	
+	public void setNpcs(HashMap<String, NPC> npcs) {
+		this.npcs = npcs;
+	}
+	
+	public void setId(int id) {
+		this.id = id;
 	}
 
 }

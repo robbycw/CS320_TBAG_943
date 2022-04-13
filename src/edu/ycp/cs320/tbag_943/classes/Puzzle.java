@@ -13,6 +13,7 @@ public class Puzzle {
 	private boolean solved;
 	private boolean breakable;
 	private boolean jumpable;
+	private int id; 
 	
 	// Constructors
 	public Puzzle() {
@@ -55,10 +56,15 @@ public class Puzzle {
 	}
 	
 	// Getters
+	
 	public String getPrompt() {
 		return prompt;
 	}
 	
+	public int getId() {
+		return id;
+	}
+
 	public String getAnswer() {
 		return answer;
 	}
@@ -90,6 +96,10 @@ public class Puzzle {
 	//Setters
 	public void setPrompt(String newPrompt) {
 		prompt = newPrompt;
+	}
+	
+	public void setId(int id) {
+		this.id = id;
 	}
 	
 	public void setAnswer(String answerIn)

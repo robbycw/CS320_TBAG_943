@@ -2,13 +2,15 @@ package edu.ycp.cs320.tbag_943.classes;
 
 public class Item {
 	private boolean consumable, isWeapon;
-	private int damage, healthGain, value, amount;
+	private int damage, healthGain, value, amount, id;
 	private double accuracy;
 	private String name; 
 	
+	
+	// Constructors
 	public Item() {
 	}
-	
+
 	public Item(String name) {
 		this.name = name; 
 	}
@@ -32,12 +34,12 @@ public class Item {
 		this.value = value;
 	}
 	
-	public String getName() {
-		return name; 
-	}
-	
 	public void setName(String name) {
 		this.name = name; 
+	}
+	
+	public void setId(int id) {
+		this.id = id;
 	}
 								///consumable setter stuff//
 	public void isConsumable(boolean consumable) {
@@ -64,8 +66,14 @@ public class Item {
 	public int getValue() {
 		return value;
 	}
+	public int getId() {
+		return id;
+	}
 	
-	
+	public String getName() {
+		return name; 
+	}
+
 								/// consumable getter stuff ///
 	public boolean getIsConsumbale() {
 		return consumable;

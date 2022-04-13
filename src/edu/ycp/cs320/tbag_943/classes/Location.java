@@ -11,7 +11,9 @@ public class Location {
 	private ArrayList<Combat> combats;
 	private Loot treasure;
 	private HashMap<String, NPC> npcs;
-	
+	private int id; 
+
+	// Constructors
 	public Location() {
 		this.name = "Start"; 
 		this.puzzles = new ArrayList<Puzzle>(); 
@@ -31,76 +33,80 @@ public class Location {
 		this.hidden = true; 
 	}
 	
+	// Methods
+	
+	public void addPuzzle(Puzzle puzzleIn)
+	{
+		puzzles.add(puzzleIn);
+	}
+	
+	// Getters 
 	public String getName() {
 		return name;
 	}
 
-
-	public void setName(String name) {
-		this.name = name;
-	}
-	
 	public String getDescription() {
 		return description;
 	}
-
-	public void setDescription(String description) {
-		this.description = description;
+	
+	public int getId() {
+		return id;
 	}
-
+	
 	public boolean isHidden() {
 		return hidden;
-	}
-
-	public void setHidden(boolean hidden) {
-		this.hidden = hidden;
 	}
 
 	public ArrayList<Puzzle> getPuzzles() {
 		return puzzles;
 	}
 
-
-	public void setPuzzles(ArrayList<Puzzle> puzzles) {
-		this.puzzles = puzzles;
-	}
-	
 	public Puzzle getPuzzle(int num)
 	{
 		return puzzles.get(num);
 	}
 	
-	public void addPuzzle(Puzzle puzzleIn)
-	{
-		puzzles.add(puzzleIn);
+	public HashMap<String, NPC> getNPCs() {
+		return npcs;
 	}
-
-
+	
 	public ArrayList<Combat> getCombats() {
 		return combats;
 	}
-
-
-	public void setCombats(ArrayList<Combat> combats) {
-		this.combats = combats;
-	}
-
 
 	public Loot getTreasure() {
 		return treasure;
 	}
 
 
+	// Setters 
+	
+	public void setId(int id) {
+		this.id = id;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public void setPuzzles(ArrayList<Puzzle> puzzles) {
+		this.puzzles = puzzles;
+	}
+
+	public void setCombats(ArrayList<Combat> combats) {
+		this.combats = combats;
+	}
+
 	public void setTreasure(Loot treasure) {
 		this.treasure = treasure;
 	}
 
-
-	public HashMap<String, NPC> getNPCs() {
-		return npcs;
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
 	}
-
-
 	public void setNPCs(HashMap<String, NPC> npcs) {
 		this.npcs = npcs;
 	}
@@ -113,4 +119,5 @@ public class Location {
 		}
 		this.npcs = npc; 
 	}
+
 }

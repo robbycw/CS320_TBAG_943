@@ -11,6 +11,7 @@ public class Map {
 	private String icon;
 	private HashMap<String, Location> locations; 
 	private HashMap<String, ArrayList<String>> connections;  
+	private int id; 
 	
 	// Default Constructor
 	public Map() {
@@ -41,8 +42,13 @@ public class Map {
 	public HashMap<String, ArrayList<String>> getConnections() {
 		return connections;
 	}
-
 	
+	public int getId() {
+		return id;
+	}
+
+
+
 	//
 	// Setters
 	//
@@ -58,6 +64,10 @@ public class Map {
 		this.connections = connections;
 	}
 	
+	public void setId(int id) {
+		this.id = id;
+	}
+		
 	
 	//
 	// Methods
