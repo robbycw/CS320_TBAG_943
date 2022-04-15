@@ -368,6 +368,7 @@ public class GameController {
 		{
 			model.addOutput("There are no people in this room");
 		}
+
 	}
 	
 	public void equip(String item) {
@@ -446,6 +447,7 @@ public class GameController {
 								model.getMap().getLocations().get(puz.getRoomCon()).setBlocked(false);
 							}
 						//puz connections
+
 						}
 						else if(puz.solve(response) && !puz.checkRequiredSkill(model.getPlayer().getStats().get("strength")))
 						{

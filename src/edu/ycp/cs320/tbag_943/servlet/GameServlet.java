@@ -184,7 +184,17 @@ public class GameServlet extends HttpServlet {
 						case "items":
 							controller.inventory();
 							break;
-						case "puzzle":
+						}
+					  case "solve":
+					  case "answer":
+              error = "Incorrect Syntax: solve [target #] [answer]";
+              String response = input[2];
+              for(int i = 3; i < input.length; i++) {
+                response = response + " " + input[i];
+              }
+              controller.solve(input[1],response);
+              break;
+					  case "puzzle":
 							if(input.length>1)
 							{
 								controller.puzzle(input[1]);
