@@ -12,12 +12,14 @@ public class Puzzle {
 	private boolean canSolve;
 	private boolean solved;
 	private boolean breakable;
-	private boolean jumpable;
+	private String roomCon;
+	
 	
 	// Constructors
 	public Puzzle() {
 		result = false;
 		canSolve = true;
+		roomCon = "";
 	}
 	
 	public Puzzle(String promptIn, String answerIn) {
@@ -25,6 +27,7 @@ public class Puzzle {
 		canSolve = true;
 		prompt = promptIn;
 		answer = answerIn;
+		roomCon = "";
 	}
 	
 	// Methods
@@ -124,13 +127,14 @@ public class Puzzle {
 		breakable = bool;
 	}
 	
-	public boolean getJumpable()
+	public String getRoomCon()
 	{
-		return jumpable;
+		return roomCon;
 	}
 	
-	public void setJumpable(boolean bool)
+	public void setRoomCon(String roomConIn)
 	{
-		jumpable = bool;
+		roomCon = roomConIn;
 	}
+
 }
