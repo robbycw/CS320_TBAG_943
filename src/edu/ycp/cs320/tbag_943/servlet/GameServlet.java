@@ -76,14 +76,16 @@ public class GameServlet extends HttpServlet {
 			session.setAttribute("charismaStat", charismaStat);
 			
 			
-			Player player = new Player(playerName, model.getPlayer().getLocation(), (10 + vitalityStat), 10, strengthStat, speedStat);
-			model.setPlayer(player);
+				Player player = new Player(playerName, model.getPlayer().getLocation(), (10 + vitalityStat), 10, strengthStat, speedStat);
+				model.setPlayer(player);
+				
+				session.setAttribute("health", player.getStats().get("health").getRank());
+				session.setAttribute("armor", player.getStats().get("armor").getRank());
+				
+				model.setPlayerCreated(false);
+				session.setAttribute("model", model);
 			
-			session.setAttribute("health", player.getStats().get("health").getRank());
-			session.setAttribute("armor", player.getStats().get("armor").getRank());
 			
-			model.setPlayerCreated(false);
-			session.setAttribute("model", model);
 		}
 		
 		if(req.getParameter("title") != null) {
@@ -126,9 +128,14 @@ public class GameServlet extends HttpServlet {
 			in = in.toLowerCase(); 
 			String[] input = in.split(" +"); 
 			
+			// Generate the personalized error
+			String error = "";
+			
 			// The following switch-case will interpret the user's command and call the
 			// appropriate controller functions. 
+			
 			try {
+
 				// The player should only be able to enter commands if they are alive. 
 				if(model.getPlayer().getStats().get("health").getRank() > 0) {
 					switch(input[0]) {
@@ -180,6 +187,16 @@ public class GameServlet extends HttpServlet {
 						case "items":
 							controller.inventory();
 							break;
+						
+						case "solve":
+						case "answer":
+							error = "Incorrect Syntax: solve [target #] [answer]";
+							String response = input[2];
+							for(int i = 3; i < input.length; i++) {
+								response = response + " " + input[i];
+							}
+							controller.solve(input[1],response);
+							break;
 						case "puzzle":
 							if(input.length>1)
 							{
@@ -191,14 +208,7 @@ public class GameServlet extends HttpServlet {
 								controller.puzzle();
 								break;
 							}
-						case "solve":
-							String response = input[2];
-							for(int i = 3; i < input.length; i++) 
-							{
-								response = response + " " + input[i];
-							}
-							controller.solve(input[1],response);
-							break;
+						
 						default: 
 							model.addOutput("Unknown command.");
 					}
@@ -211,8 +221,8 @@ public class GameServlet extends HttpServlet {
 				// In the event the user passes a command without a target, 
 				// this catch will handle the exception. 
 				// Ex: User inputs "attack" or "move "
-				
-				model.addOutput("Incorrect command syntax: Please specify a target.");
+				model.addOutput(error);
+				model.addOutput("Please enter another command:");
 
 			}
 			
@@ -388,7 +398,9 @@ public class GameServlet extends HttpServlet {
 		
 		
 		// Create Loots
-		Loot loot = new Loot(new Item("Axe", 12));  
+		Item lootAxe = new Item("Axe", 12);
+		lootAxe.setDes("A rusty axe with a blade coated in a blue liquid rests on a table...");
+		Loot loot = new Loot(lootAxe);  
 		
 		// Sets up for adding connections and rooms to the map. 
 		String room1, room2, room3, room4, room5, room6, room7, room8; 
@@ -527,12 +539,23 @@ public class GameServlet extends HttpServlet {
 		
 		// Creating Location Descriptions
 		r1.setDescription("You find yourself in a lobby.  There are doors in all directions.  Choose Carefully...");
+		r2.setDescription("You have come to a room. There is a door to the West, South, and East...");
 		r3.setDescription("Investigate...There are doors to the North, South, and West...");
 		r4.setDescription("A dark figure is standing in front of you.  There are doors to the West and South...");
 		r5.setDescription("You find yourself in a dark room.  There are doors to the South and East...");
+		r6.setDescription("You have come to a room. There is a door to the North and East...");
 		r7.setDescription("A mysterious figure is staring at you.  There are doors to the North and East...");
+		r8.setDescription("You have come to a room. There is a door to the West and North...");
 		
-
+		r1.setLongDescription("You find yourself in a lobby.  There are doors in all directions.  Choose Carefully...");
+		r2.setLongDescription("You have come to a room. There is a door to the West, South, and East...");
+		r3.setLongDescription("Investigate...There are doors to the North, South, and West...");
+		r4.setLongDescription("A dark figure is standing in front of you.  There are doors to the West and South...");
+		r5.setLongDescription("You find yourself in a dark room.  There are doors to the South and East...");
+		r6.setLongDescription("You have come to a room. There is a door to the North and East...");
+		r7.setLongDescription("A mysterious figure is staring at you.  There are doors to the North and East...");
+		r8.setLongDescription("You have come to a room. There is a door to the West and North...");
+		
 		// Create Game with proper parameters
 		Game game = new Game(1, map, player); 
 		

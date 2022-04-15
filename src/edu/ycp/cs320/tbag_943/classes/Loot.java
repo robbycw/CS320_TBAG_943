@@ -9,6 +9,13 @@ public class Loot {
 	private boolean collected;
 
 	// Constructors 
+	
+	public Loot()
+	{
+		this.item = new Item();
+		collected = false;
+	}
+	
 	public Loot(Item item) {
 		this.item = item; 
 		collected = false;

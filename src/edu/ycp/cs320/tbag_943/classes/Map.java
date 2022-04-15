@@ -67,8 +67,7 @@ public class Map {
 	public void setId(int id) {
 		this.id = id;
 	}
-		
-	
+			
 	//
 	// Methods
 	// 
