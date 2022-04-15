@@ -63,7 +63,7 @@ public class GameServlet extends HttpServlet {
 		
 		if(req.getParameter("characterSubmit") != null) {
 			Game model = (Game) session.getAttribute("model"); 
-			String playerName =req.getParameter("playerName");
+			String playerName =req.getParameter("playerNameBox");
 			int strengthStat = getIntegerFromParameter(req.getParameter("strengthStat"));
 			int speedStat = getIntegerFromParameter(req.getParameter("speedStat"));
 			int vitalityStat = getIntegerFromParameter(req.getParameter("vitalityStat"));
@@ -74,6 +74,8 @@ public class GameServlet extends HttpServlet {
 			session.setAttribute("speedStat", speedStat);
 			session.setAttribute("vitalityStat", vitalityStat);
 			session.setAttribute("charismaStat", charismaStat);
+			
+			System.out.println("character created");
 			
 			
 				Player player = new Player(playerName, model.getPlayer().getLocation(), (10 + vitalityStat), 10, strengthStat, speedStat);
@@ -135,7 +137,6 @@ public class GameServlet extends HttpServlet {
 			// appropriate controller functions. 
 			
 			try {
-
 				// The player should only be able to enter commands if they are alive. 
 				if(model.getPlayer().getStats().get("health").getRank() > 0) {
 					switch(input[0]) {
@@ -187,7 +188,6 @@ public class GameServlet extends HttpServlet {
 						case "items":
 							controller.inventory();
 							break;
-						
 						case "solve":
 						case "answer":
 							error = "Incorrect Syntax: solve [target #] [answer]";
@@ -197,7 +197,8 @@ public class GameServlet extends HttpServlet {
 							}
 							controller.solve(input[1],response);
 							break;
-						case "puzzle":
+					
+					  case "puzzle":
 							if(input.length>1)
 							{
 								controller.puzzle(input[1]);
@@ -208,7 +209,6 @@ public class GameServlet extends HttpServlet {
 								controller.puzzle();
 								break;
 							}
-						
 						default: 
 							model.addOutput("Unknown command.");
 					}
@@ -403,9 +403,9 @@ public class GameServlet extends HttpServlet {
 		Loot loot = new Loot(lootAxe);  
 		
 		// Sets up for adding connections and rooms to the map. 
-		String room1, room2, room3, room4, room5, room6, room7, room8; 
+		String room1, room2, room3, room4, room5, room6, room7, room8, room9; 
 		HashMap<String, ArrayList<String>> connections = new HashMap<String, ArrayList<String>>();
-		ArrayList<String> room1Con, room2Con, room3Con, room4Con, room5Con, room6Con, room7Con, room8Con; 
+		ArrayList<String> room1Con, room2Con, room3Con, room4Con, room5Con, room6Con, room7Con, room8Con, room9Con; 
 		room1 = "Room1"; 
 		room2 = "Room2"; 
 		room3 = "Room3";
@@ -414,6 +414,7 @@ public class GameServlet extends HttpServlet {
 		room6 = "Room6";
 		room7 = "Room7";
 		room8 = "Room8";
+		room9 = "Room9";
 		
 		room1Con = new ArrayList<String>(); 
 		room1Con.add(room2); // north
@@ -444,6 +445,7 @@ public class GameServlet extends HttpServlet {
 		room5Con.add(room2); // east
 		room5Con.add(room6); // south
 		room5Con.add("-1"); // west
+		room5Con.add(room9); // magic?
 		
 		room6Con = new ArrayList<String>();
 		room6Con.add(room5); // north
@@ -463,6 +465,13 @@ public class GameServlet extends HttpServlet {
 		room8Con.add("-1"); // south
 		room8Con.add(room7); // west
 		
+    room9Con = new ArrayList<String>();
+		room9Con.add("-1"); // north
+		room9Con.add("-1"); // east
+		room9Con.add("-1"); // south
+		room9Con.add("-1"); // west
+		room9Con.add(room5); // room5 connection, no direction!
+
 		connections.put(room1.toLowerCase(), room1Con); 
 		connections.put(room2.toLowerCase(), room2Con); 
 		connections.put(room3.toLowerCase(), room3Con); 
@@ -471,9 +480,10 @@ public class GameServlet extends HttpServlet {
 		connections.put(room6.toLowerCase(), room6Con);
 		connections.put(room7.toLowerCase(), room7Con);
 		connections.put(room8.toLowerCase(), room8Con);
-		
+    connections.put(room9.toLowerCase(), room9Con);
+
 		HashMap<String, Location> locations = new HashMap<String, Location>(); 
-		Location r1, r2, r3, r4, r5, r6, r7, r8; 
+		Location r1, r2, r3, r4, r5, r6, r7, r8, r9; 
 //		Puzzle prompt = new Puzzle();
 		r1 = new Location(room1); 
 		r2 = new Location(room2); 
@@ -483,6 +493,8 @@ public class GameServlet extends HttpServlet {
 		r6 = new Location(room6);
 		r7 = new Location(room7);
 		r8 = new Location(room8);
+    r9 = new Location(room9);
+
 		locations.put(room1.toLowerCase(), r1); 
 		locations.put(room2.toLowerCase(), r2); 
 		locations.put(room3.toLowerCase(), r3); 
@@ -491,6 +503,8 @@ public class GameServlet extends HttpServlet {
 		locations.put(room6.toLowerCase(), r6);
 		locations.put(room7.toLowerCase(), r7);
 		locations.put(room8.toLowerCase(), r8);
+    locations.put(room9.toLowerCase(), r9);
+
 		
 		// Set NPCs, Loot and Combat in rooms. 
 		r1.setTreasure(loot);
@@ -528,12 +542,13 @@ public class GameServlet extends HttpServlet {
 		String samplePuzzlePrompt5 = "There is a large, metal door that lies in front of you, but maybe it can be broken...";
 		Puzzle samplePuzzle5 = new Puzzle(samplePuzzlePrompt5, "break");
 		samplePuzzle5.setBreakable(true);
+		samplePuzzle5.setRoomCon(room9);
 		samplePuzzle5.setRequiredSkill(new Stat("strength",2));
 		r5.addPuzzle(samplePuzzle5);
 		
 		String samplePuzzlePrompt6 = "A box that stretches 6 feet high blocks the way forward, maybe it can be jumped over...";
 		Puzzle samplePuzzle6 = new Puzzle(samplePuzzlePrompt6, "jump");
-		samplePuzzle6.setJumpable(true);
+		samplePuzzle6.setBreakable(true);
 		samplePuzzle6.setRequiredSkill(new Stat("speed",5));
 		r5.addPuzzle(samplePuzzle6);
 		
@@ -546,6 +561,7 @@ public class GameServlet extends HttpServlet {
 		r6.setDescription("You have come to a room. There is a door to the North and East...");
 		r7.setDescription("A mysterious figure is staring at you.  There are doors to the North and East...");
 		r8.setDescription("You have come to a room. There is a door to the West and North...");
+		r9.setDescription("Beyond the steel door is your eternal happiness...");
 		
 		r1.setLongDescription("You find yourself in a lobby.  There are doors in all directions.  Choose Carefully...");
 		r2.setLongDescription("You have come to a room. There is a door to the West, South, and East...");
@@ -555,6 +571,7 @@ public class GameServlet extends HttpServlet {
 		r6.setLongDescription("You have come to a room. There is a door to the North and East...");
 		r7.setLongDescription("A mysterious figure is staring at you.  There are doors to the North and East...");
 		r8.setLongDescription("You have come to a room. There is a door to the West and North...");
+		r9.setLongDescription("There is nothing here.");
 		
 		// Create Game with proper parameters
 		Game game = new Game(1, map, player); 

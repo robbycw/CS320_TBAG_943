@@ -74,7 +74,9 @@ public class Map {
 	
 	// Adds a location to the HashMap of Locations
 	public void addLocation(Location location) {
+
 		this.locations.put(location.getName().toLowerCase(), location); 
+
 	}
 	
 	public boolean isConnected(Location start, Location end) {

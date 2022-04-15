@@ -34,6 +34,14 @@ public class Stat implements Comparable {
 		rank = set;
 	}
 	
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String nameIn) {
+		name = nameIn;
+	}
+	
 	public void addToRank(int add) {
 		rank = rank + add;
 	}
