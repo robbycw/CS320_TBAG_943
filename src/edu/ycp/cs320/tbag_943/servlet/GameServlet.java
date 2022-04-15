@@ -63,7 +63,7 @@ public class GameServlet extends HttpServlet {
 		
 		if(req.getParameter("characterSubmit") != null) {
 			Game model = (Game) session.getAttribute("model"); 
-			String playerName =req.getParameter("playerName");
+			String playerName =req.getParameter("playerNameBox");
 			int strengthStat = getIntegerFromParameter(req.getParameter("strengthStat"));
 			int speedStat = getIntegerFromParameter(req.getParameter("speedStat"));
 			int vitalityStat = getIntegerFromParameter(req.getParameter("vitalityStat"));
@@ -74,6 +74,8 @@ public class GameServlet extends HttpServlet {
 			session.setAttribute("speedStat", speedStat);
 			session.setAttribute("vitalityStat", vitalityStat);
 			session.setAttribute("charismaStat", charismaStat);
+			
+			System.out.println("character created");
 			
 			
 				Player player = new Player(playerName, model.getPlayer().getLocation(), (10 + vitalityStat), 10, strengthStat, speedStat);
@@ -187,7 +189,6 @@ public class GameServlet extends HttpServlet {
 						case "items":
 							controller.inventory();
 							break;
-						
 						case "solve":
 						case "answer":
 							error = "Incorrect Syntax: solve [target #] [answer]";
@@ -197,7 +198,8 @@ public class GameServlet extends HttpServlet {
 							}
 							controller.solve(input[1],response);
 							break;
-						case "puzzle":
+					
+					  case "puzzle":
 							if(input.length>1)
 							{
 								controller.puzzle(input[1]);
