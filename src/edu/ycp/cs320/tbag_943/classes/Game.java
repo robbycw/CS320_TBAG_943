@@ -11,6 +11,9 @@ public class Game {
 	private Combat currentCombat; 
 	private boolean inCombat, playerTurnTaken; 
 	private boolean playerNotCreated;
+	private int id; 
+	
+	// Constructors
 
 	public Game() {
 		this.difficulty = 1; 
@@ -30,26 +33,20 @@ public class Game {
 		this.playerTurnTaken = false; 
 	}
 	
+	// Getters
 	
+	public int getId() {
+		return id;
+	}
+
 	public boolean isInCombat() {
 		return inCombat;
 	}
-
-	public void setInCombat(boolean inCombat) {
-		this.inCombat = inCombat;
-	}
-	public void setPlayerCreated(boolean created) {
-		this.playerNotCreated = created;
-	}
-
+	
 	public boolean isPlayerTurnTaken() {
 		return playerTurnTaken;
 	}
-
-	public void setPlayerTurnTaken(boolean playerTurnTaken) {
-		this.playerTurnTaken = playerTurnTaken;
-	}
-
+	
 	public int getDifficulty() {
 		return difficulty;
 	}
@@ -61,21 +58,45 @@ public class Game {
 	public Timer getTimer() {
 		return timer;
 	}
+	
+	public Map getMap() {
+		return map;
+	}
+	
+	public Player getPlayer() {
+		return player;
+	}
+	
+	public Combat getCurrentCombat() {
+		return currentCombat;
+	}
+	public boolean getPlayerNotCreated() {
+		return playerNotCreated;
+	}
+	
+	// Setters
+	
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public void setInCombat(boolean inCombat) {
+		this.inCombat = inCombat;
+	}
+	public void setPlayerCreated(boolean created) {
+		this.playerNotCreated = created;
+	}
+
+	public void setPlayerTurnTaken(boolean playerTurnTaken) {
+		this.playerTurnTaken = playerTurnTaken;
+	}
 
 	public void setTimer(Timer timer) {
 		this.timer = timer;
 	}
 
-	public Map getMap() {
-		return map;
-	}
-
 	public void setMap(Map map) {
 		this.map = map;
-	}
-
-	public Player getPlayer() {
-		return player;
 	}
 
 	public void setPlayer(Player player) {
@@ -86,12 +107,6 @@ public class Game {
 		this.difficulty = difficulty;
 	}
 	
-	public Combat getCurrentCombat() {
-		return currentCombat;
-	}
-	public boolean getPlayerNotCreated() {
-		return playerNotCreated;
-	}
 	public void setCurrentCombat(Combat currentCombat) {
 		this.currentCombat = currentCombat;
 	}
@@ -99,6 +114,8 @@ public class Game {
 	public void setOutputLog(ArrayList<String> outputLog) {
 		this.outputLog = outputLog;
 	}
+	
+	// Methods
 
 	public void addOutput(String s) {
 		outputLog.add(s);

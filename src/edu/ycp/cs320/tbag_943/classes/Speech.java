@@ -6,6 +6,7 @@ public class Speech {
 
 	private ArrayList<String> speechOptions;
 	private ArrayList<String> speechResponses; 
+	private int id; 
 	private String intimidateOption;
 	private String intimidateResponse;
 	private String intimidateResponseFail;
@@ -45,6 +46,14 @@ public class Speech {
 		speechResponses.addAll(add);
 	}
 	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public String getSpeech(int get) 
 	{
 		return speechOptions.get(get);

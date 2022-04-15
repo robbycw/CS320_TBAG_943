@@ -14,6 +14,7 @@ public class WinCondition {
 	private boolean wonRooms;
 	private boolean bestCase;
 	private boolean defaultCase;
+	private int id; 
 	
 	// Constructor
 	public WinCondition() {
@@ -48,10 +49,15 @@ public class WinCondition {
 	}
 	
 	// Getters
+	
 	public boolean getComplete() {
 		return complete;
 	}
 	
+	public int getId() {
+		return id;
+	}
+
 	public boolean getLost() {
 		return lost;
 	}
@@ -94,5 +100,9 @@ public class WinCondition {
 		bestCase = value;
 		wonRooms = value;
 		complete = value;
+	}
+	
+	public void setId(int id) {
+		this.id = id;
 	}
 }

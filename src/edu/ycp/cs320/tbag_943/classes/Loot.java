@@ -3,11 +3,13 @@ package edu.ycp.cs320.tbag_943.classes;
 import java.util.HashMap;
 
 public class Loot {
-	private int xp;
+	private int xp, id;
 	//private enum loot[];
 	private Item item; 
 	private boolean collected;
 
+	// Constructors 
+	
 	public Loot()
 	{
 		this.item = new Item();
@@ -19,13 +21,7 @@ public class Loot {
 		collected = false;
 	}
 	
-	public Item getItem() {
-		return item;
-	}
-
-	public void setItems(Item item) {
-		this.item = item;
-	}
+	// Methods
 	
 	public void calculateLoot() {
 		
@@ -33,10 +29,6 @@ public class Loot {
 	
 	public void giveXP() {
 		
-	}
-	
-	public boolean isCollected() {
-		return collected;
 	}
 	
 	public void giveItems(Player player) {
@@ -60,5 +52,30 @@ public class Loot {
 	public void giveInfo() {
 		
 	}
+	
+	// Getters
+	
+	public Item getItem() {
+		return item;
+	}
+
+	public boolean isCollected() {
+		return collected;
+	}
+	
+	public int getId() {
+		return id;
+	}
+	
+	// Setters 
+	
+	public void setItems(Item item) {
+		this.item = item;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+	
 	
 }

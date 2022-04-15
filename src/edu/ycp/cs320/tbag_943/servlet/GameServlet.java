@@ -276,11 +276,12 @@ public class GameServlet extends HttpServlet {
 		session.setAttribute("sec", "gray");
 		
 		// If Room to the North exists...
-		if(!game.getMap().getConnections().get(current.getName()).get(0).equals("-1")) {
+		String currentLC = current.getName().toLowerCase(); 
+		if(!game.getMap().getConnections().get(currentLC).get(0).equals("-1")) {
 			
 			// Try to color and name rooms to the east and west of the Northern room, if connected.
 			
-			String north = game.getMap().getConnections().get(current.getName()).get(0);
+			String north = game.getMap().getConnections().get(currentLC).get(0).toLowerCase();
 			// Northeast
 			if(!game.getMap().getConnections().get(north).get(1).equals("-1")) {
 				Location n = game.getMap().getLocations().get(north);
@@ -296,10 +297,10 @@ public class GameServlet extends HttpServlet {
 		}
 		
 		// If Room to the South exists...
-		if(!game.getMap().getConnections().get(current.getName()).get(2).equals("-1")) {
+		if(!game.getMap().getConnections().get(currentLC).get(2).equals("-1")) {
 			
 			// Try to color and name rooms to the east and west of the Southern room, if connected.
-			String south = game.getMap().getConnections().get(current.getName()).get(2);
+			String south = game.getMap().getConnections().get(currentLC).get(2).toLowerCase();
 			// Southeast
 			if(!game.getMap().getConnections().get(south).get(1).equals("-1")) {
 				Location n = game.getMap().getLocations().get(south);
@@ -464,23 +465,23 @@ public class GameServlet extends HttpServlet {
 		room8Con.add("-1"); // south
 		room8Con.add(room7); // west
 		
-		room9Con = new ArrayList<String>();
+    room9Con = new ArrayList<String>();
 		room9Con.add("-1"); // north
 		room9Con.add("-1"); // east
 		room9Con.add("-1"); // south
 		room9Con.add("-1"); // west
-		room9Con.add(room5); // west
-		
-		connections.put(room1, room1Con); 
-		connections.put(room2, room2Con); 
-		connections.put(room3, room3Con); 
-		connections.put(room4, room4Con); 
-		connections.put(room5, room5Con );
-		connections.put(room6, room6Con);
-		connections.put(room7, room7Con);
-		connections.put(room8, room8Con);
-		connections.put(room9, room9Con);
-		
+		room9Con.add(room5); // room5 connection, no direction!
+
+		connections.put(room1.toLowerCase(), room1Con); 
+		connections.put(room2.toLowerCase(), room2Con); 
+		connections.put(room3.toLowerCase(), room3Con); 
+		connections.put(room4.toLowerCase(), room4Con); 
+		connections.put(room5.toLowerCase(), room5Con);
+		connections.put(room6.toLowerCase(), room6Con);
+		connections.put(room7.toLowerCase(), room7Con);
+		connections.put(room8.toLowerCase(), room8Con);
+    connections.put(room9.toLowerCase(), room9Con);
+
 		HashMap<String, Location> locations = new HashMap<String, Location>(); 
 		Location r1, r2, r3, r4, r5, r6, r7, r8, r9; 
 //		Puzzle prompt = new Puzzle();
@@ -492,16 +493,18 @@ public class GameServlet extends HttpServlet {
 		r6 = new Location(room6);
 		r7 = new Location(room7);
 		r8 = new Location(room8);
-		r9 = new Location(room9);
-		locations.put(room1, r1); 
-		locations.put(room2, r2); 
-		locations.put(room3,r3); 
-		locations.put(room4,r4);
-		locations.put(room5,  r5);
-		locations.put(room6,  r6);
-		locations.put(room7, r7);
-		locations.put(room8,  r8);
-		locations.put(room9, r9);
+    r9 = new Location(room9);
+
+		locations.put(room1.toLowerCase(), r1); 
+		locations.put(room2.toLowerCase(), r2); 
+		locations.put(room3.toLowerCase(), r3); 
+		locations.put(room4.toLowerCase(), r4);
+		locations.put(room5.toLowerCase(), r5);
+		locations.put(room6.toLowerCase(), r6);
+		locations.put(room7.toLowerCase(), r7);
+		locations.put(room8.toLowerCase(), r8);
+    locations.put(room9.toLowerCase(), r9);
+
 		
 		// Set NPCs, Loot and Combat in rooms. 
 		r1.setTreasure(loot);
