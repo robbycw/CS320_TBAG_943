@@ -78,14 +78,18 @@ public class GameController {
 		if(!connections.get(direction).equals("-1")) { 
 			
 			Location end = map.getLocations().get(connections.get(direction)); 
-			player.move(end); 
-			
-			String desc = player.getName() + " has moved from " + start + " to " + end.getName(); 
-			model.addOutput(desc);
-			
-			// Print the room description
-			model.addOutput(player.getLocation().getDescription());
-			
+			if(!end.getBlocked()) {
+				player.move(end); 
+				
+				String desc = player.getName() + " has moved from " + start + " to " + end.getName(); 
+				model.addOutput(desc);
+				
+				// Print the room description
+				model.addOutput(player.getLocation().getDescription());
+			}
+			else {
+				model.addOutput("This direction is blocked. Look for a way past it...");
+			}
 		} else {
 			// The player cannot move here. 
 			String err = player.getName() + " cannot move in this direction";  
@@ -419,8 +423,7 @@ public class GameController {
 					Puzzle puz = loc.getPuzzle(choice);
 					String s = "Uninit";
 					if(!puz.isSolved() 
-							&& !puz.getBreakable()
-							&& !puz.getJumpable()) 
+							&& !puz.getBreakable()) 
 					{
 						if(puz.solve(response))
 						{
@@ -433,37 +436,20 @@ public class GameController {
 						}
 					}
 					else if(!puz.isSolved() 
-							&& puz.getBreakable()
-							&& !puz.getJumpable()) 
+							&& puz.getBreakable()) 
 					{
-						if(puz.solve(response) && puz.checkRequiredSkill(model.getPlayer().getStats().get("strength")))
+						if(puz.solve(response) && puz.checkRequiredSkill(model.getPlayer().getStats().get(puz.getRequiredSkill().getName())))
 						{
-						s = "You smashed right through!";
+						s = "You demonstrated your skills and got past the obstacle!";
+							if(!puz.getRoomCon().equals(""))
+							{
+								model.getMap().getLocations().get(puz.getRoomCon()).setBlocked(false);
+							}
 						//puz connections
 						}
 						else if(puz.solve(response) && !puz.checkRequiredSkill(model.getPlayer().getStats().get("strength")))
 						{
-						s = "You are far too weak for this task. Your strength is "
-								+ model.getPlayer().getStats().get("speed").getRank() 
-								+ " and must be " + puz.getRequiredSkill().getRank();
-						}
-						else
-						{
-							s = "your answer of: '" + response + "' is not what you do here.";
-						}
-					}
-					else if(!puz.isSolved() 
-							&& !puz.getBreakable()
-							&& puz.getJumpable()) 
-					{
-						if(puz.solve(response) && puz.checkRequiredSkill(model.getPlayer().getStats().get("speed")))
-						{
-						s = "You jumped right on over it!";
-						//puz connections
-						}
-						else if(puz.solve(response) && !puz.checkRequiredSkill(model.getPlayer().getStats().get("speed")))
-						{
-						s = "You are far too slow for this task. Your speed is " 
+						s = "You are far too unskilled for this task. Your " + puz.getRequiredSkill().getName() + " is "
 								+ model.getPlayer().getStats().get("speed").getRank() 
 								+ " and must be " + puz.getRequiredSkill().getRank();
 						}

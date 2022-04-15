@@ -11,6 +11,7 @@ public class Location {
 	private ArrayList<Combat> combats;
 	private Loot treasure;
 	private HashMap<String, NPC> npcs;
+	private boolean blocked;
 	
 	public Location() {
 		this.name = "Start"; 
@@ -125,5 +126,15 @@ public class Location {
 			npc.put(key, n); 
 		}
 		this.npcs = npc; 
+	}
+	
+	public boolean getBlocked()
+	{
+		return blocked;
+	}
+	
+	public void setBlocked(boolean boolIn)
+	{
+		blocked = boolIn;
 	}
 }
