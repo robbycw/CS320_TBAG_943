@@ -76,14 +76,16 @@ public class GameServlet extends HttpServlet {
 			session.setAttribute("charismaStat", charismaStat);
 			
 			
-			Player player = new Player(playerName, model.getPlayer().getLocation(), (10 + vitalityStat), 10, strengthStat, speedStat);
-			model.setPlayer(player);
+				Player player = new Player(playerName, model.getPlayer().getLocation(), (10 + vitalityStat), 10, strengthStat, speedStat);
+				model.setPlayer(player);
+				
+				session.setAttribute("health", player.getStats().get("health").getRank());
+				session.setAttribute("armor", player.getStats().get("armor").getRank());
+				
+				model.setPlayerCreated(false);
+				session.setAttribute("model", model);
 			
-			session.setAttribute("health", player.getStats().get("health").getRank());
-			session.setAttribute("armor", player.getStats().get("armor").getRank());
 			
-			model.setPlayerCreated(false);
-			session.setAttribute("model", model);
 		}
 		
 		if(req.getParameter("title") != null) {
@@ -185,17 +187,17 @@ public class GameServlet extends HttpServlet {
 						case "items":
 							controller.inventory();
 							break;
-						}
-					  case "solve":
-					  case "answer":
-              error = "Incorrect Syntax: solve [target #] [answer]";
-              String response = input[2];
-              for(int i = 3; i < input.length; i++) {
-                response = response + " " + input[i];
-              }
-              controller.solve(input[1],response);
-              break;
-					  case "puzzle":
+						
+						case "solve":
+						case "answer":
+							error = "Incorrect Syntax: solve [target #] [answer]";
+							String response = input[2];
+							for(int i = 3; i < input.length; i++) {
+								response = response + " " + input[i];
+							}
+							controller.solve(input[1],response);
+							break;
+						case "puzzle":
 							if(input.length>1)
 							{
 								controller.puzzle(input[1]);
