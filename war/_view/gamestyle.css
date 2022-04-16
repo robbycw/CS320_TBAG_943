@@ -46,7 +46,45 @@ html, body {
 	float: left;
 	margin-top:-300px;
 }
+#StartingItems{
+	border-style: solid;
+	border-color: brown;
+	background-color: beige;
+	height: 100px;
+	width: 520px;
+	float: left;
+	margin-top: -25px;
+	margin-left: 45px;
+}
+#PickWeapons{
+	width: 205px;
+	height: 25px;
+	float: left;
+	margin-top: 20px;
+	margin-left:20px;
+}
+#PickApparel{
+	width: 205px;
+	height: 25px;
+	float: left;
+	margin-top: 20px;
+	margin-left: 60px;
+}
 
+#PickTool{
+	width: 205px;
+	height: 25px;
+	float: left;
+	margin-top: 20px;
+	margin-left:285px;
+}
+#PickMisc{
+	width: 205px;
+	height: 25px;
+	float: left;
+	margin-top: -25px;
+	margin-left:20px;
+}
 #charCreationTxt{
 	float: left;
 	width: 15%;
@@ -183,9 +221,9 @@ h1{
 }
 #playerNameBox{
 	background:black;
-	width: 100px;
+	width: 250px;
 	height: 30px;
-	margin-left: 205px;
+	margin-left: 130px;
 	margin-top:-220px;
 	text-align: center;
 	float:left;
