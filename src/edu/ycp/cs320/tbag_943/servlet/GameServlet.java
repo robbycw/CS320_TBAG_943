@@ -22,6 +22,14 @@ public class GameServlet extends HttpServlet {
 		
 		HttpSession session = req.getSession(false); 
 		
+		if(session == null || session.getAttribute("loggedIn") == null) {
+			System.out.println("User is not logged in. Redirecting to Title Page.");
+			System.out.println("GameServlet: titlePage");
+			
+			resp.sendRedirect("/tbag_943/titlePage");
+			return; 
+		}
+		
 
 		if(session == null || session.getAttribute("model") == null) {
 			// need to make a new session. 

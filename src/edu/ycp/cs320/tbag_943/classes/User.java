@@ -6,12 +6,17 @@ public class User {
 	String username, password; 
 	int id; 
 	Game currentGame; 
+	boolean created; 
 	
 	
-	// Constructor
+	// Constructors
+	public User() {
+		this.created = false; 
+	}
 	public User(String username, String password) {
 		this.username = username; 
 		this.password = password; 
+		this.created = true; 
 	}
 
 	
@@ -31,7 +36,11 @@ public class User {
 	public Game getCurrentGame() {
 		return currentGame;
 	}
-
+	
+	public boolean getCreated() {
+		return created;
+	}
+	
 	
 	// Setters
 	public void setUsername(String username) {
@@ -49,4 +58,8 @@ public class User {
 	public void setCurrentGame(Game currentGame) {
 		this.currentGame = currentGame;
 	}	
+	
+	public void setCreated(boolean created) {
+		this.created = created;
+	}
 }
