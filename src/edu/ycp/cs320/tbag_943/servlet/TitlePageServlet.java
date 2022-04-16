@@ -34,6 +34,7 @@ public class TitlePageServlet extends HttpServlet {
 			String loginError = ""; 
 			session.setAttribute("user", user);
 			session.setAttribute("loginErr", loginError);
+			session.setAttribute("makeNewAccount", false);
 			
 		}
 
@@ -56,18 +57,21 @@ public class TitlePageServlet extends HttpServlet {
 			System.out.println("TitlePage Servlet: Game");
 			
 			resp.sendRedirect("/tbag_943/game");
+			return; 
 			
 		} else if(req.getParameter("credits") != null) {
 			
 			System.out.println("TitlePage Servlet: Credits");
 			
 			resp.sendRedirect("/tbag_943/credits");
+			return; 
 			
 		} else if(req.getParameter("options") != null) {
 			
 			System.out.println("TitlePage Servlet: Options");
 			
 			resp.sendRedirect("/tbag_943/game");
+			return; 
 			
 		} else if(req.getParameter("loginSubmit") != null) {
 			// This map will represent the Database Table of usernames/passwords until implemented. 
@@ -121,7 +125,61 @@ public class TitlePageServlet extends HttpServlet {
 				session.setAttribute("loginErr", loginError);
 			}
 			
-			 
+		} else if (req.getParameter("createAccount") != null) {
+			// The user wants to create an account. 
+			// This will change the overlay so that it displays
+			// account creation instead of login. 
+			
+			session.setAttribute("makeNewAccount", true); 
+			session.setAttribute("loginErr", "");
+			
+		} else if (req.getParameter("attemptCreateAccount") != null){
+			
+			// This map will represent the Database Table of usernames/passwords until implemented. 
+			HashMap<String, String> userPass = new HashMap<String, String>(); 
+			
+			userPass.put("robbyw", "tbags"); 
+			userPass.put("admin", "adminPassword"); 
+			
+			// The User has attempted to create an account. 
+			User user = (User) session.getAttribute("user"); 
+			String username = (String) req.getParameter("username"); 
+			String password = (String) req.getParameter("password"); 
+			
+			System.out.println("username: " + username); 
+			
+			// Consider if user doesn't enter a username or password. 
+			if(username == null || password == null || username.isEmpty() || password.isEmpty()) {
+				String loginError = "Please specify a username and password."; 
+				session.setAttribute("loginErr", loginError);
+			}
+			
+			// The user has entered a username and password for their account. 
+			// We want to ensure a username does not already exist. 
+			else if (userPass.containsKey(username)) {
+				String loginError = username + " already exists. Pick a different username.";  
+				session.setAttribute("loginErr", loginError);
+			} else {
+				System.out.println("	Creating account for username: " + username); 
+				// The username does not yet exist. Make the account and log the user in. 
+				user.setUsername(username);
+				user.setPassword(password);
+				user.setCreated(true);
+				userPass.put(username, password); 
+				
+				// User is now logged in, store user data into session. 
+				session.setAttribute("user", user);
+				session.setAttribute("loggedIn", true); 
+				session.setAttribute("makeNewAccount", false);
+				
+			}
+			
+		} else if (req.getParameter("createCancel") != null) {
+			// The user is cancelling account creation. 
+			// Reload the login page. 
+			session.setAttribute("loggedIn", false); 
+			session.setAttribute("makeNewAccount", false);
+			session.setAttribute("loginErr", "");
 		}
 		
 		
