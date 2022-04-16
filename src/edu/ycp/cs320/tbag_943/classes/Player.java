@@ -11,7 +11,7 @@ public class Player {
 	private HashMap<String, Item> inventory; 
 	private Location location; 
 	private HashMap<String, Stat> stats; 
-	private String weapon; 
+	private String weapon, armor; 
 	private boolean playerCreated = false;
 	private WinCondition winCondition;
 	
@@ -90,9 +90,15 @@ public class Player {
 	public String getWeapon() {
 		return weapon;
 	}
+	public String getArmor() {
+		return armor;
+	}
 
 	public void setWeapon(String weapon) {
 		this.weapon = weapon;
+	}
+	public void setArmor(String armor) {
+		this.armor = armor;
 	}
 
 	public Location getLocation() {

@@ -65,7 +65,7 @@
 						
 							<tr>
 								<div id= "nameBox">
-									<input type="text" name="playerNameBox" value="--">
+									<input type="text" name="playerName" value="--" id="pNameBox">
 									
 								</div>
 							</tr>
@@ -104,7 +104,52 @@
 					<div id= "SkillPointsText">
 						<p>Points Available</p>
 					</div>
-					
+					<div id= "StartingItems">
+						
+						<div id="PickWeapons">
+							 <label for="weapons">Weapon:</label>
+							 <select name="weapons" id="weapon" >
+							 	<option value="--">--</option>
+							    <option value="revolver">Revolver</option>
+							    <option value="baton">Baton</option>
+							    <option value="brass knuckles">Brass Knuckles</option>
+							    <option value="hard salami">Hard Salami</option>
+							 </select>
+						 </div>
+						 
+						 <div id="PickApparel">
+							 <label for="apparel">Apparel:</label>
+							 <select name="apparel" id="apparel">
+							 	<option value="--">--</option>
+							    <option value="Sunday suit">Sunday Suit</option>
+							    <option value="old police uniform">Old Police Uniform</option>
+							    <option value="dectective's duster">Detective's Duster</option>
+							    <option value="birthday suit">Birthday Suit</option>
+							 </select>
+						 </div>
+						  
+						  <div id="PickTool">
+							  <label for="tool">Tool:</label>
+							  <select name="tool" id="tool">
+								   <option value="--">--</option>
+								   <option value="wire cutters">Wire Cutters</option>
+								   <option value="axe">Rusty Axe</option>
+								   <option value="crowbar">Crowbar</option>
+								   <option value="case file">Case File</option>
+							  </select>
+						  </div>
+						  
+						  <div id="PickMisc">
+							 <label for="misc">Misc:</label>
+							 <select name="misc" id="misc" onclick="itemSelected()">
+							 	<option value="--">--</option>
+							    <option value="box of cigars">Box of Cigars</option>
+							    <option value="flask of whiskey">Flask of Whiskey</option>
+							    <option value="pill bottle">Pill Bottle</option>
+							    <option value="teddy bear">Teddy Bear</option>
+							 </select>
+						 </div>
+					</div>
 					<div id= "CharacterCreationError">
 						<p class="output" id="chrError"></p>
 					</div>
@@ -273,6 +318,7 @@
 		
 		</div></div>
 		<script>
+			const characterName = document.getElementById('pNameBox');
 			const strengthPoints = document.getElementById('strengthStatBox');
 			const speedPoints = document.getElementById('speedStatBox');
 			const vitalityPoints = document.getElementById('vitalityStatBox');
@@ -283,8 +329,15 @@
 			const submitButton = document.getElementById('chrDone');
 			
 			const error = document.getElementById('chrError');
+			
+			const apparelItem = document.getElementById('apparel');
+			const weaponItem = document.getElementById('weapon');
+			const toolItem = document.getElementById('tool');
+			const miscItem = document.getElementById('misc');
+			
+			const itemNum = 0;
 		
-			error.innerHTML = "no points?";
+			error.innerHTML = "";
 			pointLeft.innerHTML = 21;
 			
 			function calculatePoints(){
@@ -309,10 +362,15 @@
 	
 			function off() {
 				if(pointLeft.innerHTML == 21){
-					error.innerHTML = "error, points need to be allocated";
+					error.innerHTML = "Error, points need to be allocated";
 				}else if(pointLeft.innerHTML < 0 || pointLeft.innerHTML > 0){
-					error.innerHTML = "error, points are allocated improperly";
+					error.innerHTML = "Error, points are allocated improperly";
+				}else if(characterName.value == "--"){
+					error.innerHTML = "Error, name has not been typed in"
+				}else if(miscItem.value == "--" || toolItem.value == "--" || weaponItem.value == "--" || apparelItem.value == "--"){
+					error.innerHTML = "Error, all items have not been properly chosen";
 				}else{
+					error.innerHTML = "done";
 					submitButton.type = "submit";
 					document.getElementById("overlay").style.display = "none";
 				}
