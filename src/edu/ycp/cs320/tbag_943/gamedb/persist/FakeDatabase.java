@@ -2,11 +2,13 @@ package edu.ycp.cs320.tbag_943.gamedb.persist;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import edu.ycp.cs320.booksdb.model.Author;
 import edu.ycp.cs320.booksdb.model.Book;
 import edu.ycp.cs320.booksdb.model.Pair;
+import edu.ycp.cs320.tbag_943.classes.*;
 
 //Code comes from CS320 Library Example. 
 public class FakeDatabase implements IDatabase {
@@ -14,9 +16,63 @@ public class FakeDatabase implements IDatabase {
 	private List<Author> authorList;
 	private List<Book> bookList;
 	
+	// Fields
+	private List<User> userList;
+	private HashMap<String, Integer> userToGame; 
+	private List<Game> gameList;  
+	private List<ArrayList<String>> gameLogList; 
+	private List<Player> playerList; 
+	private List<Map> mapList; 
+	private HashMap<Integer, Integer> playerToStats;
+	private HashMap<Integer, Integer> playerInventory; 
+	private List<Stat> playerStatsList; 
+	private List<Item> itemList; 
+	private List<Loot> lootList;
+	private List<Location> locationList; 
+	private HashMap<Integer, Integer> locationToNPC; 
+	private List<WinCondition> winConditionList;
+	private List<NPC> npcList; 
+	private HashMap<Integer, Integer> npcToStats; 
+	private HashMap<Integer, Integer> npcToSpeech; 
+	private List<Stat> npcStatsList; 
+	private List<Speech> speechList; 
+	private HashMap<Integer, Integer> locationToCombat; 
+	private HashMap<Integer, Integer> combatToNPC; 
+	private HashMap<Integer, Integer> locationToPuzzle; 
+	private List<Combat> combatList; 
+	private List<Puzzle> puzzleList; 
+	
+	// Constructor
+	public FakeDatabase() {
+		this.userList = new ArrayList<User>();
+		this.userToGame = new HashMap<String, Integer>();
+		this.gameList = new ArrayList<Game>();
+		this.gameLogList = new ArrayList<ArrayList<String>>();
+		this.playerList = new ArrayList<Player>();
+		this.mapList = new ArrayList<Map>();
+		this.playerToStats = new HashMap<Integer, Integer>();
+		this.playerInventory = new HashMap<Integer, Integer>();
+		this.playerStatsList = new ArrayList<Stat>();
+		this.itemList = new ArrayList<Item>();
+		this.lootList = new ArrayList<Loot>();
+		this.locationList = new ArrayList<Location>();
+		this.locationToNPC = new HashMap<Integer, Integer>();
+		this.winConditionList = new ArrayList<WinCondition>();
+		this.npcList = new ArrayList<NPC>();
+		this.npcToStats = new HashMap<Integer, Integer>();
+		this.npcToSpeech = new HashMap<Integer, Integer>();
+		this.npcStatsList = new ArrayList<Stat>();
+		this.speechList = new ArrayList<Speech>();
+		this.locationToCombat = new HashMap<Integer, Integer>();
+		this.combatToNPC = new HashMap<Integer, Integer>();
+		this.locationToPuzzle = new HashMap<Integer, Integer>();
+		this.combatList = new ArrayList<Combat>();
+		this.puzzleList = new ArrayList<Puzzle>();
+	}
+
 	// Fake database constructor - initializes the DB
 	// the DB only consists for a List of Authors and a List of Books
-	public FakeDatabase() {
+	/*public FakeDatabase() {
 		authorList = new ArrayList<Author>();
 		bookList = new ArrayList<Book>();
 		
@@ -25,7 +81,7 @@ public class FakeDatabase implements IDatabase {
 		
 //		System.out.println(authorList.size() + " authors");
 //		System.out.println(bookList.size() + " books");
-	}
+	}*/
 
 	// loads the initial data retrieved from the CSV files into the DB
 	public void readInitialData() {
