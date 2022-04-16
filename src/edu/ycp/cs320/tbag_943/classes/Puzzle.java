@@ -13,11 +13,15 @@ public class Puzzle {
 	private boolean solved;
 	private boolean breakable;
 	private boolean jumpable;
+	private int id; 
+	private String roomCon;
+
 	
 	// Constructors
 	public Puzzle() {
 		result = false;
 		canSolve = true;
+		roomCon = "";
 	}
 	
 	public Puzzle(String promptIn, String answerIn) {
@@ -25,6 +29,7 @@ public class Puzzle {
 		canSolve = true;
 		prompt = promptIn;
 		answer = answerIn;
+		roomCon = "";
 	}
 	
 	// Methods
@@ -55,10 +60,15 @@ public class Puzzle {
 	}
 	
 	// Getters
+	
 	public String getPrompt() {
 		return prompt;
 	}
 	
+	public int getId() {
+		return id;
+	}
+
 	public String getAnswer() {
 		return answer;
 	}
@@ -90,6 +100,10 @@ public class Puzzle {
 	//Setters
 	public void setPrompt(String newPrompt) {
 		prompt = newPrompt;
+	}
+	
+	public void setId(int id) {
+		this.id = id;
 	}
 	
 	public void setAnswer(String answerIn)
@@ -124,13 +138,14 @@ public class Puzzle {
 		breakable = bool;
 	}
 	
-	public boolean getJumpable()
+	public String getRoomCon()
 	{
-		return jumpable;
+		return roomCon;
 	}
 	
-	public void setJumpable(boolean bool)
+	public void setRoomCon(String roomConIn)
 	{
-		jumpable = bool;
+		roomCon = roomConIn;
 	}
+
 }

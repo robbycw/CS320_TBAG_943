@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 public class Player {
 	private String name; 
+	private int id; 
 	private String icon; 
 	private HashMap<String, Item> inventory; 
 	private Location location; 
@@ -13,6 +14,8 @@ public class Player {
 	private String weapon; 
 	private boolean playerCreated = false;
 	private WinCondition winCondition;
+	
+	// Constructors
 	
 	public Player() { 
 		this.name = "John Johnson"; 
@@ -62,9 +65,20 @@ public class Player {
 		winCondition = new WinCondition();
 	}
 	
+	// Methods
+	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public boolean getPlayerCreated() {
 		return playerCreated;
 	}
+	
 	public String getName() {
 		return name;
 	}

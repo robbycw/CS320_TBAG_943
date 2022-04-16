@@ -5,9 +5,13 @@ import java.util.HashMap;
 
 
 public class Map {
+	
+	// Note that the key sets for HashMaps are all lowercase.
+	// This keeps the user from needing to use capital letters. 
 	private String icon;
 	private HashMap<String, Location> locations; 
 	private HashMap<String, ArrayList<String>> connections;  
+	private int id; 
 	
 	// Default Constructor
 	public Map() {
@@ -38,8 +42,13 @@ public class Map {
 	public HashMap<String, ArrayList<String>> getConnections() {
 		return connections;
 	}
-
 	
+	public int getId() {
+		return id;
+	}
+
+
+
 	//
 	// Setters
 	//
@@ -55,21 +64,25 @@ public class Map {
 		this.connections = connections;
 	}
 	
-
-	
+	public void setId(int id) {
+		this.id = id;
+	}
+			
 	//
 	// Methods
 	// 
 	
 	// Adds a location to the HashMap of Locations
 	public void addLocation(Location location) {
-		this.locations.put(location.getName(), location); 
+
+		this.locations.put(location.getName().toLowerCase(), location); 
+
 	}
 	
 	public boolean isConnected(Location start, Location end) {
 		ArrayList<String> startConnections = connections.get(start.getName()); 
 		
-		if(startConnections.contains(end.getName())) {
+		if(startConnections.contains(end.getName().toLowerCase())) {
 			return true;
 		} else {
 			return false; 
@@ -88,11 +101,11 @@ public class Map {
 	public String getDirectionColor(Location current, int direction) {
 		
 		// Check if there is a connection in the given direction
-		String roomName = connections.get(current.getName()).get(direction); 
+		String roomName = connections.get(current.getName().toLowerCase()).get(direction); 
 		if(roomName.equals("-1")) {
 			return "gray"; 
 		} else {
-			Location room = locations.get(roomName); 
+			Location room = locations.get(roomName.toLowerCase()); 
 		
 			if(room.isHidden()) {
 				return "gray"; 
@@ -105,11 +118,11 @@ public class Map {
 	
 	public String getDirectionName(Location current, int direction) {
 		
-		String roomName = connections.get(current.getName()).get(direction); 
+		String roomName = connections.get(current.getName().toLowerCase()).get(direction); 
 		if(roomName.equals("-1")) {
 			return ""; 
 		} else {
-			Location room = locations.get(roomName); 
+			Location room = locations.get(roomName.toLowerCase()); 
 		
 			if(room.isHidden()) {
 				return ""; 

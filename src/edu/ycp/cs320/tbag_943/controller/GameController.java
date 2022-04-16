@@ -65,6 +65,27 @@ public class GameController {
 			GameController.doMove(model, map, player, 3);
 			
 		} else {
+			// Check if the player has input the name of a room. 
+			// Also check if that room is discovered. This is legal
+			// thanks to short-circuiting booleans! 
+			if(map.getLocations().keySet().contains(direction) && 
+					!map.getLocations().get(direction).isHidden()) {
+				
+				String start = player.getLocation().getName(); 
+				
+				// Move the player to this location. 
+				Location end = map.getLocations().get(direction); 
+				player.move(end);
+				
+				String move = "Player has moved from " + start + " to " + end.getName(); 
+				model.addOutput(move);
+				
+				return; 
+			}
+			
+			 
+			
+			// Since the room exists and is discovered, move the player to that room. 
 			String err = "Invalid move."; 
 			model.addOutput(err);
 		}
@@ -72,20 +93,24 @@ public class GameController {
 	
 	public static void doMove(Game model, Map map, Player player, int direction) {
 		String start = player.getLocation().getName();
-		ArrayList<String> connections = map.getConnections().get(start); 
-		// The player can move here. 
-		System.out.println("Printing null string:" + connections.get(direction)); 
+		ArrayList<String> connections = map.getConnections().get(start.toLowerCase()); 
+		
+		// The player can move here.  
 		if(!connections.get(direction).equals("-1")) { 
 			
-			Location end = map.getLocations().get(connections.get(direction)); 
-			player.move(end); 
-			
-			String desc = player.getName() + " has moved from " + start + " to " + end.getName(); 
-			model.addOutput(desc);
-			
-			// Print the room description
-			model.addOutput(player.getLocation().getDescription());
-			
+			Location end = map.getLocations().get(connections.get(direction).toLowerCase()); 
+			if(!end.getBlocked()) {
+				player.move(end); 
+				
+				String desc = player.getName() + " has moved from " + start + " to " + end.getName(); 
+				model.addOutput(desc);
+				
+				// Print the room description
+				model.addOutput(player.getLocation().getDescription());
+			}
+			else {
+				model.addOutput("This direction is blocked. Look for a way past it...");
+			}
 		} else {
 			// The player cannot move here. 
 			String err = player.getName() + " cannot move in this direction";  
@@ -420,8 +445,7 @@ public class GameController {
 					Puzzle puz = loc.getPuzzle(choice);
 					String s = "Uninit";
 					if(!puz.isSolved() 
-							&& !puz.getBreakable()
-							&& !puz.getJumpable()) 
+							&& !puz.getBreakable()) 
 					{
 						if(puz.solve(response))
 						{
@@ -434,40 +458,21 @@ public class GameController {
 						}
 					}
 					else if(!puz.isSolved() 
-							&& puz.getBreakable()
-							&& !puz.getJumpable()) 
+							&& puz.getBreakable()) 
 					{
-						if(puz.solve(response) && puz.checkRequiredSkill(model.getPlayer().getStats().get("strength")))
+						if(puz.solve(response) && puz.checkRequiredSkill(model.getPlayer().getStats().get(puz.getRequiredSkill().getName())))
 						{
-						s = "You smashed right through!";
+						s = "You demonstrated your skills and got past the obstacle!";
+							if(!puz.getRoomCon().equals(""))
+							{
+								model.getMap().getLocations().get(puz.getRoomCon()).setBlocked(false);
+							}
 						//puz connections
 
 						}
 						else if(puz.solve(response) && !puz.checkRequiredSkill(model.getPlayer().getStats().get("strength")))
 						{
-						s = "You are far too weak for this task. Your strength is "
-								+ model.getPlayer().getStats().get("speed").getRank() 
-								+ " and must be " + puz.getRequiredSkill().getRank();
-						}
-						else
-						{
-							s = "your answer of: '" + response + "' is not what you do here.";
-						}
-					}
-					else if(!puz.isSolved() 
-							&& !puz.getBreakable()
-							&& puz.getJumpable()) 
-					{
-						if(puz.solve(response) && puz.checkRequiredSkill(model.getPlayer().getStats().get("speed")))
-						{
-						s = "You jumped right on over it!";
-              
-						//puz connections
-
-						}
-						else if(puz.solve(response) && !puz.checkRequiredSkill(model.getPlayer().getStats().get("speed")))
-						{
-						s = "You are far too slow for this task. Your speed is " 
+						s = "You are far too unskilled for this task. Your " + puz.getRequiredSkill().getName() + " is "
 								+ model.getPlayer().getStats().get("speed").getRank() 
 								+ " and must be " + puz.getRequiredSkill().getRank();
 						}

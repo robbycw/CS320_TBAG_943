@@ -47,6 +47,7 @@
 
 		<c:if test= "${model.playerNotCreated}">
 			<div id="overlay">
+				
 				<div id="charCreationTxt">
 					<p>Name:</p>
 					<p>Strength:</p>
@@ -58,47 +59,60 @@
 			
 			
 		
-				<form action="${pageContext.servletContext.contextPath}/game" method="post">
+				<form action="${pageContext.servletContext.contextPath}/game" method="post" onkeydown="return event.key != 'Enter'">
+					
 					<div id="charCreationBoxes">
 						
 							<tr>
 								<div id= "nameBox">
-									<input type="text" name="playerName">
+									<input type="text" name="playerNameBox" value="--">
 									
 								</div>
 							</tr>
 							
 							<tr>
 								<div id= "strengthBox">
-									<input type="text" maxlength="2" name="strengthStat"><br>
+									<input type="text" maxlength="2" name="strengthStat" value= "0" id="strengthStatBox"><br>
 								
 								</div>
 							</tr>
 							
 							<tr>
 								<div id= "SpeedBox">
-									<input type="text" maxlength="2" name="speedStat"><br>
+									<input type="text" maxlength="2" name="speedStat" value= "0" id="speedStatBox"><br>
 								</div>
 							</tr>
 							
 							<tr>
-								<div id= "ConstitutionBox">
-									<input type="text" maxlength="2" name="vitalityStat"><br>
+								<div id= "VitalityBox">
+									<input type="text" maxlength="2" name="vitalityStat" value="0" id="vitalityStatBox"><br>
 								</div>
 							</tr>
 							
 							<tr>
 								<div id= "charismaBox">
-									<input type="text" maxlength="2" name="charismaStat"><br>
+									<input type="text" maxlength="2" name="charismaStat" value="0" id="charismaStatBox"><br>
 								</div>
 							</tr>
 							
 							
 					</div>
-					
-					<div id= "submitButton">
-						<input type="submit" id="chrDone" value="Done" onclick="off()" name= "characterSubmit">
+				
+					<div id= "SkillPoints">
+						<p class="output" id="availStats"></p>
 					</div>
+					<div id= "SkillPointsText">
+						<p>Points Available</p>
+					</div>
+					
+					<div id= "CharacterCreationError">
+						<p class="output" id="chrError"></p>
+					</div>
+					<div id= "submitButton">
+						<button type="button" id="chrDone" value="Done" onclick="off()" name= "characterSubmit">Done</button>
+						
+					</div>
+					
 					
 				</form>
 			</div >
@@ -250,6 +264,7 @@
 					<div id="armorStat">
 						<h1>${armor}</h1>
 					</div>
+					
 				</div>
 				
 				<div class="subsection">Timer<br>
@@ -261,12 +276,49 @@
 		
 		</div></div>
 		<script>
-			function on() {
-			  	document.getElementById("overlay").style.display = "block";
+			const strengthPoints = document.getElementById('strengthStatBox');
+			const speedPoints = document.getElementById('speedStatBox');
+			const vitalityPoints = document.getElementById('vitalityStatBox');
+			const charismaPoints = document.getElementById('charismaStatBox');
+			
+			const pointLeft = document.getElementById('availStats');
+			
+			const submitButton = document.getElementById('chrDone');
+			
+			const error = document.getElementById('chrError');
+		
+			error.innerHTML = "no points?";
+			pointLeft.innerHTML = 21;
+			
+			function calculatePoints(){
+				pointLeft.innerHTML = 21;
+				pointLeft.innerHTML = pointLeft.innerHTML - (strengthPoints.value);
+				pointLeft.innerHTML = pointLeft.innerHTML - (speedPoints.value);
+				pointLeft.innerHTML = pointLeft.innerHTML - (vitalityStatBox.value);
+				pointLeft.innerHTML = pointLeft.innerHTML - (charismaStatBox.value);
+				
+				if(pointLeft.innerHTML < 0){
+					document.getElementById("SkillPoints").style.color = "red";
+				}else{
+					document.getElementById("SkillPoints").style.color = "blue";
+				}
 			}
+		
+			strengthStatBox.addEventListener('input', calculatePoints);
+			speedStatBox.addEventListener('input', calculatePoints);
+			vitalityStatBox.addEventListener('input', calculatePoints);
+			charismaStatBox.addEventListener('input', calculatePoints);
+			
 	
 			function off() {
-				document.getElementById("overlay").style.display = "none";
+				if(pointLeft.innerHTML == 21){
+					error.innerHTML = "error, points need to be allocated";
+				}else if(pointLeft.innerHTML < 0 || pointLeft.innerHTML > 0){
+					error.innerHTML = "error, points are allocated improperly";
+				}else{
+					submitButton.type = "submit";
+					document.getElementById("overlay").style.display = "none";
+				}
 			}
 		</script>
 		

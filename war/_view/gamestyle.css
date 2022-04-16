@@ -17,47 +17,78 @@ html, body {
 	z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
   	cursor: pointer; /* Add a pointer on hover */
 }
+#CharacterCreationError{
+	text-align: right;
+	font-size:20px;
+	color: red;
+	height: 40px;
+	width: 390px;
+	float: left;
+	margin-left:520px;
+	margin-top: -10px;
+}
+#SkillPoints{
+	font-size: 40px;
+	color: blue;
+	width: 25px;
+	height: 25px;
+	margin-left: -100px;
+	margin-top:-370px;
+	float: left;
+}
+#SkillPointsText{
+	color: blue;
+	font-size: 20px;
+	width: 195px;
+	height: 20px;
+	text-align:center;
+	margin-left: -180px;
+	float: left;
+	margin-top:-300px;
+}
+
 #charCreationTxt{
 	float: left;
-	width: 25%;
-	height: 90%;
+	width: 15%;
+	height: 80%;
 	color: blue;
 	text-align: right;
 	font-size: 35px;
 	margin-left:1%;
-	margin-top:2%;
-	
+	margin-top:6%;
+	float: left;
 }
 #charCreationBoxes{
-	margin-top:2%;
-	width:25%;
+	margin-top:-3%;
+	width: 22%;
 	height: 90%;
-	margin-left:27%;
+	margin-left:18%;
 }
 #nameBox{
-	margin-top:20%;
+	margin-top: 50%;
 	float: left;
 }
 #strengthBox{
-	margin-top:22%;
+	margin-top:24%;
 	float: left;
 }
 #SpeedBox{
-	margin-top:22%;
+	margin-top:25%;
 	float: left;
 }
-#ConstitutionBox{
-	margin-top:22%;
+#VitalityBox{
+	margin-top:25%;
 	float: left;
 }
 #charismaBox{
-	margin-top:22%;
+	margin-top:25%;
 	float: left;
 }
 #submitButton{
 	background:black;
 	float: right;
-	margin-right: 10px;
+	margin-top: 10px;
+	margin-right: 5px;
 }
 #entire{
 	border-style: none;
@@ -122,15 +153,15 @@ h1{
 }
 #statNameBox{
 	width:22%;
-	height:85%;
+	height:84%;
 	background:black;
 }
 #statsBox{
 	background: black;
 	width: 50px;
 	height: 160px;
-	margin-left: 85px;
-	margin-top:-188px;
+	margin-left: 90px;
+	margin-top:-186px;
 	float: left;
 	
 }
@@ -146,7 +177,7 @@ h1{
 	background:black;
 	width: 25px;
 	height: 30px;
-	margin-left: 220px;
+	margin-left: 225px;
 	margin-top:-40px;
 	float: left;
 }
@@ -154,9 +185,9 @@ h1{
 	background:black;
 	width: 100px;
 	height: 30px;
-	margin-left: 185px;
+	margin-left: 205px;
 	margin-top:-220px;
-	text-align: left;
+	text-align: center;
 	float:left;
 }
 #armorBox{
@@ -169,6 +200,14 @@ h1{
 }
 #armorStat{
 	background: black;
+	width: 20px;
+	height: 30px;
+	margin-left: 350px;
+	margin-top:-40px;
+	float: left;
+}
+#levelUpBackDrop{
+	background: grey;
 	width: 20px;
 	height: 30px;
 	margin-left: 350px;
