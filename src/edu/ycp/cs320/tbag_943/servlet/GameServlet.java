@@ -71,11 +71,18 @@ public class GameServlet extends HttpServlet {
 		
 		if(req.getParameter("characterSubmit") != null) {
 			Game model = (Game) session.getAttribute("model"); 
-			String playerName =req.getParameter("playerNameBox");
+			
+			String playerName =req.getParameter("playerName");
+			String startingWeapon = req.getParameter("weapons");
+			String startingApparel = req.getParameter("apparel");
+			String startingTool = req.getParameter("tool");
+			String startingMisc = req.getParameter("misc");
+			
 			int strengthStat = getIntegerFromParameter(req.getParameter("strengthStat"));
 			int speedStat = getIntegerFromParameter(req.getParameter("speedStat"));
 			int vitalityStat = getIntegerFromParameter(req.getParameter("vitalityStat"));
 			int charismaStat = getIntegerFromParameter(req.getParameter("charismaStat"));
+			 
 			
 			session.setAttribute("playerName", playerName);
 			session.setAttribute("strengthStat", strengthStat);
@@ -96,6 +103,24 @@ public class GameServlet extends HttpServlet {
 				session.setAttribute("model", model);
 			
 			
+				Item strtWeapon = new Item(startingWeapon, 5);
+				strtWeapon.isWeapon(true);
+				player.getInventory().put(startingWeapon, strtWeapon);
+				player.setWeapon(startingWeapon);
+				
+				Item strtApparel = new Item(startingApparel);
+				strtApparel.isArmor(true);
+				strtApparel.setArmor(6);
+				player.getInventory().put(startingApparel, strtApparel);
+				player.setArmor(startingApparel);
+				
+				Item strtTool = new Item(startingTool);
+				strtTool.isTool(true);
+				player.getInventory().put(startingTool, strtTool);
+				
+				Item strtMisc = new Item(startingMisc, 10);
+				strtMisc.isConsumable(true);
+				player.getInventory().put(startingMisc, strtMisc);
 		}
 		
 		if(req.getParameter("title") != null) {
@@ -593,8 +618,8 @@ public class GameServlet extends HttpServlet {
 		} else {
 			return Integer.parseInt(s);
 		}
-
 	}
+	
 
 
 }

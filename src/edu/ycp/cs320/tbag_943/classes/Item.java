@@ -1,8 +1,8 @@
 package edu.ycp.cs320.tbag_943.classes;
 
 public class Item {
-	private boolean consumable, isWeapon;
-	private int damage, healthGain, value, amount, id;
+	private boolean isConsumable, isWeapon, isArmor, isTool;
+	private int damage, healthGain, value, amount, id, armor;
 	private double accuracy;
 	private String name, description; 
 	
@@ -55,8 +55,8 @@ public class Item {
 		this.description = des; 
 	}
 								///consumable setter stuff//
-	public void isConsumable(boolean consumable) {
-		this.consumable = consumable;
+	public void isConsumable(boolean isConsumable) {
+		this.isConsumable = isConsumable;
 	}
 	public void setHealthGain(int healthGain) {
 		this.healthGain = healthGain;
@@ -89,7 +89,7 @@ public class Item {
 
 								/// consumable getter stuff ///
 	public boolean getIsConsumbale() {
-		return consumable;
+		return isConsumable;
 	}
 	public int getHealthGain() {
 		return healthGain;
@@ -108,6 +108,29 @@ public class Item {
 		return accuracy;
 	}
 	
+								/// armor setter stuff//
+	public void isArmor(boolean isArmor) {
+		this.isArmor = isArmor;
+	}
+	public void setArmor(int armor) {
+		this.armor = armor;
+	}
+								/// armor getter stuff ///
+	public boolean getIsArmor() {
+		return isArmor;
+	}
+	public int getArmor() {
+		return armor;
+	}
+	
+								// tool setter stuff //
+	public void isTool(boolean isTool) {
+		this.isTool = isTool;
+	}
+								// tool getter stuff //
+	public boolean getIsTool() {
+		return isTool;
+	}
 								/// big boy methods///
 	public void useItem() {
 		

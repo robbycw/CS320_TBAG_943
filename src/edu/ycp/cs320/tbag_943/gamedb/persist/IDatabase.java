@@ -13,6 +13,7 @@ public interface IDatabase {
 	public List<Game> findGamesByUsername(String username); 
 	public List<NPC> findNPCsByLocationID(int locationID); 
 	public List<NPC> findNPCsByCombatID(int combatID);
+	
 	public List<Speech> findSpeechByNPCID(int npcID); 
 	public List<String> findGameLogByGameID(int gameID); 
 	public Player findPlayerByGameID(int gameID); 
