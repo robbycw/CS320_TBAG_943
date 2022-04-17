@@ -17,6 +17,14 @@ public class FakeDatabase implements IDatabase {
 	private List<Book> bookList;
 	
 	// Fields
+	
+	// Remember that Map implementations will have the key set
+	// contain the unique values and the value set contain the
+	// repeated values, as keys cannot have multiple values. 
+	
+	// Ex: in userToGame, Game IDs will be in the key set (as 
+	// they only occur once) and user IDs will be in the value
+	// set. 
 	private List<User> userList;
 	private HashMap<String, Integer> userToGame; 
 	private List<Game> gameList;  
@@ -92,6 +100,100 @@ public class FakeDatabase implements IDatabase {
 			throw new IllegalStateException("Couldn't read initial data", e);
 		}
 	}
+	
+	// Finds
+	public Loot findLootByLocationID(int locationID) {
+		// Get the location from Location Table based on given id. 
+		Location loc = locationList.get(locationID); 
+		
+		// Retrieve lootID from the Location
+		int lootID = loc.getTreasure().getId();
+		
+		// Return the loot. 
+		return lootList.get(lootID); 
+	}
+	
+	public HashMap<String, Item> findInventoryByPlayerID(int playerID) {
+		// Retrieve a list of item IDs with given player ID. 
+		// keySet contains all of the item IDs. Add the item
+		// to a list of integers if its value is the playerID. 
+		ArrayList<Integer> itemIDs = new ArrayList<Integer>(); 
+		for(Integer i : playerInventory.keySet()) {
+			if(playerInventory.get(i) == playerID) {
+				itemIDs.add(i); 
+			}
+		}
+		
+		// This list of item IDs will be used to retrieve the items
+		// from itemList. 
+		HashMap<String, Item> inventory = new HashMap<String, Item>(); 
+		for(Integer i : itemIDs) {
+			Item item = itemList.get(i); 
+			String name = item.getName(); 
+			
+			inventory.put(name.toLowerCase(), item); 
+		}
+		
+		return inventory; 
+	}
+	
+	public HashMap<String, Stat> findPlayerStatsByPlayerID(int playerID){
+		// Retrieve a list of stat IDs with given player ID. 
+		// keySet contains all of the stat IDs. Add the statID
+		// to a list of integers if its value is the playerID. 
+		ArrayList<Integer> statIDs = new ArrayList<Integer>(); 
+		for(Integer i : playerToStats.keySet()) {
+			if(playerToStats.get(i) == playerID) {
+				statIDs.add(i); 
+			}
+		}
+		
+		// Using list of Stat IDs, we want to create a 
+		// HashMap that takes the stat name and maps it 
+		// to the Stat class. 
+		HashMap<String, Stat> stats = new HashMap<String, Stat>(); 
+		for(Integer i : statIDs) {
+			Stat stat = playerStatsList.get(i); 
+			String statName = stat.getName(); 
+			stats.put(statName, stat); 
+		}
+		
+		return stats; 
+	}
+	
+	public HashMap<String, Stat> findNPCStatsByNPCID(int npcID){
+		// Retrieve a list of stat IDs with given NPC ID. 
+		// keySet contains all of the stat IDs. Add the statID
+		// to a list of integers if its value is the NPCID. 
+		ArrayList<Integer> statIDs = new ArrayList<Integer>(); 
+		for(Integer i : npcToStats.keySet()) {
+			if(npcToStats.get(i) == npcID) {
+				statIDs.add(i); 
+			}
+		}
+		
+		// Using list of Stat IDs, we want to create a 
+		// HashMap that takes the stat name and maps it 
+		// to the Stat class. 
+		HashMap<String, Stat> stats = new HashMap<String, Stat>(); 
+		for(Integer i : statIDs) {
+			Stat stat = npcStatsList.get(i); 
+			String statName = stat.getName(); 
+			stats.put(statName, stat); 
+		}
+		
+		return stats; 
+	}
+	
+	public Item findItemByItemID(int itemID) {
+		return itemList.get(itemID); 
+	}
+	
+	
+	
+	
+	
+	
 	
 	// query that retrieves Book and its Author by Title
 	@Override

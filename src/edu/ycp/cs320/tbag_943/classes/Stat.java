@@ -6,6 +6,10 @@ public class Stat implements Comparable {
 	private String name; 
 	private int id; 
 	
+	public Stat() {
+		this.name = ""; 
+	}
+	
 	public Stat(String name) {
 		
 		this.name = name;
