@@ -21,6 +21,10 @@ public class NPC implements Comparable {
 
 	
 	// Constructors
+	public NPC() {
+		
+	}
+	
 	public NPC(String name, int health, boolean combat, HashMap<String, Stat> stats) {
 		this.combat = combat;
 		this.name = name;

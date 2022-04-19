@@ -26,54 +26,54 @@ public class FakeDatabase implements IDatabase {
 	// they only occur once) and user IDs will be in the value
 	// set. 
 	private List<User> userList;
-	private HashMap<String, Integer> userToGame; 
+	private List<Pair<Integer, Integer>> userToGame; 
 	private List<Game> gameList;  
 	private List<ArrayList<String>> gameLogList; 
 	private List<Player> playerList; 
 	private List<Map> mapList; 
-	private HashMap<Integer, Integer> playerToStats;
-	private HashMap<Integer, Integer> playerInventory; 
+	private List<Pair<Integer, Integer>> playerToStats;
+	private List<Pair<Integer, Integer>> playerInventory; 
 	private List<Stat> playerStatsList; 
 	private List<Item> itemList; 
 	private List<Loot> lootList;
 	private List<Location> locationList; 
-	private HashMap<Integer, Integer> locationToNPC; 
+	private List<Pair<Integer, Integer>> locationToNPC; 
 	private List<WinCondition> winConditionList;
 	private List<NPC> npcList; 
-	private HashMap<Integer, Integer> npcToStats; 
-	private HashMap<Integer, Integer> npcToSpeech; 
+	private List<Pair<Integer, Integer>> npcToStats; 
+	private List<Pair<Integer, Integer>> npcToSpeech; 
 	private List<Stat> npcStatsList; 
 	private List<Speech> speechList; 
-	private HashMap<Integer, Integer> locationToCombat; 
-	private HashMap<Integer, Integer> combatToNPC; 
-	private HashMap<Integer, Integer> locationToPuzzle; 
+	private List<Pair<Integer, Integer>> locationToCombat; 
+	private List<Pair<Integer, Integer>> combatToNPC; 
+	private List<Pair<Integer, Integer>> locationToPuzzle; 
 	private List<Combat> combatList; 
 	private List<Puzzle> puzzleList; 
 	
 	// Constructor
 	public FakeDatabase() {
 		this.userList = new ArrayList<User>();
-		this.userToGame = new HashMap<String, Integer>();
+		this.userToGame = new ArrayList<Pair<Integer, Integer>>();
 		this.gameList = new ArrayList<Game>();
 		this.gameLogList = new ArrayList<ArrayList<String>>();
 		this.playerList = new ArrayList<Player>();
 		this.mapList = new ArrayList<Map>();
-		this.playerToStats = new HashMap<Integer, Integer>();
-		this.playerInventory = new HashMap<Integer, Integer>();
+		this.playerToStats = new ArrayList<Pair<Integer, Integer>>();
+		this.playerInventory = new ArrayList<Pair<Integer, Integer>>();
 		this.playerStatsList = new ArrayList<Stat>();
 		this.itemList = new ArrayList<Item>();
 		this.lootList = new ArrayList<Loot>();
 		this.locationList = new ArrayList<Location>();
-		this.locationToNPC = new HashMap<Integer, Integer>();
+		this.locationToNPC = new ArrayList<Pair<Integer, Integer>>();
 		this.winConditionList = new ArrayList<WinCondition>();
 		this.npcList = new ArrayList<NPC>();
-		this.npcToStats = new HashMap<Integer, Integer>();
-		this.npcToSpeech = new HashMap<Integer, Integer>();
+		this.npcToStats = new ArrayList<Pair<Integer, Integer>>();
+		this.npcToSpeech = new ArrayList<Pair<Integer, Integer>>();
 		this.npcStatsList = new ArrayList<Stat>();
 		this.speechList = new ArrayList<Speech>();
-		this.locationToCombat = new HashMap<Integer, Integer>();
-		this.combatToNPC = new HashMap<Integer, Integer>();
-		this.locationToPuzzle = new HashMap<Integer, Integer>();
+		this.locationToCombat = new ArrayList<Pair<Integer, Integer>>();
+		this.combatToNPC = new ArrayList<Pair<Integer, Integer>>();
+		this.locationToPuzzle = new ArrayList<Pair<Integer, Integer>>();
 		this.combatList = new ArrayList<Combat>();
 		this.puzzleList = new ArrayList<Puzzle>();
 	}
@@ -115,12 +115,14 @@ public class FakeDatabase implements IDatabase {
 	
 	public HashMap<String, Item> findInventoryByPlayerID(int playerID) {
 		// Retrieve a list of item IDs with given player ID. 
-		// keySet contains all of the item IDs. Add the item
-		// to a list of integers if its value is the playerID. 
+		// The getLeft of each pair contains the playerID.
+		// Add the item ID to the list if the playerIDs match.
 		ArrayList<Integer> itemIDs = new ArrayList<Integer>(); 
-		for(Integer i : playerInventory.keySet()) {
-			if(playerInventory.get(i) == playerID) {
-				itemIDs.add(i); 
+		for(Pair<Integer, Integer> i : playerInventory) {
+			// Check if item has player's ID (is in their inventory)
+			if(i.getLeft() == playerID) {
+				// If so, add the item ID to the list of IDs. 
+				itemIDs.add(i.getRight()); 
 			}
 		}
 		
@@ -139,12 +141,12 @@ public class FakeDatabase implements IDatabase {
 	
 	public HashMap<String, Stat> findPlayerStatsByPlayerID(int playerID){
 		// Retrieve a list of stat IDs with given player ID. 
-		// keySet contains all of the stat IDs. Add the statID
-		// to a list of integers if its value is the playerID. 
+		// The getLeft of each pair contains the playerID.
+		// Add the Stat ID to the list if the playerIDs match.
 		ArrayList<Integer> statIDs = new ArrayList<Integer>(); 
-		for(Integer i : playerToStats.keySet()) {
-			if(playerToStats.get(i) == playerID) {
-				statIDs.add(i); 
+		for(Pair<Integer, Integer> i : playerToStats) {
+			if(i.getLeft() == playerID) {
+				statIDs.add(i.getRight()); 
 			}
 		}
 		
@@ -163,12 +165,12 @@ public class FakeDatabase implements IDatabase {
 	
 	public HashMap<String, Stat> findNPCStatsByNPCID(int npcID){
 		// Retrieve a list of stat IDs with given NPC ID. 
-		// keySet contains all of the stat IDs. Add the statID
-		// to a list of integers if its value is the NPCID. 
+		// The getLeft of each pair contains the npcID.
+		// Add the item ID to the list if the npcIDs match.
 		ArrayList<Integer> statIDs = new ArrayList<Integer>(); 
-		for(Integer i : npcToStats.keySet()) {
-			if(npcToStats.get(i) == npcID) {
-				statIDs.add(i); 
+		for(Pair<Integer, Integer> i : npcToStats) {
+			if(i.getLeft() == npcID) {
+				statIDs.add(i.getRight()); 
 			}
 		}
 		
@@ -186,7 +188,9 @@ public class FakeDatabase implements IDatabase {
 	}
 	
 	public Item findItemByItemID(int itemID) {
-		return itemList.get(itemID); 
+		// An item of ID X will be stored at index X-1
+		// This is due to lists counting from 0 
+		return itemList.get(itemID - 1); 
 	}
 	
 	

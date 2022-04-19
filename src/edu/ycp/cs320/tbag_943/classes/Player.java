@@ -79,6 +79,10 @@ public class Player {
 		return playerCreated;
 	}
 	
+	public void setPlayerCreated(boolean created) {
+		this.playerCreated = created; 
+	}
+	
 	public String getName() {
 		return name;
 	}

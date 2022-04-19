@@ -14,7 +14,7 @@ public class ReadCSV implements Closeable {
 	private BufferedReader reader;
 	
 	public ReadCSV(String resourceName) throws IOException {
-		InputStream in = this.getClass().getClassLoader().getResourceAsStream("edu/ycp/cs320/booksdb/persist/res/" + resourceName);
+		InputStream in = this.getClass().getClassLoader().getResourceAsStream("edu/ycp/cs320/tbag_943/gamedb/persist/res/" + resourceName);
 		
 		if (in == null) {
 			throw new IOException("Couldn't open " + resourceName);

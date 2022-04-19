@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Random; 
 
 public class Combat {
-	private int damage, turn, difficulty;
+	private int turn, difficulty;
 	private boolean dead;
 	private ArrayList<NPC> turnOrder; 
 	private HashMap<String, NPC> npcs; 
@@ -76,7 +76,7 @@ public class Combat {
 		if(roll >= tar.getStats().get("armor").getRank()) {
 			// Attack hits
 			 
-			damage = Combat.calculateDamage(player); 
+			int damage = Combat.calculateDamage(player); 
 			
 			// Double damage on a critical hit. 
 			if(roll == 20) {
@@ -132,7 +132,7 @@ public class Combat {
 			if(roll >= player.getStats().get("armor").getRank()) {
 				// Attack hits
 				 
-				damage = Combat.calculateDamage(enemy); 
+				int damage = Combat.calculateDamage(enemy); 
 				
 				// Double damage on a critical hit. 
 				if(roll == 20) {
@@ -200,6 +200,10 @@ public class Combat {
 		return id;
 	}
 
+	public int getTurn() {
+		return turn;
+	}
+	
 
 	// Setters 
 	
@@ -211,4 +215,17 @@ public class Combat {
 		this.id = id;
 	}
 
+	public void setTurn(int turn) {
+		this.turn = turn;
+	}
+
+	public void setDifficulty(int difficulty) {
+		this.difficulty = difficulty;
+	}
+
+	public void setDead(boolean dead) {
+		this.dead = dead;
+	}
+
+	
 }

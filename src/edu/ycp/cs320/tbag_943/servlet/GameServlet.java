@@ -498,7 +498,7 @@ public class GameServlet extends HttpServlet {
 		room8Con.add("-1"); // south
 		room8Con.add(room7); // west
 		
-    room9Con = new ArrayList<String>();
+		room9Con = new ArrayList<String>();
 		room9Con.add("-1"); // north
 		room9Con.add("-1"); // east
 		room9Con.add("-1"); // south
@@ -513,7 +513,7 @@ public class GameServlet extends HttpServlet {
 		connections.put(room6.toLowerCase(), room6Con);
 		connections.put(room7.toLowerCase(), room7Con);
 		connections.put(room8.toLowerCase(), room8Con);
-    connections.put(room9.toLowerCase(), room9Con);
+		connections.put(room9.toLowerCase(), room9Con);
 
 		HashMap<String, Location> locations = new HashMap<String, Location>(); 
 		Location r1, r2, r3, r4, r5, r6, r7, r8, r9; 
@@ -526,7 +526,7 @@ public class GameServlet extends HttpServlet {
 		r6 = new Location(room6);
 		r7 = new Location(room7);
 		r8 = new Location(room8);
-    r9 = new Location(room9);
+		r9 = new Location(room9);
 
 		locations.put(room1.toLowerCase(), r1); 
 		locations.put(room2.toLowerCase(), r2); 
@@ -536,7 +536,7 @@ public class GameServlet extends HttpServlet {
 		locations.put(room6.toLowerCase(), r6);
 		locations.put(room7.toLowerCase(), r7);
 		locations.put(room8.toLowerCase(), r8);
-    locations.put(room9.toLowerCase(), r9);
+		locations.put(room9.toLowerCase(), r9);
 
 		
 		// Set NPCs, Loot and Combat in rooms. 

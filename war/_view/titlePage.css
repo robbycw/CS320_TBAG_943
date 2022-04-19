@@ -20,6 +20,9 @@
 	color: blue; 
 	font-size: 35px; 
 	text-align: center;
+	border-style: solid; 
+	border-color: blue; 
+	padding: 15px; 
 }
 
 .loginText{

@@ -10,7 +10,7 @@ public interface IDatabase {
 	
 	// Finds
 	public User findUserByUsernameAndPassword(String username, String password); 
-	public List<Game> findGamesByUsername(String username); 
+	public List<Game> findGamesByUserID(int userID); 
 	public List<NPC> findNPCsByLocationID(int locationID); 
 	public List<NPC> findNPCsByCombatID(int combatID);
 	
