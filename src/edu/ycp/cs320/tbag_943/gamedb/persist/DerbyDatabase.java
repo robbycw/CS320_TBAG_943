@@ -7,12 +7,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import edu.ycp.cs320.booksdb.model.Author;
 import edu.ycp.cs320.booksdb.model.Book;
 import edu.ycp.cs320.booksdb.model.BookAuthor;
 import edu.ycp.cs320.booksdb.model.Pair;
+import edu.ycp.cs320.tbag_943.classes.Item;
+import edu.ycp.cs320.tbag_943.classes.Loot;
+import edu.ycp.cs320.tbag_943.classes.Stat;
 
 //Code comes from CS320 Library Example. 
 public class DerbyDatabase implements IDatabase {
@@ -30,6 +34,270 @@ public class DerbyDatabase implements IDatabase {
 
 	private static final int MAX_ATTEMPTS = 10;
 
+	
+	public Loot findLootByLocationID(int locationID) {
+		return executeTransaction(new Transaction<Loot>() {
+			@Override
+			public Loot execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select Loot.loot_id, Loot.xp, Loot.collected, Loot.item_id " +
+							"  from  Loot, Location " +
+							"  where Location.location_id = ? " +
+							"    and Location.loot_id = Loot.loot_id"
+					);
+					stmt1.setInt(1, locationID);
+					
+					Loot loot = new Loot(); 
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						loot.setId(resultSet1.getInt(1));
+						loot.setXP(resultSet1.getInt(2));
+						loot.setCollected(resultSet1.getBoolean(3)); 
+						loot.setItems(findItemByItemID(resultSet1.getInt(4)));
+						
+					}
+					
+					// check if the locationID was found
+					if (!found) {
+						System.out.println("<" + locationID + "> was not found in the Location table");
+					}
+					
+					return loot;
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public HashMap<String, Item> findInventoryByPlayerID(int playerID) {
+		return executeTransaction(new Transaction<HashMap<String, Item>>() {
+			@Override
+			public HashMap<String, Item> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select Item.* " +
+							"  from  Item, PlayerInventory " +
+							"  where PlayerInventory.player_id = ? " +
+							"    and Item.item_id = PlayerInventory.item_id"
+					);
+					stmt1.setInt(1, playerID);
+					
+					HashMap<String, Item> inventory = new HashMap<String, Item>(); 
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						Item item = new Item(); 
+						
+						// TODO : Need to set all fields in Item based on entries in table.
+						
+						item.setId(resultSet1.getInt(1));
+						item.setName(resultSet1.getString(2));
+						
+						//loot.setCollected(resultSet1.getBoolean(3)); 
+						//loot.setItems(findItemByItemID(resultSet1.getInt(4)));
+						
+						// Add the Item to the inventory HashMap
+						
+						String itemName = item.getName(); 
+						
+						inventory.put(itemName.toLowerCase(), item); 
+					}
+					
+					// check if the playerID was found
+					if (!found) {
+						System.out.println("<" + playerID + "> was not found in the PlayerInventory table");
+					}
+					
+					return inventory;
+					
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public HashMap<String, Stat> findPlayerStatsByPlayerID(int playerID) {
+		return executeTransaction(new Transaction<HashMap<String, Stat>>() {
+			@Override
+			public HashMap<String, Stat> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select PlayerStats.* " +
+							"  from  PlayerStats, PlayerToStats " +
+							"  where PlayerToStats.player_id = ? " +
+							"    and PlayerStats.stat_id = PlayerToStats.stat_id"
+					);
+					stmt1.setInt(1, playerID);
+					
+					HashMap<String, Stat> playerStats = new HashMap<String, Stat>(); 
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						Stat stat = new Stat(); 
+						
+						// Set values of stat from current result set row. 
+						stat.setId(resultSet1.getInt(1));
+						stat.setName(resultSet1.getString(2));
+						stat.setRank(resultSet1.getInt(3));
+	
+						
+						// Add the stat to the playerStats HashMap
+						playerStats.put(stat.getName(), stat); 
+					}
+					
+					// check if the playerID was found
+					if (!found) {
+						System.out.println("<" + playerID + "> was not found in the PlayerToStats table");
+					}
+					
+					return playerStats;
+					
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public HashMap<String, Stat> findNPCStatsByNPCID(int npcID) {
+		return executeTransaction(new Transaction<HashMap<String, Stat>>() {
+			@Override
+			public HashMap<String, Stat> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select NPCStats.* " +
+							"  from  NPCStats, NPCToStats " +
+							"  where NPCToStats.npc_id = ? " +
+							"    and NPCStats.stat_id = NPCToStats.stat_id"
+					);
+					stmt1.setInt(1, npcID);
+					
+					HashMap<String, Stat> npcStats = new HashMap<String, Stat>(); 
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						Stat stat = new Stat(); 
+						
+						// Set values of stat from current result set row. 
+						stat.setId(resultSet1.getInt(1));
+						stat.setName(resultSet1.getString(2));
+						stat.setRank(resultSet1.getInt(3));
+	
+						
+						// Add the stat to the npcStats HashMap
+						npcStats.put(stat.getName(), stat); 
+					}
+					
+					// check if the playerID was found
+					if (!found) {
+						System.out.println("<" + npcID + "> was not found in the NPCToStats table");
+					}
+					
+					return npcStats;
+					
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Item findItemByItemID(int itemID) {
+		return executeTransaction(new Transaction<Item>() {
+			@Override
+			public Item execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select Item.* " +
+							"  from  Item " +
+							"  where Item.item_id = ? "
+					);
+					stmt1.setInt(1, itemID);
+					
+					Item item = new Item(); 
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						// TODO : Need to set all fields in Item based on entries in table.
+						
+						item.setId(resultSet1.getInt(1));
+						item.setName(resultSet1.getString(2));
+						
+					}
+					
+					// check if the playerID was found
+					if (!found) {
+						System.out.println("<" + itemID + "> was not found in the Item table");
+					}
+					
+					return item;
+					
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	
+	
+	
+	
+	
 	
 	// transaction that retrieves a Book, and its Author by Title
 	@Override

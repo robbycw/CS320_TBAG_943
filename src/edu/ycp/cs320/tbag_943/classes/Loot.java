@@ -69,6 +69,14 @@ public class Loot {
 	
 	// Setters 
 	
+	public void setCollected(boolean collected) {
+		this.collected = collected; 
+	}
+	
+	public void setXP(int xp) {
+		this.xp = xp; 
+	}
+	
 	public void setItems(Item item) {
 		this.item = item;
 	}

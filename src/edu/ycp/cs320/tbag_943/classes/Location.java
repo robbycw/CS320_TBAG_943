@@ -5,14 +5,16 @@ import java.util.HashMap;
 
 
 public class Location {
+	private int id;
 	private String name, description, longDescription; 
 	private boolean hidden; 
 	private ArrayList<Puzzle> puzzles; 
 	private ArrayList<Combat> combats;
 	private Loot treasure;
 	private HashMap<String, NPC> npcs;
-  private boolean blocked;
-	private int id; 
+	private boolean blocked;
+	private WinCondition winCondition; 
+	
 
 	// Constructors
 
@@ -40,6 +42,11 @@ public class Location {
 	public void addPuzzle(Puzzle puzzleIn)
 	{
 		puzzles.add(puzzleIn);
+	}
+	
+	public void addNPC(NPC npc)
+	{
+		npcs.put(npc.getName(),npc);
 	}
 	
 	// Getters 
@@ -79,11 +86,6 @@ public class Location {
 	public HashMap<String, NPC> getNPCs() {
 		return npcs;
 	}
-	
-	public void addNPC(NPC npc)
-	{
-		npcs.put(npc.getName(),npc);
-	}
 
 	public ArrayList<Combat> getCombats() {
 		return combats;
@@ -92,10 +94,18 @@ public class Location {
 	public Loot getTreasure() {
 		return treasure;
 	}
+	
+	public WinCondition getWinCondition() {
+		return winCondition;
+	}
 
 
 	// Setters 
-	
+
+	public void setWinCondition(WinCondition winCondition) {
+		this.winCondition = winCondition;
+	}
+
 	public void setId(int id) {
 		this.id = id;
 	}

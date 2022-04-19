@@ -31,6 +31,36 @@ public class Item {
 		this.description = "";
 	}
 	
+	
+	
+	public boolean isConsumable() {
+		return isConsumable;
+	}
+
+	public int getAmount() {
+		return amount;
+	}
+
+	public void setConsumable(boolean isConsumable) {
+		this.isConsumable = isConsumable;
+	}
+
+	public void setWeapon(boolean isWeapon) {
+		this.isWeapon = isWeapon;
+	}
+
+	public void setArmor(boolean isArmor) {
+		this.isArmor = isArmor;
+	}
+
+	public void setTool(boolean isTool) {
+		this.isTool = isTool;
+	}
+
+	public void setAmount(int amount) {
+		this.amount = amount;
+	}
+
 	public void setIcon() {
 		
 	}
