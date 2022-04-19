@@ -104,13 +104,13 @@ public class FakeDatabase implements IDatabase {
 	// Finds
 	public Loot findLootByLocationID(int locationID) {
 		// Get the location from Location Table based on given id. 
-		Location loc = locationList.get(locationID); 
+		Location loc = locationList.get(locationID - 1); 
 		
 		// Retrieve lootID from the Location
 		int lootID = loc.getTreasure().getId();
 		
 		// Return the loot. 
-		return lootList.get(lootID); 
+		return lootList.get(lootID - 1); 
 	}
 	
 	public HashMap<String, Item> findInventoryByPlayerID(int playerID) {
@@ -130,7 +130,7 @@ public class FakeDatabase implements IDatabase {
 		// from itemList. 
 		HashMap<String, Item> inventory = new HashMap<String, Item>(); 
 		for(Integer i : itemIDs) {
-			Item item = itemList.get(i); 
+			Item item = itemList.get(i - 1); 
 			String name = item.getName(); 
 			
 			inventory.put(name.toLowerCase(), item); 
@@ -155,7 +155,7 @@ public class FakeDatabase implements IDatabase {
 		// to the Stat class. 
 		HashMap<String, Stat> stats = new HashMap<String, Stat>(); 
 		for(Integer i : statIDs) {
-			Stat stat = playerStatsList.get(i); 
+			Stat stat = playerStatsList.get(i - 1); 
 			String statName = stat.getName(); 
 			stats.put(statName, stat); 
 		}
@@ -179,7 +179,7 @@ public class FakeDatabase implements IDatabase {
 		// to the Stat class. 
 		HashMap<String, Stat> stats = new HashMap<String, Stat>(); 
 		for(Integer i : statIDs) {
-			Stat stat = npcStatsList.get(i); 
+			Stat stat = npcStatsList.get(i - 1); 
 			String statName = stat.getName(); 
 			stats.put(statName, stat); 
 		}
