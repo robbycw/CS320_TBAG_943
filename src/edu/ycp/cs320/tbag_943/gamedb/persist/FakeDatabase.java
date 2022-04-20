@@ -18,13 +18,8 @@ public class FakeDatabase implements IDatabase {
 	
 	// Fields
 	
-	// Remember that Map implementations will have the key set
-	// contain the unique values and the value set contain the
-	// repeated values, as keys cannot have multiple values. 
-	
-	// Ex: in userToGame, Game IDs will be in the key set (as 
-	// they only occur once) and user IDs will be in the value
-	// set. 
+	// Remember that because lists count from 0, the
+	// ID X object is stored at index X-1. 
 	private List<User> userList;
 	private List<Pair<Integer, Integer>> userToGame; 
 	private List<Game> gameList;  
@@ -41,9 +36,10 @@ public class FakeDatabase implements IDatabase {
 	private List<WinCondition> winConditionList;
 	private List<NPC> npcList; 
 	private List<Pair<Integer, Integer>> npcToStats; 
-	private List<Pair<Integer, Integer>> npcToSpeech; 
 	private List<Stat> npcStatsList; 
 	private List<Speech> speechList; 
+	private HashMap<Integer, ArrayList<String>> speechOptions;
+	private HashMap<Integer, ArrayList<String>> speechResponses; 
 	private List<Pair<Integer, Integer>> locationToCombat; 
 	private List<Pair<Integer, Integer>> combatToNPC; 
 	private List<Pair<Integer, Integer>> locationToPuzzle; 
@@ -68,9 +64,10 @@ public class FakeDatabase implements IDatabase {
 		this.winConditionList = new ArrayList<WinCondition>();
 		this.npcList = new ArrayList<NPC>();
 		this.npcToStats = new ArrayList<Pair<Integer, Integer>>();
-		this.npcToSpeech = new ArrayList<Pair<Integer, Integer>>();
 		this.npcStatsList = new ArrayList<Stat>();
 		this.speechList = new ArrayList<Speech>();
+		this.speechOptions = new HashMap<Integer, ArrayList<String>>();
+		this.speechResponses = new HashMap<Integer, ArrayList<String>>();
 		this.locationToCombat = new ArrayList<Pair<Integer, Integer>>();
 		this.combatToNPC = new ArrayList<Pair<Integer, Integer>>();
 		this.locationToPuzzle = new ArrayList<Pair<Integer, Integer>>();
@@ -94,8 +91,40 @@ public class FakeDatabase implements IDatabase {
 	// loads the initial data retrieved from the CSV files into the DB
 	public void readInitialData() {
 		try {
-			authorList.addAll(InitialData.getAuthors());
-			bookList.addAll(InitialData.getBooks());
+			this.userList.addAll(InitialData.getUser());
+			this.userToGame.addAll(InitialData.getUserToGame());
+			 
+			this.gameLogList.addAll(InitialData.getGameLog());
+			
+			this.playerToStats.addAll(InitialData.getPlayerToStats());
+			this.playerInventory.addAll(InitialData.getPlayerInventory());
+			this.playerStatsList.addAll(InitialData.getPlayerStats()); 
+			this.itemList.addAll(InitialData.getItem());
+			this.lootList.addAll(InitialData.getLoot(itemList));
+			
+			this.locationToNPC.addAll(InitialData.getLocationToNPC());
+			this.winConditionList.addAll(InitialData.getWinCondition());
+			
+			this.npcToStats.addAll(InitialData.getNPCToStats());
+			this.npcStatsList.addAll(InitialData.getNPCStats());
+			
+			this.speechOptions = InitialData.getSpeechOptions(); 
+			this.speechResponses = InitialData.getSpeechResponses(); 
+			this.speechList.addAll(InitialData.getSpeech(speechOptions, speechResponses)); 
+			
+			this.locationToCombat.addAll(InitialData.getLocationToCombat());
+			this.combatToNPC.addAll(InitialData.getCombatToNPC());
+			this.locationToPuzzle.addAll(InitialData.getLocationToPuzzle()); 
+			this.puzzleList.addAll(InitialData.getPuzzle(playerStatsList, itemList));
+			
+			this.npcList.addAll(InitialData.getNPC(itemList, speechList, npcToStats, npcStatsList));
+			this.combatList.addAll(InitialData.getCombat(npcList, combatToNPC));
+			this.locationList.addAll(InitialData.getLocation(lootList, winConditionList, 
+					locationToNPC, npcList, locationToCombat, combatList, locationToPuzzle, puzzleList));
+			this.mapList.addAll(InitialData.getMap(locationList));
+			this.playerList.addAll(InitialData.getPlayer(playerStatsList, playerToStats, 
+					itemList, playerInventory, locationList));
+			this.gameList.addAll(InitialData.getGame(playerList,gameLogList, mapList, combatList));
 		} catch (IOException e) {
 			throw new IllegalStateException("Couldn't read initial data", e);
 		}
