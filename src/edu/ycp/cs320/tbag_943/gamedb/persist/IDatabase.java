@@ -79,6 +79,9 @@ public interface IDatabase {
 	public boolean removeItemFromInventoryByItemIDAndPlayerID(int itemID, int playerID); 
 	
 	
+	// Other
+	public int getNumberRowsInTable(String table); 
+	
 	/* Library Example: 
 	// Finds
 	public List<Pair<Author, Book>> findAuthorAndBookByTitle(String title);

@@ -297,6 +297,49 @@ public class DerbyDatabase implements IDatabase {
 	
 	
 	
+	public int getNumberRowsInTable(String table) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select COUNT(*) as total from ?"
+					);
+					stmt1.setString(1, table);
+					
+					int rows = 0; 
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						rows = resultSet1.getInt("total");
+					}
+					
+					// check if the playerID was found
+					if (!found) {
+						System.out.println("No rows were found in <" + table + ">");
+					}
+					
+					return rows;
+					
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	
+	
 	
 	
 	// transaction that retrieves a Book, and its Author by Title
@@ -946,7 +989,7 @@ public class DerbyDatabase implements IDatabase {
 						"	log_id integer constraint log_id references GameLog," +
 						"	player_id integer constraint player_id references Player," +
 						"	map_id integer constraint map_id references Map," +
-						"	combat_id integer constraint combat_id references Combat" +
+						"	combat_id integer" +
 						")"
 					);
 					game.executeUpdate();
@@ -1077,10 +1120,11 @@ public class DerbyDatabase implements IDatabase {
 						"create table Map (" +
 						"	map_id integer," +
 						"	location_id integer constraint location_id references Location," +
-						"	north integer constraint location_id references Location," +
-						"	east integer constraint location_id references Location," +
-						"	south integer constraint location_id references Location," +
-						"	west integer constraint location_id references Location" +
+						"	north integer," +
+						"	east integer," +
+						"	south integer," +
+						"	west integer," +
+						"	extra integer" +
 						")"
 					);
 					map.executeUpdate();
