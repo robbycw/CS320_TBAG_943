@@ -8,7 +8,7 @@ import java.util.List;
 
 import edu.ycp.cs320.tbag_943.classes.*;
 
-//Code comes from CS320 Library Example. 
+//Code is based on the CS320 Library Example. 
 public class InitialData {
 
 	public static List<User> getUser() throws IOException {
@@ -62,16 +62,11 @@ public class InitialData {
 		}
 	}
 	
-	// Since Game contains all of the data, 
-	public static List<Game> getGame() throws IOException {
+	// Remember to initialize dependencies first (initialize all locations before initializing Maps)
+	public static List<Game> getGame(List<Player> players, List<ArrayList<String>> logs, List<Map> maps,
+			List<Combat> combats) throws IOException {
 		List<Game> gameList = new ArrayList<Game>(); 
 		ReadCSV readGame = new ReadCSV("Game.csv"); 
-		
-		// Get lists of Player, Map, Log, and Combat
-		List<Player> players = InitialData.getPlayer(); 
-		HashMap<Integer, ArrayList<String>> logs = InitialData.getGameLog(); 
-		HashMap<Integer, Map> maps = InitialData.getMap(); 
-		List<Combat> combats = InitialData.getCombat(); 
 		
 		try {
 			while (true) {
@@ -102,9 +97,10 @@ public class InitialData {
 				
 				// Setting the log, player, map, and combat will require using
 				// their IDs to get the correct item in their respective Lists. 
-				game.setOutputLog(logs.get(Integer.parseInt(i.next())));
+				// The object with ID X is stored in index X-1 within the list. 
+				game.setOutputLog(logs.get(Integer.parseInt(i.next()) - 1));
 				game.setPlayer(players.get(Integer.parseInt(i.next()) - 1));
-				game.setMap(maps.get(Integer.parseInt(i.next())));
+				game.setMap(maps.get(Integer.parseInt(i.next()) - 1));
 				game.setCurrentCombat(combats.get(Integer.parseInt(i.next()) - 1));
 				
 
@@ -118,7 +114,7 @@ public class InitialData {
 		}
 	}
 	
-	public static HashMap<Integer, ArrayList<String>> getGameLog() throws IOException {
+	public static List<ArrayList<String>> getGameLog() throws IOException {
 		HashMap<Integer, ArrayList<String>> gameLogList = new HashMap<Integer, ArrayList<String>>(); 
 		ReadCSV readGameLog = new ReadCSV("GameLog.csv");
 		
@@ -154,20 +150,24 @@ public class InitialData {
 				}
 				
 			}
-			
+			// Store HashMap as an ArrayList. 
+			ArrayList<ArrayList<String>> logAList = new ArrayList<ArrayList<String>>();
+			for(int j = 1; j <= gameLogList.keySet().size(); j++) {
+				logAList.add(gameLogList.get(j)); 
+			}
 			System.out.println("gameLogList loaded from CSV file");
-			return gameLogList;
+			return logAList;
 		
 		} finally {
 			readGameLog.close();
 		}
 	}
 	
-	public static List<Player> getPlayer() throws IOException {
+	public static List<Player> getPlayer(List<Stat> stats, List<Pair<Integer, Integer>> playerToStats,
+			List<Item> items, List<Pair<Integer, Integer>> playerInventory, 
+			List<Location> locations) throws IOException {
 		List<Player> playerList = new ArrayList<Player>(); 
 		ReadCSV readPlayer = new ReadCSV("Player.csv"); 
-		
-		// Get list of PlayerStats
 		
 		try {
 			while (true) {
@@ -186,8 +186,35 @@ public class InitialData {
 				player.setName(i.next());
 				player.setIcon(i.next());
 				player.setWeapon(i.next());
+				player.setArmor(i.next());
 				player.setPlayerCreated(Boolean.parseBoolean(i.next()));
+				
+				// Set Player Stats
+				HashMap<String, Stat> s = new HashMap<String, Stat>();
+				for(Pair<Integer, Integer> p : playerToStats) {
+					if(p.getLeft() == player.getId()) {
+						Stat stat = stats.get(p.getRight() - 1);
+						s.put(stat.getName(), stat);
+					}
+				}
 
+				player.setStats(s);
+				
+				// Set Player Inventory
+				HashMap<String, Item> invent = new HashMap<String, Item>();
+				for(Pair<Integer, Integer> p : playerInventory) {
+					if(p.getLeft() == player.getId()) {
+						Item item = items.get(p.getRight() - 1);
+						invent.put(item.getName().toLowerCase(), item);
+					}
+				}
+
+				player.setInventory(invent);
+				
+				// Set Player Location
+				int location_id = Integer.parseInt(i.next());
+				player.move(locations.get(location_id - 1));
+				
 				// Add Player to list of Players. 
 				playerList.add(player);
 			}
@@ -278,12 +305,9 @@ public class InitialData {
 		}
 	}
 	
-	public static HashMap<Integer, Map> getMap() throws IOException {
+	public static List<Map> getMap(List<Location> locations) throws IOException {
 		HashMap<Integer, Map> mapList = new HashMap<Integer, Map>(); 
 		ReadCSV readMap = new ReadCSV("Map.csv"); 
-		
-		// Get List of Locations 
-		List<Location> locations = InitialData.getLocation(); 
 		
 		try {
 			while (true) {
@@ -351,20 +375,26 @@ public class InitialData {
 				// Put the map into the list. 
 				mapList.put(map_id, map); 
 			}
-			System.out.println("playerStatsList loaded from CSV file");
-			return mapList;
+			System.out.println("mapList loaded from CSV file");
+			
+			// Convert HashMap to ArrayList of Maps
+			ArrayList<Map> maps = new ArrayList<Map>();
+			for(int j = 1; j <= mapList.keySet().size(); j++) {
+				maps.add(mapList.get(j));
+			}
+			
+			return maps;
 		} finally {
 			readMap.close();
 		}
 	}
 	
-	public static List<Location> getLocation() throws IOException {
+	public static List<Location> getLocation(List<Loot> loots, List<WinCondition> winCs, 
+			List<Pair<Integer, Integer>> locToNPC, List<NPC> npcs, List<Pair<Integer, Integer>> locToCombat,
+			List<Combat> combats, List<Pair<Integer, Integer>> locToPuzzle, List<Puzzle> puzzles)
+					throws IOException {
 		List<Location> locationList = new ArrayList<Location>(); 
 		ReadCSV readLocation = new ReadCSV("Location.csv"); 
-		
-		// Get Loot List and WinCondition List
-		List<Loot> loots = InitialData.getLoot(); 
-		List<WinCondition> winCs = InitialData.getWinCondition(); 
 		
 		try {
 			while (true) {
@@ -386,7 +416,37 @@ public class InitialData {
 				loc.setTreasure(loots.get(Integer.parseInt(i.next()) - 1));
 				loc.setWinCondition(winCs.get(Integer.parseInt(i.next()) - 1));
 				
-
+				// Add NPCs
+				HashMap<String, NPC> n = new HashMap<String, NPC>();
+				for(Pair<Integer, Integer> p : locToNPC) {
+					if(loc.getId() == p.getLeft()) {
+						NPC earl = npcs.get(p.getRight() - 1); 
+						n.put(earl.getName().toLowerCase(), earl); 
+					}
+				}
+				
+				loc.setNPCs(n);
+				
+				// Add Combats
+				ArrayList<Combat> com = new ArrayList<Combat>();
+				for(Pair<Integer, Integer> p : locToCombat) {
+					if(loc.getId() == p.getLeft()) {
+						com.add(combats.get(p.getRight() - 1)); 
+					}
+				}
+				
+				loc.setCombats(com);
+				
+				// Add Puzzles
+				ArrayList<Puzzle> puz = new ArrayList<Puzzle>();
+				for(Pair<Integer, Integer> p : locToPuzzle) {
+					if(loc.getId() == p.getLeft()) {
+						puz.add(puzzles.get(p.getRight() - 1)); 
+					}
+				}
+				
+				loc.setPuzzles(puz);
+				
 				// Add location to List. 
 				locationList.add(loc);
 			}
@@ -431,12 +491,9 @@ public class InitialData {
 		}
 	}
 	
-	public static List<Loot> getLoot() throws IOException {
+	public static List<Loot> getLoot(List<Item> items) throws IOException {
 		List<Loot> lootList = new ArrayList<Loot>(); 
 		ReadCSV readLoot = new ReadCSV("Loot.csv"); 
-		
-		// Get Item List
-		List<Item> items = InitialData.getItem(); 
 		
 		try {
 			while (true) {
@@ -459,7 +516,7 @@ public class InitialData {
 				// Add location to List. 
 				lootList.add(loot); 
 			}
-			System.out.println("locationList loaded from CSV file");
+			System.out.println("lootList loaded from CSV file");
 			return lootList;
 		} finally {
 			readLoot.close();
@@ -507,7 +564,7 @@ public class InitialData {
 		}
 	}
 	
-	public static List<Combat> getCombat() throws IOException {
+	public static List<Combat> getCombat(List<NPC> npcs, List<Pair<Integer, Integer>> combatToNPC) throws IOException {
 		List<Combat> combatList = new ArrayList<Combat>(); 
 		ReadCSV readCombat = new ReadCSV("Combat.csv"); 
 		
@@ -528,7 +585,19 @@ public class InitialData {
 				combat.setDifficulty(Integer.parseInt(i.next()));
 				combat.setDead(Boolean.parseBoolean(i.next()));
 				
+				// Initialize HashMap for NPCs in Combat
+				HashMap<String, NPC> n = new HashMap<String, NPC>();
+				
+				// Add NPCs to Combat
+				for(Pair<Integer, Integer> c : combatToNPC) {
+					if(c.getLeft() == combat.getId()) {
+						NPC earl = npcs.get(c.getRight() - 1); 
+						n.put(earl.getName().toLowerCase(), earl); 
+					}
+				}
 
+				combat.setNpcs(n);
+				
 				// Add Combat to List. 
 				combatList.add(combat);
 			}
@@ -539,12 +608,10 @@ public class InitialData {
 		}
 	}
 	
-	public static List<NPC> getNPC() throws IOException {
+	public static List<NPC> getNPC(List<Item> items, List<Speech> speeches, 
+			List<Pair<Integer, Integer>> npcToStats, List<Stat> stats) throws IOException {
 		List<NPC> npcList = new ArrayList<NPC>(); 
 		ReadCSV readNPC = new ReadCSV("NPC.csv"); 
-		
-		// Get list of Items
-		List<Item> items = InitialData.getItem(); 
 		
 		try {
 			while (true) {
@@ -561,8 +628,8 @@ public class InitialData {
 				npc.setId(Integer.parseInt(i.next()));
 				npc.setName(i.next());
 				npc.setCombat(Boolean.parseBoolean(i.next()));
-				Item item = items.get(Integer.parseInt(i.next()) - 1); 
-				npc.setWeapon(item);
+				npc.setWeapon(items.get(Integer.parseInt(i.next()) - 1));
+				npc.setSpeech(speeches.get(Integer.parseInt(i.next()) - 1));
 				npc.setIntimidated(Boolean.parseBoolean(i.next()));
 				npc.setCanIntimidate(Boolean.parseBoolean(i.next()));
 				npc.setIntimidationThreshold(Integer.parseInt(i.next()));
@@ -570,6 +637,19 @@ public class InitialData {
 				npc.setCanPersuade(Boolean.parseBoolean(i.next()));
 				npc.setPersuasionThreshold(Integer.parseInt(i.next()));
 				
+				
+				// Initialize Hashmap for NPC Stats
+				HashMap<String, Stat> s = new HashMap<String, Stat>();
+				// Find Pairs storing this NPC's ID. 
+				for(Pair<Integer, Integer> p : npcToStats) {
+					if(p.getLeft() == npc.getId()) {
+						Stat stat = stats.get(p.getRight() - 1); 
+						s.put(stat.getName(), stat); 
+					}
+				}
+				
+				// Set NPC Stats
+				npc.setStats(s);
 
 				// Add NPC to List. 
 				npcList.add(npc);
@@ -607,32 +687,6 @@ public class InitialData {
 		}
 	}
 	
-	public static List<Pair<Integer, Integer>> getNPCToSpeech() throws IOException {
-		List<Pair<Integer, Integer>> npcToSpeechList = new ArrayList<Pair<Integer, Integer>>(); 
-		ReadCSV readNPCToSpeech = new ReadCSV("NPCToSpeech.csv"); 
-		try {
-			while (true) {
-				List<String> tuple = readNPCToSpeech.next();
-				if (tuple == null) {
-					break;
-				}
-				// Iterates over tuple.
-				Iterator<String> i = tuple.iterator();
-				
-				int npcID = Integer.parseInt(i.next()); 
-				int speechID = Integer.parseInt(i.next()); 
-				
-				Pair<Integer, Integer> npcToSpeech = new Pair<Integer, Integer>(npcID, speechID);
-
-				npcToSpeechList.add(npcToSpeech);
-			}
-			System.out.println("npcToSpeechList loaded from CSV file");
-			return npcToSpeechList;
-		} finally {
-			readNPCToSpeech.close();
-		}
-	}
-	
 	public static List<Stat> getNPCStats() throws IOException {
 		List<Stat> npcStatsList = new ArrayList<Stat>(); 
 		ReadCSV readNPCStats = new ReadCSV("NPCStats.csv"); 
@@ -661,13 +715,10 @@ public class InitialData {
 		}
 	}
 	
-	public static List<Speech> getSpeech() throws IOException {
+	public static List<Speech> getSpeech(HashMap<Integer, ArrayList<String>> speechOptions, 
+			HashMap<Integer, ArrayList<String>> speechResponses) throws IOException {
 		List<Speech> speechList = new ArrayList<Speech>(); 
 		ReadCSV readSpeech = new ReadCSV("Speech.csv"); 
-		
-		// Get SpeechOptions and SpeechResponses
-		HashMap<Integer, ArrayList<String>> speechOptions = InitialData.getSpeechOptions();
-		HashMap<Integer, ArrayList<String>> speechResponses = InitialData.getSpeechResponses();
 		
 		try {
 			while (true) {
@@ -897,7 +948,7 @@ public class InitialData {
 		}
 	}
 	
-	public static List<Puzzle> getPuzzle(List<Stat> stats, List<Item> items, List<Location> locations) throws IOException {
+	public static List<Puzzle> getPuzzle(List<Stat> stats, List<Item> items) throws IOException {
 		List<Puzzle> puzzleList = new ArrayList<Puzzle>(); 
 		ReadCSV readPuzzle = new ReadCSV("Puzzle.csv"); 
 		
@@ -925,7 +976,7 @@ public class InitialData {
 				puzzle.setSolved(Boolean.parseBoolean(i.next()));
 				puzzle.setBreakable(Boolean.parseBoolean(i.next()));
 				puzzle.setJumpable(Boolean.parseBoolean(i.next()));
-				puzzle.setRoomCon(locations.get(Integer.parseInt(i.next()) - 1).getName());
+				puzzle.setRoomCon(i.next());
 
 				// Add puzzle to List. 
 				puzzleList.add(puzzle);

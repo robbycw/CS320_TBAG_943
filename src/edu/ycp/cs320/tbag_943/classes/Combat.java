@@ -40,6 +40,12 @@ public class Combat {
 	// Methods
 	
 	public void calculateTurnOrder() {
+		turnOrder = new ArrayList<NPC>();
+		
+		// Add NPCs to turnOrder from HashMap
+		turnOrder.addAll(npcs.values()); 
+		
+		// Sort the list. 
 		Collections.sort(turnOrder);
 	}
 	
