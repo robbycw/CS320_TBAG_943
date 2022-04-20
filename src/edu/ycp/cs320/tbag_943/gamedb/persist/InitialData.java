@@ -948,7 +948,7 @@ public class InitialData {
 		}
 	}
 	
-	public static List<Puzzle> getPuzzle(List<Stat> stats, List<Item> items, List<Location> locations) throws IOException {
+	public static List<Puzzle> getPuzzle(List<Stat> stats, List<Item> items) throws IOException {
 		List<Puzzle> puzzleList = new ArrayList<Puzzle>(); 
 		ReadCSV readPuzzle = new ReadCSV("Puzzle.csv"); 
 		
@@ -976,7 +976,7 @@ public class InitialData {
 				puzzle.setSolved(Boolean.parseBoolean(i.next()));
 				puzzle.setBreakable(Boolean.parseBoolean(i.next()));
 				puzzle.setJumpable(Boolean.parseBoolean(i.next()));
-				puzzle.setRoomCon(locations.get(Integer.parseInt(i.next()) - 1).getName());
+				puzzle.setRoomCon(i.next());
 
 				// Add puzzle to List. 
 				puzzleList.add(puzzle);
