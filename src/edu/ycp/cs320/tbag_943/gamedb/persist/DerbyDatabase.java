@@ -14,10 +14,12 @@ import edu.ycp.cs320.booksdb.model.Author;
 import edu.ycp.cs320.booksdb.model.Book;
 import edu.ycp.cs320.booksdb.model.BookAuthor;
 import edu.ycp.cs320.booksdb.model.Pair;
+import edu.ycp.cs320.tbag_943.classes.Game;
 import edu.ycp.cs320.tbag_943.classes.Item;
 import edu.ycp.cs320.tbag_943.classes.Loot;
+import edu.ycp.cs320.tbag_943.classes.NPC;
 import edu.ycp.cs320.tbag_943.classes.Stat;
-
+import edu.ycp.cs320.tbag_943.classes.User;
 //Code comes from CS320 Library Example. 
 public class DerbyDatabase implements IDatabase {
 	static {
@@ -33,7 +35,177 @@ public class DerbyDatabase implements IDatabase {
 	}
 
 	private static final int MAX_ATTEMPTS = 10;
-
+	public User findUserByUsernameAndPassword(String username, String password) {
+		return executeTransaction(new Transaction<User>() {
+			@Override
+			public User execute(Connection conn) throws SQLException{
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				User user = new User();
+				boolean found = false;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select User.user_id, User.username, User.created" + 
+							"from User" +
+							"User.username = ? and User.password = ?");
+					stmt1.setString(1,username);
+					stmt1.setString(2, username);
+					
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					while(resultSet1.next()) {
+						found = true;
+						
+						user.setId(resultSet1.getInt(1));
+						user.setUsername(resultSet1.getString(2));
+						user.setCreated(resultSet1.getBoolean(3));
+						
+					}
+					if(!found) {
+						System.out.println("This user doesn't exist");
+					}
+					
+					return user;
+				}finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public List<Game> findGamesByUserID(int userID){
+		return executeTransaction(new Transaction<List<Game>>() {
+			@Override
+			public List<Game> execute(Connection conn) throws SQLException{
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				Boolean found = false;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select Game.difficulty, Game.outputLog, Game.timer, Game.inCombat, Game.id" +
+							"from User, Game" +
+							"where User.user_id = ?" +
+							"and Game.user_id = User.user_id");
+					
+					stmt1.setInt(1, userID);
+					
+					ArrayList<Game> userGames = new ArrayList<Game>();
+					Game game = new Game();
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						game.setDifficulty(resultSet1.getInt(1));
+						game.setOutputLog((ArrayList<String>) resultSet1.getArray(2));
+						game.setTimer(resultSet1.getTime(3));
+						game.setInCombat(resultSet1.getBoolean(4));
+						
+						userGames.add(game);
+					}
+					
+					if(!found) {
+						System.out.println("user doesn't have any current games");
+					}
+					
+					return userGames;
+				}finally {
+					
+				}
+			}
+		});
+	}
+	public List<NPC> findNPCsByLocationID(int locationID){
+		return executeTransaction(new Transaction<List<NPC>>() {
+			@Override
+			public List<NPC> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				Boolean found = false;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select NPC.name, NPC.canIntimidate, NPC.intimidationThreshold, NPC.canPersuade, NPC.persuasionThreshold" +
+							"from Location, NPC" + 
+									"where Location.location_id = ?"
+							);
+					stmt1.setInt(1, locationID);
+					
+					ArrayList<NPC> NPCs = new ArrayList<NPC>();
+					NPC npc = new NPC();
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					while(resultSet1.next()) {
+						found = true;
+						
+						npc.setName(resultSet1.getString(1));
+						npc.setCanIntimidate(resultSet1.getBoolean(2));
+						npc.setIntimidationThreshold(resultSet1.getInt(3));
+						npc.setCanPersuade(resultSet1.getBoolean(3));
+						npc.setPersuasionThreshold(resultSet1.getInt(4));
+						NPCs.add(npc);
+					}
+					
+					if(!found) {
+						System.out.println("No NPCs in this location");
+					}
+					return NPCs;
+				}finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	public List<NPC> findNPCsByCombatID(int combatID){
+		return executeTransaction(new Transaction<List<NPC>>() {
+			@Override
+			public List<NPC> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				Boolean found = false;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select NPC.name, NPC.canIntimidate, NPC.intimidationThreshold, NPC.canPersuade, NPC.persuasionThreshold" +
+							"from Combat, NPC" + 
+									"where Combat.combat_id = ?"
+							);
+					stmt1.setInt(1, combatID);
+					
+					ArrayList<NPC> NPCs = new ArrayList<NPC>();
+					NPC npc = new NPC();
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					while(resultSet1.next()) {
+						found = true;
+						
+						npc.setName(resultSet1.getString(1));
+						npc.setCanIntimidate(resultSet1.getBoolean(2));
+						npc.setIntimidationThreshold(resultSet1.getInt(3));
+						npc.setCanPersuade(resultSet1.getBoolean(3));
+						npc.setPersuasionThreshold(resultSet1.getInt(4));
+						NPCs.add(npc);
+					}
+					
+					if(!found) {
+						System.out.println("No NPCs in this location");
+					}
+					return NPCs;
+				}finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
 	
 	public Loot findLootByLocationID(int locationID) {
 		return executeTransaction(new Transaction<Loot>() {
