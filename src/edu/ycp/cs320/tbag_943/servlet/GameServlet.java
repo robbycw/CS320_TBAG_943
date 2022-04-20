@@ -22,6 +22,14 @@ public class GameServlet extends HttpServlet {
 		
 		HttpSession session = req.getSession(false); 
 		
+		if(session == null || session.getAttribute("loggedIn") == null) {
+			System.out.println("User is not logged in. Redirecting to Title Page.");
+			System.out.println("GameServlet: titlePage");
+			
+			resp.sendRedirect("/tbag_943/titlePage");
+			return; 
+		}
+		
 
 		if(session == null || session.getAttribute("model") == null) {
 			// need to make a new session. 
@@ -63,11 +71,18 @@ public class GameServlet extends HttpServlet {
 		
 		if(req.getParameter("characterSubmit") != null) {
 			Game model = (Game) session.getAttribute("model"); 
-			String playerName =req.getParameter("playerNameBox");
+			
+			String playerName =req.getParameter("playerName");
+			String startingWeapon = req.getParameter("weapons");
+			String startingApparel = req.getParameter("apparel");
+			String startingTool = req.getParameter("tool");
+			String startingMisc = req.getParameter("misc");
+			
 			int strengthStat = getIntegerFromParameter(req.getParameter("strengthStat"));
 			int speedStat = getIntegerFromParameter(req.getParameter("speedStat"));
 			int vitalityStat = getIntegerFromParameter(req.getParameter("vitalityStat"));
 			int charismaStat = getIntegerFromParameter(req.getParameter("charismaStat"));
+			 
 			
 			session.setAttribute("playerName", playerName);
 			session.setAttribute("strengthStat", strengthStat);
@@ -88,6 +103,24 @@ public class GameServlet extends HttpServlet {
 				session.setAttribute("model", model);
 			
 			
+				Item strtWeapon = new Item(startingWeapon, 5);
+				strtWeapon.isWeapon(true);
+				player.getInventory().put(startingWeapon, strtWeapon);
+				player.setWeapon(startingWeapon);
+				
+				Item strtApparel = new Item(startingApparel);
+				strtApparel.isArmor(true);
+				strtApparel.setArmor(6);
+				player.getInventory().put(startingApparel, strtApparel);
+				player.setArmor(startingApparel);
+				
+				Item strtTool = new Item(startingTool);
+				strtTool.isTool(true);
+				player.getInventory().put(startingTool, strtTool);
+				
+				Item strtMisc = new Item(startingMisc, 10);
+				strtMisc.isConsumable(true);
+				player.getInventory().put(startingMisc, strtMisc);
 		}
 		
 		if(req.getParameter("title") != null) {
@@ -465,7 +498,7 @@ public class GameServlet extends HttpServlet {
 		room8Con.add("-1"); // south
 		room8Con.add(room7); // west
 		
-    room9Con = new ArrayList<String>();
+		room9Con = new ArrayList<String>();
 		room9Con.add("-1"); // north
 		room9Con.add("-1"); // east
 		room9Con.add("-1"); // south
@@ -480,7 +513,7 @@ public class GameServlet extends HttpServlet {
 		connections.put(room6.toLowerCase(), room6Con);
 		connections.put(room7.toLowerCase(), room7Con);
 		connections.put(room8.toLowerCase(), room8Con);
-    connections.put(room9.toLowerCase(), room9Con);
+		connections.put(room9.toLowerCase(), room9Con);
 
 		HashMap<String, Location> locations = new HashMap<String, Location>(); 
 		Location r1, r2, r3, r4, r5, r6, r7, r8, r9; 
@@ -493,7 +526,7 @@ public class GameServlet extends HttpServlet {
 		r6 = new Location(room6);
 		r7 = new Location(room7);
 		r8 = new Location(room8);
-    r9 = new Location(room9);
+		r9 = new Location(room9);
 
 		locations.put(room1.toLowerCase(), r1); 
 		locations.put(room2.toLowerCase(), r2); 
@@ -503,7 +536,7 @@ public class GameServlet extends HttpServlet {
 		locations.put(room6.toLowerCase(), r6);
 		locations.put(room7.toLowerCase(), r7);
 		locations.put(room8.toLowerCase(), r8);
-    locations.put(room9.toLowerCase(), r9);
+		locations.put(room9.toLowerCase(), r9);
 
 		
 		// Set NPCs, Loot and Combat in rooms. 
@@ -586,8 +619,8 @@ public class GameServlet extends HttpServlet {
 		} else {
 			return Integer.parseInt(s);
 		}
-
 	}
+	
 
 
 }

@@ -7,12 +7,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import edu.ycp.cs320.booksdb.model.Author;
 import edu.ycp.cs320.booksdb.model.Book;
 import edu.ycp.cs320.booksdb.model.BookAuthor;
 import edu.ycp.cs320.booksdb.model.Pair;
+import edu.ycp.cs320.tbag_943.classes.Item;
+import edu.ycp.cs320.tbag_943.classes.Loot;
+import edu.ycp.cs320.tbag_943.classes.Stat;
 
 //Code comes from CS320 Library Example. 
 public class DerbyDatabase implements IDatabase {
@@ -30,6 +34,270 @@ public class DerbyDatabase implements IDatabase {
 
 	private static final int MAX_ATTEMPTS = 10;
 
+	
+	public Loot findLootByLocationID(int locationID) {
+		return executeTransaction(new Transaction<Loot>() {
+			@Override
+			public Loot execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select Loot.loot_id, Loot.xp, Loot.collected, Loot.item_id " +
+							"  from  Loot, Location " +
+							"  where Location.location_id = ? " +
+							"    and Location.loot_id = Loot.loot_id"
+					);
+					stmt1.setInt(1, locationID);
+					
+					Loot loot = new Loot(); 
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						loot.setId(resultSet1.getInt(1));
+						loot.setXP(resultSet1.getInt(2));
+						loot.setCollected(resultSet1.getBoolean(3)); 
+						loot.setItems(findItemByItemID(resultSet1.getInt(4)));
+						
+					}
+					
+					// check if the locationID was found
+					if (!found) {
+						System.out.println("<" + locationID + "> was not found in the Location table");
+					}
+					
+					return loot;
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public HashMap<String, Item> findInventoryByPlayerID(int playerID) {
+		return executeTransaction(new Transaction<HashMap<String, Item>>() {
+			@Override
+			public HashMap<String, Item> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select Item.* " +
+							"  from  Item, PlayerInventory " +
+							"  where PlayerInventory.player_id = ? " +
+							"    and Item.item_id = PlayerInventory.item_id"
+					);
+					stmt1.setInt(1, playerID);
+					
+					HashMap<String, Item> inventory = new HashMap<String, Item>(); 
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						Item item = new Item(); 
+						
+						// TODO : Need to set all fields in Item based on entries in table.
+						
+						item.setId(resultSet1.getInt(1));
+						item.setName(resultSet1.getString(2));
+						
+						//loot.setCollected(resultSet1.getBoolean(3)); 
+						//loot.setItems(findItemByItemID(resultSet1.getInt(4)));
+						
+						// Add the Item to the inventory HashMap
+						
+						String itemName = item.getName(); 
+						
+						inventory.put(itemName.toLowerCase(), item); 
+					}
+					
+					// check if the playerID was found
+					if (!found) {
+						System.out.println("<" + playerID + "> was not found in the PlayerInventory table");
+					}
+					
+					return inventory;
+					
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public HashMap<String, Stat> findPlayerStatsByPlayerID(int playerID) {
+		return executeTransaction(new Transaction<HashMap<String, Stat>>() {
+			@Override
+			public HashMap<String, Stat> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select PlayerStats.* " +
+							"  from  PlayerStats, PlayerToStats " +
+							"  where PlayerToStats.player_id = ? " +
+							"    and PlayerStats.stat_id = PlayerToStats.stat_id"
+					);
+					stmt1.setInt(1, playerID);
+					
+					HashMap<String, Stat> playerStats = new HashMap<String, Stat>(); 
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						Stat stat = new Stat(); 
+						
+						// Set values of stat from current result set row. 
+						stat.setId(resultSet1.getInt(1));
+						stat.setName(resultSet1.getString(2));
+						stat.setRank(resultSet1.getInt(3));
+	
+						
+						// Add the stat to the playerStats HashMap
+						playerStats.put(stat.getName(), stat); 
+					}
+					
+					// check if the playerID was found
+					if (!found) {
+						System.out.println("<" + playerID + "> was not found in the PlayerToStats table");
+					}
+					
+					return playerStats;
+					
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public HashMap<String, Stat> findNPCStatsByNPCID(int npcID) {
+		return executeTransaction(new Transaction<HashMap<String, Stat>>() {
+			@Override
+			public HashMap<String, Stat> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select NPCStats.* " +
+							"  from  NPCStats, NPCToStats " +
+							"  where NPCToStats.npc_id = ? " +
+							"    and NPCStats.stat_id = NPCToStats.stat_id"
+					);
+					stmt1.setInt(1, npcID);
+					
+					HashMap<String, Stat> npcStats = new HashMap<String, Stat>(); 
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						Stat stat = new Stat(); 
+						
+						// Set values of stat from current result set row. 
+						stat.setId(resultSet1.getInt(1));
+						stat.setName(resultSet1.getString(2));
+						stat.setRank(resultSet1.getInt(3));
+	
+						
+						// Add the stat to the npcStats HashMap
+						npcStats.put(stat.getName(), stat); 
+					}
+					
+					// check if the playerID was found
+					if (!found) {
+						System.out.println("<" + npcID + "> was not found in the NPCToStats table");
+					}
+					
+					return npcStats;
+					
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Item findItemByItemID(int itemID) {
+		return executeTransaction(new Transaction<Item>() {
+			@Override
+			public Item execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select Item.* " +
+							"  from  Item " +
+							"  where Item.item_id = ? "
+					);
+					stmt1.setInt(1, itemID);
+					
+					Item item = new Item(); 
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						// TODO : Need to set all fields in Item based on entries in table.
+						
+						item.setId(resultSet1.getInt(1));
+						item.setName(resultSet1.getString(2));
+						
+					}
+					
+					// check if the playerID was found
+					if (!found) {
+						System.out.println("<" + itemID + "> was not found in the Item table");
+					}
+					
+					return item;
+					
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	
+	
+	
+	
+	
 	
 	// transaction that retrieves a Book, and its Author by Title
 	@Override
@@ -616,6 +884,421 @@ public class DerbyDatabase implements IDatabase {
 		executeTransaction(new Transaction<Boolean>() {
 			@Override
 			public Boolean execute(Connection conn) throws SQLException {
+				PreparedStatement user = null;
+				PreparedStatement userToGame = null;
+				PreparedStatement game = null;
+				PreparedStatement gameLog = null;
+				PreparedStatement player = null;
+				PreparedStatement playerToStats = null;	
+				PreparedStatement playerStats = null;
+				PreparedStatement playerInventory = null;
+				PreparedStatement item = null;	
+				PreparedStatement loot = null;
+				PreparedStatement map = null;
+				PreparedStatement location = null;	
+				PreparedStatement locationToNPC = null;
+				PreparedStatement npc = null;
+				PreparedStatement winCondition = null;	
+				PreparedStatement npcToStats = null;
+				PreparedStatement npcStats = null;
+				PreparedStatement speech = null;	
+				PreparedStatement speechOptions = null;
+				PreparedStatement speechResponses = null;
+				PreparedStatement locationToCombat = null;	
+				PreparedStatement combat = null;
+				PreparedStatement combatToNPC = null;
+				PreparedStatement locationToPuzzle = null;	
+				PreparedStatement puzzle = null;
+			
+				try {
+					user = conn.prepareStatement(
+						"create table User (" +
+						"	user_id integer primary key " +
+						"		generated always as identity (start with 1, increment by 1), " +									
+						"	username varchar(40)," +
+						"	password varchar(40)" +
+						")"
+					);	
+					user.executeUpdate();
+					
+					System.out.println("User table created");
+					
+					userToGame = conn.prepareStatement(
+						"create table UserToGame (" +
+						"	user_id integer constraint user_id references User, " +
+						"	game_id integer constraint game_id references Game" +
+						")"
+					);
+					userToGame.executeUpdate();
+					
+					System.out.println("UserToGame table created");					
+					
+					game = conn.prepareStatement(
+						"create table Game (" +
+						"	game_id integer primary key " +
+						"		generated always as identity (start with 1, increment by 1), " +
+						"	difficulty integer," +
+						"	inCombat varchar(5)," +
+						"	playerTurnTaken varchar(5)," +
+						"	playerCreated varchar(5)," +
+						"	timeRemaining integer," +
+						"	timerRate integer," +
+						"	log_id integer constraint log_id references GameLog," +
+						"	player_id integer constraint player_id references Player," +
+						"	map_id integer constraint map_id references Map," +
+						"	combat_id integer constraint combat_id references Combat" +
+						")"
+					);
+					game.executeUpdate();
+					
+					System.out.println("Game table created");	
+					
+					gameLog = conn.prepareStatement(
+						"create table GameLog (" +
+						"	log_id integer primary key " +
+						"		generated always as identity (start with 1, increment by 1), " +									
+						"	order integer," +
+						"	output varchar(500)" +
+						")"
+					);	
+					gameLog.executeUpdate();
+					
+					System.out.println("GameLog table created");
+					
+					player = conn.prepareStatement(
+						"create table Player (" +
+						"	player_id integer primary key " +
+						"		generated always as identity (start with 1, increment by 1), " +
+						"	name varchar(50)," +
+						"	icon varchar(200)," +
+						"	weapon varchar(50)," +
+						"	armor varchar(50)," +
+						"	playerCreated varchar(5)," +
+						"	location_id integer constraint location_id references Location" +
+						")"
+					);
+					player.executeUpdate();
+					
+					System.out.println("Player table created");
+					
+					playerToStats = conn.prepareStatement(
+						"create table PlayerToStats (" +
+						"	player_id integer constraint player_id references Player, " +
+						"	stat_id integer constraint stat_id references PlayerStats" +
+						")"
+					);
+					playerToStats.executeUpdate();
+					
+					System.out.println("PlayerToStats table created");
+						
+					
+					playerInventory = conn.prepareStatement(
+						"create table PlayerInventory (" +
+						"	player_id integer constraint player_id references Player, " +
+						"	item_id integer constraint item_id references Item" +
+						")"
+					);
+					playerInventory.executeUpdate();
+					
+					System.out.println("PlayerInventory table created");
+					
+					
+					playerStats = conn.prepareStatement(
+						"create table PlayerStats (" +
+						"	stat_id integer primary key " +
+						"		generated always as identity (start with 1, increment by 1), " +
+						"	name varchar(50)," +
+						"	amount integer" +
+						")"
+					);
+					playerStats.executeUpdate();
+					
+					System.out.println("PlayerStats table created");
+					
+					npcStats = conn.prepareStatement(
+						"create table NPCStats (" +
+						"	stat_id integer primary key " +
+						"		generated always as identity (start with 1, increment by 1), " +
+						"	name varchar(50)," +
+						"	amount integer" +
+						")"
+					);
+					npcStats.executeUpdate();
+					
+					System.out.println("NPCStats table created");
+					
+					npcToStats = conn.prepareStatement(
+						"create table NPCToStats (" +
+						"	npc_id integer constraint npc_id references NPC, " +
+						"	stat_id integer constraint stat_id references NPCStats" +
+						")"
+					);
+					npcToStats.executeUpdate();
+					
+					System.out.println("NPCToStats table created");
+					
+					
+					item = conn.prepareStatement(
+						"create table Item (" +
+						"	item_id integer primary key " +
+						"		generated always as identity (start with 1, increment by 1), " +
+						"	name varchar(50)," +
+						"	description varchar(300)," +
+						"	isConsumable varchar(5)," +
+						"	isWeapon varchar(5)," +
+						"	isArmor varchar(5)," +
+						"	isTool varchar(5)," +
+						"	damage integer," +
+						"	healthGain integer," +
+						"	value integer," +
+						"	amount integer," +
+						"	armor integer," +
+						"	accuracy double" +
+						")"
+					);
+					item.executeUpdate();
+						
+					System.out.println("Item table created");
+					
+					loot = conn.prepareStatement(
+						"create table Loot (" +
+						"	loot_id integer primary key " +
+						"		generated always as identity (start with 1, increment by 1), " +
+						"	xp integer," +
+						"	collected varchar(5)," +
+						"	item_id integer constraint item_id references Item" +
+						")"
+					);
+					loot.executeUpdate();
+						
+					System.out.println("Loot table created");
+					
+					map = conn.prepareStatement(
+						"create table Map (" +
+						"	map_id integer," +
+						"	location_id integer constraint location_id references Location," +
+						"	north integer constraint location_id references Location," +
+						"	east integer constraint location_id references Location," +
+						"	south integer constraint location_id references Location," +
+						"	west integer constraint location_id references Location" +
+						")"
+					);
+					map.executeUpdate();
+						
+					System.out.println("Map table created");
+					
+					winCondition = conn.prepareStatement(
+						"create table WinCondition (" +
+						"	winCondition_id integer primary key " +
+						"		generated always as identity (start with 1, increment by 1), " +
+						"	complete varchar(5)," +
+						"	lost varchar(5)," +
+						"	wonRooms varchar(5)," +
+						"	bestCase varchar(5)," +
+						"	defaultCase varchar(5)" +
+						")"
+					);
+					winCondition.executeUpdate();
+						
+					System.out.println("WinCondition table created");
+					
+					location = conn.prepareStatement(
+						"create table Location (" +
+						"	location_id integer primary key " +
+						"		generated always as identity (start with 1, increment by 1), " +
+						"	name varchar(50)," +
+						"	description varchar(500)," +
+						"	hidden varchar(5)," +
+						"	blocked varchar(5)," +
+						"	loot_id integer constraint loot_id references Loot," +
+						"	winCondition_id integer constraint winCondition_id references WinCondition" +
+						")"
+					);
+					location.executeUpdate();
+					
+					System.out.println("Location table created");
+					
+					locationToNPC = conn.prepareStatement(
+						"create table LocationToNPC (" +
+						"	location_id integer constraint location_id references Location, " +
+						"	npc_id integer constraint npc_id references NPC" +
+						")"
+					);
+					locationToNPC.executeUpdate();
+					
+					System.out.println("LocationToNPC table created");
+					
+					locationToCombat = conn.prepareStatement(
+						"create table LocationToCombat (" +
+						"	location_id integer constraint location_id references Location, " +
+						"	combat_id integer constraint combat_id references Combat" +
+						")"
+					);
+					locationToCombat.executeUpdate();
+					
+					System.out.println("LocationToCombat table created");
+					
+					locationToPuzzle = conn.prepareStatement(
+						"create table LocationToPuzzle (" +
+						"	location_id integer constraint location_id references Location, " +
+						"	puzzle_id integer constraint puzzle_id references Puzzle" +
+						")"
+					);
+					locationToPuzzle.executeUpdate();
+					
+					System.out.println("LocationToPuzzle table created");
+					
+					combatToNPC = conn.prepareStatement(
+						"create table CombatToNPC (" +
+						"	combat_id integer constraint combat_id references Combat, " +
+						"	npc_id integer constraint npc_id references NPC" +
+						")"
+					);
+					combatToNPC.executeUpdate();
+					
+					System.out.println("CombatToNPC table created");
+					
+					npcToStats = conn.prepareStatement(
+						"create table NPCToStats (" +
+						"	npc_id integer constraint npc_id references NPC," +
+						"	stat_id integer constraint stat_id references NPCStats" +
+						")"
+					);
+					npcToStats.executeUpdate();
+					
+					System.out.println("NPCToStats table created");
+					
+					npc = conn.prepareStatement(
+						"create table NPC (" +
+						"	npc_id integer primary key " +
+						"		generated always as identity (start with 1, increment by 1), " +
+						"	name varchar(50)," +
+						"	combat varchar(5)," +
+						"	item_id integer constraint item_id references Item," +
+						"	speech_id integer constraint speech_id references Speech," +
+						"	isIntimidated varchar(5)," +
+						"	canIntimidate varchar(5)," +
+						"	intimidationThreshold integer," +
+						"	isPersuaded varchar(5)," +
+						"	canPersuade varchar(5)," +
+						"	persuasionThreshold integer" +
+						")"
+					);
+					npc.executeUpdate();
+						
+					System.out.println("NPC table created");
+					
+					combat = conn.prepareStatement(
+						"create table Combat (" +
+						"	combat_id integer primary key " +
+						"		generated always as identity (start with 1, increment by 1), " +
+						"	turn integer," +
+						"	difficulty integer," +
+						"	dead varchar(5)" +
+						")"
+					);
+					combat.executeUpdate();
+						
+					System.out.println("Combat table created");
+					
+					puzzle = conn.prepareStatement(
+						"create table Puzzle (" +
+						"	puzzle_id integer primary key " +
+						"		generated always as identity (start with 1, increment by 1), " +
+						"	prompt varchar(500)," +
+						"	answer varchar(50)," +
+						"	stat_id integer constraint stat_id references PlayerStats," +
+						"	item_id integer constraint item_id references Item," +
+						"	result varchar(5)," +
+						"	canSolve varchar(5)," +
+						"	solved varchar(5)," +
+						"	breakable varchar(5)," +
+						"	jumpable varchar(5)," +
+						"	roomCon varchar(50)" +
+						")"
+					);
+					puzzle.executeUpdate();
+						
+					System.out.println("Puzzle table created");
+					
+					speech = conn.prepareStatement(
+						"create table Speech (" +
+						"	speech_id integer primary key " +
+						"		generated always as identity (start with 1, increment by 1), " +
+						"	intimidateOption varchar(200)," +
+						"	intimidateResponse varchar(200)," +
+						"	intimidateResponseFail varchar(200)," +
+						"	persuadeOption varchar(200)," +
+						"	persuadeResponse varchar(200)," +
+						"	persuadeResponseFail varchar(200)," +
+						"	prompt varchar(200)" +
+						")"
+					);
+					speech.executeUpdate();
+						
+					System.out.println("Speech table created");
+					
+					speechOptions = conn.prepareStatement(
+						"create table speechOptions (" +
+						"	speech_id integer constraint speech_id references Speech," +								
+						"	order integer," +
+						"	option varchar(500)" +
+						")"
+					);	
+					speechOptions.executeUpdate();
+					
+					System.out.println("SpeechOptions table created");
+					
+					
+					speechResponses = conn.prepareStatement(
+						"create table speechResponses (" +
+						"	speech_id integer constraint speech_id references Speech," +								
+						"	order integer," +
+						"	response varchar(500)" +
+						")"
+					);	
+					speechResponses.executeUpdate();
+					
+					System.out.println("SpeechResponses table created");
+					
+					
+					return true;
+				} finally {
+					DBUtil.closeQuietly(user);
+					DBUtil.closeQuietly(userToGame);
+					DBUtil.closeQuietly(game);
+					DBUtil.closeQuietly(gameLog);
+					DBUtil.closeQuietly(player);
+					DBUtil.closeQuietly(playerToStats);	
+					DBUtil.closeQuietly(playerStats);
+					DBUtil.closeQuietly(playerInventory);
+					DBUtil.closeQuietly(item);	
+					DBUtil.closeQuietly(loot);
+					DBUtil.closeQuietly(map);
+					DBUtil.closeQuietly(location);	
+					DBUtil.closeQuietly(locationToNPC);
+					DBUtil.closeQuietly(npc);
+					DBUtil.closeQuietly(winCondition);	
+					DBUtil.closeQuietly(npcToStats);
+					DBUtil.closeQuietly(npcStats);
+					DBUtil.closeQuietly(speech);	
+					DBUtil.closeQuietly(speechOptions);
+					DBUtil.closeQuietly(speechResponses);
+					DBUtil.closeQuietly(locationToCombat);	
+					DBUtil.closeQuietly(combat);
+					DBUtil.closeQuietly(combatToNPC);
+					DBUtil.closeQuietly(locationToPuzzle);	
+					DBUtil.closeQuietly(puzzle);
+				}
+			}
+		});
+	}
+	
+//  creates the Authors and Books tables
+	public void createTablesBAExample() {
+		executeTransaction(new Transaction<Boolean>() {
+			@Override
+			public Boolean execute(Connection conn) throws SQLException {
 				PreparedStatement stmt1 = null;
 				PreparedStatement stmt2 = null;
 				PreparedStatement stmt3 = null;				
@@ -661,6 +1344,77 @@ public class DerbyDatabase implements IDatabase {
 				} finally {
 					DBUtil.closeQuietly(stmt1);
 					DBUtil.closeQuietly(stmt2);
+				}
+			}
+		});
+	}
+	
+	// Create a new game, which will insert onto the existing table! 
+	// Takes a User's ID, which will be inserted as a new pair in the UserToGame table.
+	public void createNewGame(int user_id) {
+		executeTransaction(new Transaction<Boolean>() {
+			@Override
+			public Boolean execute(Connection conn) throws SQLException {
+				List<Author> authorList;
+				List<Book> bookList;
+				List<BookAuthor> bookAuthorList;
+				
+				try {
+					authorList     = InitialData.getAuthors();
+					bookList       = InitialData.getBooks();
+					bookAuthorList = InitialData.getBookAuthors();					
+				} catch (IOException e) {
+					throw new SQLException("Couldn't read initial data", e);
+				}
+
+				PreparedStatement insertAuthor     = null;
+				PreparedStatement insertBook       = null;
+				PreparedStatement insertBookAuthor = null;
+
+				try {
+					// must completely populate Authors table before populating BookAuthors table because of primary keys
+					insertAuthor = conn.prepareStatement("insert into authors (lastname, firstname) values (?, ?)");
+					for (Author author : authorList) {
+//						insertAuthor.setInt(1, author.getAuthorId());	// auto-generated primary key, don't insert this
+						insertAuthor.setString(1, author.getLastname());
+						insertAuthor.setString(2, author.getFirstname());
+						insertAuthor.addBatch();
+					}
+					insertAuthor.executeBatch();
+					
+					System.out.println("Authors table populated");
+					
+					// must completely populate Books table before populating BookAuthors table because of primary keys
+					insertBook = conn.prepareStatement("insert into books (title, isbn, published) values (?, ?, ?)");
+					for (Book book : bookList) {
+//						insertBook.setInt(1, book.getBookId());		// auto-generated primary key, don't insert this
+//						insertBook.setInt(1, book.getAuthorId());	// this is now in the BookAuthors table
+						insertBook.setString(1, book.getTitle());
+						insertBook.setString(2, book.getIsbn());
+						insertBook.setInt(3, book.getPublished());
+						insertBook.addBatch();
+					}
+					insertBook.executeBatch();
+					
+					System.out.println("Books table populated");					
+					
+					// must wait until all Books and all Authors are inserted into tables before creating BookAuthor table
+					// since this table consists entirely of foreign keys, with constraints applied
+					insertBookAuthor = conn.prepareStatement("insert into bookAuthors (book_id, author_id) values (?, ?)");
+					for (BookAuthor bookAuthor : bookAuthorList) {
+						insertBookAuthor.setInt(1, bookAuthor.getBookId());
+						insertBookAuthor.setInt(2, bookAuthor.getAuthorId());
+						insertBookAuthor.addBatch();
+					}
+					insertBookAuthor.executeBatch();	
+					
+					System.out.println("BookAuthors table populated");					
+					
+					return true;
+				} finally {
+					DBUtil.closeQuietly(insertBook);
+					DBUtil.closeQuietly(insertAuthor);
+					DBUtil.closeQuietly(insertBookAuthor);					
 				}
 			}
 		});

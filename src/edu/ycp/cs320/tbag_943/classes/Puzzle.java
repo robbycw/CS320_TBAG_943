@@ -148,4 +148,25 @@ public class Puzzle {
 		roomCon = roomConIn;
 	}
 
+	public boolean isCanSolve() {
+		return canSolve;
+	}
+
+	public boolean isJumpable() {
+		return jumpable;
+	}
+
+	public void setCanSolve(boolean canSolve) {
+		this.canSolve = canSolve;
+	}
+
+	public void setSolved(boolean solved) {
+		this.solved = solved;
+	}
+
+	public void setJumpable(boolean jumpable) {
+		this.jumpable = jumpable;
+	}
+
+	
 }

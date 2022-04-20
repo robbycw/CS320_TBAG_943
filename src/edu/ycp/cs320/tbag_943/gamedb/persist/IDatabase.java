@@ -10,9 +10,10 @@ public interface IDatabase {
 	
 	// Finds
 	public User findUserByUsernameAndPassword(String username, String password); 
-	public List<Game> findGamesByUsername(String username); 
+	public List<Game> findGamesByUserID(int userID); 
 	public List<NPC> findNPCsByLocationID(int locationID); 
 	public List<NPC> findNPCsByCombatID(int combatID);
+	
 	public List<Speech> findSpeechByNPCID(int npcID); 
 	public List<String> findGameLogByGameID(int gameID); 
 	public Player findPlayerByGameID(int gameID); 
@@ -22,9 +23,11 @@ public interface IDatabase {
 	public HashMap<String, ArrayList<String>> findConnectionsByMapID(int mapID); 
 	public List<Location> findLocationsByMapID(int mapID); 
 	public Loot findLootByLocationID(int locationID); 
-	public List<Item> findInventoryByPlayerID(int playerID); 
+	public HashMap<String, Item> findInventoryByPlayerID(int playerID); 
 	public HashMap<String, Stat> findPlayerStatsByPlayerID(int playerID); 
 	public HashMap<String, Stat> findNPCStatsByNPCID(int npcID); 
+	
+	public Item findItemByItemID(int itemID); 
 	
 	
 	// Inserts

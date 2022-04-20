@@ -2,11 +2,13 @@ package edu.ycp.cs320.tbag_943.gamedb.persist;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import edu.ycp.cs320.booksdb.model.Author;
 import edu.ycp.cs320.booksdb.model.Book;
 import edu.ycp.cs320.booksdb.model.Pair;
+import edu.ycp.cs320.tbag_943.classes.*;
 
 //Code comes from CS320 Library Example. 
 public class FakeDatabase implements IDatabase {
@@ -14,9 +16,68 @@ public class FakeDatabase implements IDatabase {
 	private List<Author> authorList;
 	private List<Book> bookList;
 	
+	// Fields
+	
+	// Remember that because lists count from 0, the
+	// ID X object is stored at index X-1. 
+	private List<User> userList;
+	private List<Pair<Integer, Integer>> userToGame; 
+	private List<Game> gameList;  
+	private List<ArrayList<String>> gameLogList; 
+	private List<Player> playerList; 
+	private List<Map> mapList; 
+	private List<Pair<Integer, Integer>> playerToStats;
+	private List<Pair<Integer, Integer>> playerInventory; 
+	private List<Stat> playerStatsList; 
+	private List<Item> itemList; 
+	private List<Loot> lootList;
+	private List<Location> locationList; 
+	private List<Pair<Integer, Integer>> locationToNPC; 
+	private List<WinCondition> winConditionList;
+	private List<NPC> npcList; 
+	private List<Pair<Integer, Integer>> npcToStats; 
+	private List<Stat> npcStatsList; 
+	private List<Speech> speechList; 
+	private HashMap<Integer, ArrayList<String>> speechOptions;
+	private HashMap<Integer, ArrayList<String>> speechResponses; 
+	private List<Pair<Integer, Integer>> locationToCombat; 
+	private List<Pair<Integer, Integer>> combatToNPC; 
+	private List<Pair<Integer, Integer>> locationToPuzzle; 
+	private List<Combat> combatList; 
+	private List<Puzzle> puzzleList; 
+	
+	// Constructor
+	public FakeDatabase() {
+		this.userList = new ArrayList<User>();
+		this.userToGame = new ArrayList<Pair<Integer, Integer>>();
+		this.gameList = new ArrayList<Game>();
+		this.gameLogList = new ArrayList<ArrayList<String>>();
+		this.playerList = new ArrayList<Player>();
+		this.mapList = new ArrayList<Map>();
+		this.playerToStats = new ArrayList<Pair<Integer, Integer>>();
+		this.playerInventory = new ArrayList<Pair<Integer, Integer>>();
+		this.playerStatsList = new ArrayList<Stat>();
+		this.itemList = new ArrayList<Item>();
+		this.lootList = new ArrayList<Loot>();
+		this.locationList = new ArrayList<Location>();
+		this.locationToNPC = new ArrayList<Pair<Integer, Integer>>();
+		this.winConditionList = new ArrayList<WinCondition>();
+		this.npcList = new ArrayList<NPC>();
+		this.npcToStats = new ArrayList<Pair<Integer, Integer>>();
+		this.npcStatsList = new ArrayList<Stat>();
+		this.speechList = new ArrayList<Speech>();
+		this.speechOptions = new HashMap<Integer, ArrayList<String>>();
+		this.speechResponses = new HashMap<Integer, ArrayList<String>>();
+		this.locationToCombat = new ArrayList<Pair<Integer, Integer>>();
+		this.combatToNPC = new ArrayList<Pair<Integer, Integer>>();
+		this.locationToPuzzle = new ArrayList<Pair<Integer, Integer>>();
+		this.combatList = new ArrayList<Combat>();
+		this.puzzleList = new ArrayList<Puzzle>();
+	}
+
 	// Fake database constructor - initializes the DB
 	// the DB only consists for a List of Authors and a List of Books
-	public FakeDatabase() {
+	/*public FakeDatabase() {
 		authorList = new ArrayList<Author>();
 		bookList = new ArrayList<Book>();
 		
@@ -25,17 +86,147 @@ public class FakeDatabase implements IDatabase {
 		
 //		System.out.println(authorList.size() + " authors");
 //		System.out.println(bookList.size() + " books");
-	}
+	}*/
 
 	// loads the initial data retrieved from the CSV files into the DB
 	public void readInitialData() {
 		try {
-			authorList.addAll(InitialData.getAuthors());
-			bookList.addAll(InitialData.getBooks());
+			this.userList.addAll(InitialData.getUser());
+			this.userToGame.addAll(InitialData.getUserToGame());
+			 
+			this.gameLogList.addAll(InitialData.getGameLog());
+			
+			this.playerToStats.addAll(InitialData.getPlayerToStats());
+			this.playerInventory.addAll(InitialData.getPlayerInventory());
+			this.playerStatsList.addAll(InitialData.getPlayerStats()); 
+			this.itemList.addAll(InitialData.getItem());
+			this.lootList.addAll(InitialData.getLoot(itemList));
+			
+			this.locationToNPC.addAll(InitialData.getLocationToNPC());
+			this.winConditionList.addAll(InitialData.getWinCondition());
+			
+			this.npcToStats.addAll(InitialData.getNPCToStats());
+			this.npcStatsList.addAll(InitialData.getNPCStats());
+			
+			this.speechOptions = InitialData.getSpeechOptions(); 
+			this.speechResponses = InitialData.getSpeechResponses(); 
+			this.speechList.addAll(InitialData.getSpeech(speechOptions, speechResponses)); 
+			
+			this.locationToCombat.addAll(InitialData.getLocationToCombat());
+			this.combatToNPC.addAll(InitialData.getCombatToNPC());
+			this.locationToPuzzle.addAll(InitialData.getLocationToPuzzle()); 
+			this.puzzleList.addAll(InitialData.getPuzzle(playerStatsList, itemList));
+			
+			this.npcList.addAll(InitialData.getNPC(itemList, speechList, npcToStats, npcStatsList));
+			this.combatList.addAll(InitialData.getCombat(npcList, combatToNPC));
+			this.locationList.addAll(InitialData.getLocation(lootList, winConditionList, 
+					locationToNPC, npcList, locationToCombat, combatList, locationToPuzzle, puzzleList));
+			this.mapList.addAll(InitialData.getMap(locationList));
+			this.playerList.addAll(InitialData.getPlayer(playerStatsList, playerToStats, 
+					itemList, playerInventory, locationList));
+			this.gameList.addAll(InitialData.getGame(playerList,gameLogList, mapList, combatList));
 		} catch (IOException e) {
 			throw new IllegalStateException("Couldn't read initial data", e);
 		}
 	}
+	
+	// Finds
+	public Loot findLootByLocationID(int locationID) {
+		// Get the location from Location Table based on given id. 
+		Location loc = locationList.get(locationID - 1); 
+		
+		// Retrieve lootID from the Location
+		int lootID = loc.getTreasure().getId();
+		
+		// Return the loot. 
+		return lootList.get(lootID - 1); 
+	}
+	
+	public HashMap<String, Item> findInventoryByPlayerID(int playerID) {
+		// Retrieve a list of item IDs with given player ID. 
+		// The getLeft of each pair contains the playerID.
+		// Add the item ID to the list if the playerIDs match.
+		ArrayList<Integer> itemIDs = new ArrayList<Integer>(); 
+		for(Pair<Integer, Integer> i : playerInventory) {
+			// Check if item has player's ID (is in their inventory)
+			if(i.getLeft() == playerID) {
+				// If so, add the item ID to the list of IDs. 
+				itemIDs.add(i.getRight()); 
+			}
+		}
+		
+		// This list of item IDs will be used to retrieve the items
+		// from itemList. 
+		HashMap<String, Item> inventory = new HashMap<String, Item>(); 
+		for(Integer i : itemIDs) {
+			Item item = itemList.get(i - 1); 
+			String name = item.getName(); 
+			
+			inventory.put(name.toLowerCase(), item); 
+		}
+		
+		return inventory; 
+	}
+	
+	public HashMap<String, Stat> findPlayerStatsByPlayerID(int playerID){
+		// Retrieve a list of stat IDs with given player ID. 
+		// The getLeft of each pair contains the playerID.
+		// Add the Stat ID to the list if the playerIDs match.
+		ArrayList<Integer> statIDs = new ArrayList<Integer>(); 
+		for(Pair<Integer, Integer> i : playerToStats) {
+			if(i.getLeft() == playerID) {
+				statIDs.add(i.getRight()); 
+			}
+		}
+		
+		// Using list of Stat IDs, we want to create a 
+		// HashMap that takes the stat name and maps it 
+		// to the Stat class. 
+		HashMap<String, Stat> stats = new HashMap<String, Stat>(); 
+		for(Integer i : statIDs) {
+			Stat stat = playerStatsList.get(i - 1); 
+			String statName = stat.getName(); 
+			stats.put(statName, stat); 
+		}
+		
+		return stats; 
+	}
+	
+	public HashMap<String, Stat> findNPCStatsByNPCID(int npcID){
+		// Retrieve a list of stat IDs with given NPC ID. 
+		// The getLeft of each pair contains the npcID.
+		// Add the item ID to the list if the npcIDs match.
+		ArrayList<Integer> statIDs = new ArrayList<Integer>(); 
+		for(Pair<Integer, Integer> i : npcToStats) {
+			if(i.getLeft() == npcID) {
+				statIDs.add(i.getRight()); 
+			}
+		}
+		
+		// Using list of Stat IDs, we want to create a 
+		// HashMap that takes the stat name and maps it 
+		// to the Stat class. 
+		HashMap<String, Stat> stats = new HashMap<String, Stat>(); 
+		for(Integer i : statIDs) {
+			Stat stat = npcStatsList.get(i - 1); 
+			String statName = stat.getName(); 
+			stats.put(statName, stat); 
+		}
+		
+		return stats; 
+	}
+	
+	public Item findItemByItemID(int itemID) {
+		// An item of ID X will be stored at index X-1
+		// This is due to lists counting from 0 
+		return itemList.get(itemID - 1); 
+	}
+	
+	
+	
+	
+	
+	
 	
 	// query that retrieves Book and its Author by Title
 	@Override
