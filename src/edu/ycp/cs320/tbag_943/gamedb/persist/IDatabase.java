@@ -29,6 +29,8 @@ public interface IDatabase {
 	
 	public Item findItemByItemID(int itemID); 
 	
+	public List<Integer> findPlayerStatIdsByPlayerId(int playerID); 
+	
 	
 	// Inserts
 	public Integer insertPlayerIntoPlayerTable(Player player); 
@@ -37,6 +39,8 @@ public interface IDatabase {
 		// IDs when the game is first inserted (saved)
 	public Integer insertGameIntoGameTable(Game game); 
 	public Integer insertPlayerIDAndItemIDIntoInventoryTable(int playerID, int itemID);
+	
+	public Integer insertNewPlayer(Player player, int loc_rows, int game_rows); 
 	
 	// When we go to implement insertNewGame in the SQL DB, remember that
 	// creating a new game will require reading the CSVs and properly 
@@ -69,7 +73,7 @@ public interface IDatabase {
 	public boolean updateGameLog(ArrayList<String> log); 
 	public boolean updatePlayer(Player player); 
 	public boolean updateNPCs(List<NPC> npcs); 
-	public boolean updateCombat(Combat combat);
+	public boolean updateCombatByCombatId(Combat combat); 
 	public boolean updatePuzzle(Puzzle puzzle);  
 	public boolean updateLoot(Loot loot); 
 	

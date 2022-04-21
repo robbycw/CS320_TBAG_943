@@ -14,9 +14,7 @@ import edu.ycp.cs320.booksdb.model.Author;
 import edu.ycp.cs320.booksdb.model.Book;
 import edu.ycp.cs320.booksdb.model.BookAuthor;
 import edu.ycp.cs320.booksdb.model.Pair;
-import edu.ycp.cs320.tbag_943.classes.Item;
-import edu.ycp.cs320.tbag_943.classes.Loot;
-import edu.ycp.cs320.tbag_943.classes.Stat;
+import edu.ycp.cs320.tbag_943.classes.*; 
 
 //Code comes from CS320 Library Example. 
 public class DerbyDatabase implements IDatabase {
@@ -293,7 +291,158 @@ public class DerbyDatabase implements IDatabase {
 		});
 	}
 	
+	public List<Integer> findPlayerStatIdsByPlayerId(int playerID) {
+		return executeTransaction(new Transaction<List<Integer>>() {
+			@Override
+			public List<Integer> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select PlayerToStats.stat_id " +
+							"  from  PlayerToStats " +
+							"  where PlayerToStats.player_id = ? "
+					);
+					stmt1.setInt(1, playerID);
+					
+					ArrayList<Integer> statIds = new ArrayList<Integer>();
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						// Add each stat_id to the list. 
+						
+						statIds.add(resultSet1.getInt(1));
+						
+					}
+					
+					// check if the playerID was found
+					if (!found) {
+						System.out.println("<" + playerID + "> was not found in the PlayerToStats table");
+					}
+					
+					return statIds;
+					
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
 	
+	public Integer insertNewPlayer(Player player, int loc_rows, int game_rows) {
+		// Note, this method inserts a new row for the new player and default values.
+		// Character creation should call an update for the Player class! 
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					// insert new Player into Player table
+					// prepare SQL insert statement to add new Player to Player table
+					stmt1 = conn.prepareStatement(
+							"insert into Player (player_id, name, icon, weapon, armor, playerCreated, location_id) " +
+							"  values(?, ?, ?, ?, ?, ?, ?) "
+					);
+					// Number of players = number of game_rows
+					stmt1.setInt(1, player.getId() + game_rows);
+					// Name will update upon character creation; this insert is called before creation.
+					stmt1.setString(2, player.getName());
+					stmt1.setString(3, player.getIcon());
+					stmt1.setString(4, player.getWeapon());
+					stmt1.setString(5, player.getArmor());
+					stmt1.setString(6, "false");
+					stmt1.setInt(7, player.getLocation().getId() + loc_rows); 
+					
+					// execute the update
+					stmt1.executeUpdate();
+					
+					System.out.println("Player #" + game_rows + " inserted into Player table");					
+					
+					return game_rows;
+					
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public boolean updateCombatByCombatId(Combat combat) {
+		return executeTransaction(new Transaction<Boolean>() {
+			@Override
+			public Boolean execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					// Update Combat by CombatID
+					stmt1 = conn.prepareStatement(
+							"update Combat " +
+							"  set turn = ?, difficulty = ?, dead = ? " +
+							"  where combat_id = ?"
+					);
+					
+					// Set based on fields in Combat
+					stmt1.setInt(1, combat.getTurn());
+					stmt1.setInt(2, combat.getDifficulty());
+					stmt1.setString(3, Boolean.toString(combat.isDead()));
+					stmt1.setInt(4, combat.getId());
+					
+					// execute the update
+					stmt1.executeUpdate();
+					
+					System.out.println("Combat #" + combat.getId() + " updated");					
+					
+					return true;
+					
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public boolean removeItemFromInventoryByItemIdAndPlayerId(int itemID, int playerID) {
+		return executeTransaction(new Transaction<Boolean>() {
+			@Override
+			public Boolean execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					// remove item from inventory given playerID and itemID by CombatID
+					// prepare SQL insert statement to add new Player to Player table
+					stmt1 = conn.prepareStatement(
+							"delete from PlayerInventory " +
+							"  where player_id = ? and item_id = ?"
+					);
+					// Set based on fields in Combat
+					stmt1.setInt(1, playerID);
+					stmt1.setInt(2, itemID);
+					
+					// execute the deletion
+					stmt1.executeUpdate();
+					
+					System.out.println("Item #" + itemID + " deleted from Player #" + playerID + " inventory");					
+					
+					return true;
+					
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
 	
 	
 	
