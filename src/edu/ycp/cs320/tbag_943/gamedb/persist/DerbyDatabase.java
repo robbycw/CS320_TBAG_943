@@ -337,6 +337,52 @@ public class DerbyDatabase implements IDatabase {
 		});
 	}
 	
+	public List<Integer> findPlayerInventoryIdsByPlayerId(int playerID) {
+		return executeTransaction(new Transaction<List<Integer>>() {
+			@Override
+			public List<Integer> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select PlayerInventory.item_id " +
+							"  from  PlayerInventory " +
+							"  where PlayerInventory.player_id = ? "
+					);
+					stmt1.setInt(1, playerID);
+					
+					ArrayList<Integer> inventoryIds = new ArrayList<Integer>();
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						// Add each item_id to the list. 
+						
+						inventoryIds.add(resultSet1.getInt(1));
+						
+					}
+					
+					// check if the playerID was found
+					if (!found) {
+						System.out.println("<" + playerID + "> was not found in the PlayerInventory table");
+					}
+					
+					return inventoryIds;
+					
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
 	public Integer insertNewPlayer(Player player, int loc_rows, int game_rows) {
 		// Note, this method inserts a new row for the new player and default values.
 		// Character creation should call an update for the Player class! 
@@ -369,6 +415,88 @@ public class DerbyDatabase implements IDatabase {
 					System.out.println("Player #" + game_rows + " inserted into Player table");					
 					
 					return game_rows;
+					
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Integer insertNewPlayerToStats(Player player, int player_rows, int playerstat_rows) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					// insert new player_id and player_stats
+					// prepare SQL insert statement to add new player_id and stat_id
+					stmt1 = conn.prepareStatement(
+							"insert into PlayerToStats (player_id, stat_id) " +
+							"  values(?, ?) "
+					);
+
+					// We want to insert all of the stats stored in player. 
+					// Hence, we need a batch of inserts!
+					
+					int playerId = player.getId() + player_rows;
+					
+					// Add each stat with matching playerId to the table, incremented by number of rows.
+					for (Stat stat : player.getStats().values()) {
+						stmt1.setInt(1, playerId);
+						int statId = stat.getId() + playerstat_rows;
+						stmt1.setInt(2, statId);
+						stmt1.addBatch();
+					}
+					stmt1.executeBatch();
+					
+					System.out.println("Player #" + playerId + " inserted into PlayerToStats table");
+									
+					
+					return 0;
+					
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Integer insertNewPlayerInventory(Player player, int player_rows, int playerInventory_rows) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					// insert new player_id and item_id
+					// prepare SQL insert statement to add new player_id and item_id
+					stmt1 = conn.prepareStatement(
+							"insert into PlayerToStats (player_id, item_id) " +
+							"  values(?, ?) "
+					);
+
+					// We want to insert all of the items stored in player. 
+					// Hence, we need a batch of inserts!
+					
+					int playerId = player.getId() + player_rows;
+					
+					// Add each stat with matching playerId to the table, incremented by number of rows.
+					for (Item item : player.getInventory().values()) {
+						stmt1.setInt(1, playerId);
+						int itemId = item.getId() + playerInventory_rows;
+						stmt1.setInt(2, itemId);
+						stmt1.addBatch();
+					}
+					stmt1.executeBatch();
+					
+					System.out.println("Player #" + playerId + " inserted into PlayerInventory table");
+									
+					
+					return 0;
 					
 				} finally {
 					DBUtil.closeQuietly(stmt1);
