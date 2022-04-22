@@ -500,7 +500,7 @@ public class DerbyDatabase implements IDatabase {
 							+ " from Map "
 							+ " where Map.map_id = ? "
 					);
-					stmt.setInt(mapId, 1);
+					stmt.setInt(1, mapId);
 					
 					resultSet = stmt.executeQuery();
 					
@@ -540,7 +540,7 @@ public class DerbyDatabase implements IDatabase {
 							+ " from Location "
 							+ " where location_id = ? "
 					);
-					stmt.setInt(locationId, 1);
+					stmt.setInt(1, locationId);
 					
 					resultSet = stmt.executeQuery();
 					
@@ -582,7 +582,7 @@ public class DerbyDatabase implements IDatabase {
 							+ " and Puzzle.puzzle_id = LocationToPuzzle.puzzle_id "
 							+ " and Location.location_id = ? "
 					);
-					stmt.setInt(locationId, 1);
+					stmt.setInt(1, locationId);
 					
 					resultSet = stmt.executeQuery();
 					
@@ -622,7 +622,7 @@ public class DerbyDatabase implements IDatabase {
 							+ " from Puzzle "
 							+ " where Puzzle.puzzle_id = ? "
 					);
-					stmt.setInt(puzzle_id, 1);
+					stmt.setInt(1, puzzle_id);
 					
 					Puzzle puzzle = new Puzzle();
 					
@@ -656,11 +656,11 @@ public class DerbyDatabase implements IDatabase {
 				
 				try {
 					stmt = conn.prepareStatement(
-							"select WinCondition.*"
-							+ "from WinCondition"
-							+ "where WinCondition.winCondition_id = ?"
+							"select WinCondition.* "
+							+ " from WinCondition "
+							+ " where WinCondition.winCondition_id = ? "
 					);
-					stmt.setInt(winCondition_id, 1);
+					stmt.setInt(1, winCondition_id);
 					
 					resultSet = stmt.executeQuery();
 					
@@ -687,7 +687,172 @@ public class DerbyDatabase implements IDatabase {
 		});
 	}
 	
+	public List<Connections> findConnectionsByMapId(int map_id) {
+		return executeTransaction(new Transaction<List<Connections>>() {
+			@Override
+			public List<Connections> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				ResultSet resultSet = null;
+				
+				
+			}
+		});
+	}
 	
+	public WinCondition insertNewWinConditions(WinCondition winCondition) {
+		return executeTransaction(new Transaction<WinCondition>() {
+			@Override
+			public WinCondition execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+							"insert into WinCondition(winCondition_id, complete, lost, wonRooms, bestCase, defaultCase) "
+							+ " values(?, ?, ?, ?, ?, ?) "
+					);
+					stmt.setInt(1, winCondition.getId());
+					stmt.setBoolean(2, winCondition.getComplete());
+					stmt.setBoolean(3, winCondition.getLost());
+					stmt.setBoolean(4,  winCondition.getWonRooms());
+					stmt.setBoolean(5,  winCondition.getBestCase());
+					stmt.setBoolean(6,  winCondition.getDefaultCase());
+					
+					stmt.executeQuery();
+					
+					System.out.println("Win Condition: " + winCondition + " has been inserted into WinConditions table");
+					
+					return winCondition;
+				} finally {
+					DBUtil.closeQuietly(stmt);
+				}
+			}
+		});
+	}
+	
+	public Stat insertNewPlayerStats(Stat playerStats) {
+		return executeTransaction(new Transaction<Stat>() {
+			@Override
+			public Stat execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+						"insert into PlayerStats(stat_id, name, amount) "
+						+ " values(?, ?, ?)"	
+					);
+					stmt.setInt(1,  playerStats.getId());
+					stmt.setString(2,  playerStats.getName());
+					stmt.setInt(3,  playerStats.getRank());
+					
+					stmt.executeQuery();
+					
+					System.out.println("Player Stats: " + playerStats + " has been inserted into Stats table");
+					
+					return playerStats;
+				} finally {
+					DBUtil.closeQuietly(stmt);
+				}
+			}
+		});
+	}
+	
+	public Location insertNewLocations(Location location) {
+		return executeTransaction(new Transaction<Location>() {
+			@Override
+			public Location execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+						"insert into Location(location_id, name, description, hidden, blocked) "
+						+ " values(?, ?, ?, ?, ?)"	
+					);
+					stmt.setInt(1,  location.getId());
+					stmt.setString(2,  location.getName());
+					stmt.setString(3,  location.getDescription());
+					stmt.setBoolean(4,  location.isHidden());
+					stmt.setBoolean(5,  location.getBlocked());
+					
+					
+					stmt.executeQuery();
+					
+					System.out.println("Location: " + location + " has been inserted into Location table");
+					
+					return location;
+				} finally {
+					DBUtil.closeQuietly(stmt);
+				}
+			}
+		});
+	}
+	
+	public boolean updatePuzzleByPuzzleId(Puzzle puzzle) {
+		return executeTransaction(new Transaction<Boolean>() {
+			@Override
+			public Boolean execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+						"update Puzzle "
+						+ " set prompt = ?, answer = ?, requiredSkill = ?, requiredItem = ?, result = ?, canSolve = ?, solved = ?, breakable = ?, jumpable = ?, roomCon = ? "
+						+ " where Puzzle.puzzle_id = ? "	
+					);
+					stmt.setString(1,  puzzle.getPrompt());
+					stmt.setString(2, puzzle.getAnswer());
+					stmt.setString(3,  puzzle.getRequiredSkill().toString());
+					stmt.setString(4,  puzzle.getRequiredItem().toString());
+					stmt.setBoolean(5,  puzzle.getResult());
+					stmt.setBoolean(6, puzzle.isCanSolve());
+					stmt.setBoolean(7,  puzzle.isSolved());
+					stmt.setBoolean(8,  puzzle.getBreakable());
+					stmt.setBoolean(9, puzzle.isJumpable());
+					stmt.setString(10, puzzle.getRoomCon());
+					stmt.setInt(11,  puzzle.getId());
+					
+					stmt.executeQuery();
+					
+					System.out.println("Puzzle #: " + puzzle.getId() + " has been updated");
+					
+					return true;
+				} finally {
+					DBUtil.closeQuietly(stmt);
+				}
+			}
+		});
+	}
+	
+	public boolean updateWinConditionByWinConditionId(WinCondition winCondition) {
+		return executeTransaction(new Transaction<Boolean>() {
+			@Override
+			public Boolean execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+						"update WinCondition "
+						+ " set winCondition_id = ?, complete = ?, lost = ?, wonRooms = ?, bestCase = ?, defaultCase = ? "
+						+ " where WinCondition.winCondition_id = ?"
+					);
+					stmt.setInt(1,  winCondition.getId());
+					stmt.setBoolean(2,  winCondition.getComplete());
+					stmt.setBoolean(3,  winCondition.getLost());
+					stmt.setBoolean(4,  winCondition.getWonRooms());
+					stmt.setBoolean(5,  winCondition.getBestCase());
+					stmt.setBoolean(6,  winCondition.getDefaultCase());
+					stmt.setInt(7,  winCondition.getId());
+					
+					stmt.executeQuery();
+					
+					System.out.println("Win Condition #: " + winCondition.getId() + " has been updated");
+					
+					return true;
+				} finally {
+					DBUtil.closeQuietly(stmt);
+				}
+			}
+		});
+	}
 	
 	// transaction that retrieves a Book, and its Author by Title
 	@Override

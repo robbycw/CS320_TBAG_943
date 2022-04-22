@@ -44,6 +44,11 @@ public interface IDatabase {
 	
 	public Integer insertNewPlayer(Player player, int loc_rows, int game_rows); 
 	
+	public WinCondition insertNewWinConditions(WinCondition winCondition);
+	public Stat insertNewPlayerStats(Stat playerStats);
+	public Location insertNewLocations(Location location);
+	
+	
 	// When we go to implement insertNewGame in the SQL DB, remember that
 	// creating a new game will require reading the CSVs and properly 
 	// adding the Game onto the existing DB without overwriting existing data. 
@@ -78,6 +83,7 @@ public interface IDatabase {
 	public boolean updateCombatByCombatId(Combat combat); 
 	public boolean updatePuzzle(Puzzle puzzle);  
 	public boolean updateLoot(Loot loot); 
+	public boolean updateWinConditionByWinConditionId(WinCondition winCondition);
 	
 	
 	// Removals
