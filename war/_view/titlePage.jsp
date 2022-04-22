@@ -19,8 +19,33 @@
 		</style>
 	</head>
 		
-	<body style="height: 100%; display: flex; justify-content: center; align-items: center; background-color: black;">
+	<body style="height: 99%; width: 99%; margin: 0px;">
 
+		<!-- Page Header: Has log-out button, display on all pages when logged in. -->
+		<c:if test= "${user.created}">
+		<div style="width: 100%; height: 10%; align-items: top; display: flex; position: absolute; z-index: 2;">	
+			<div id="header">
+			<form action="${pageContext.servletContext.contextPath}/titlePage" method="post" style="width: 100%;">
+				<table style="width:100%">
+					<tr>
+						<td style="width:15%">${user.username}</td>
+						<td>
+							<div class= "submitButton" style="margin-top: 0px">
+								<button type="submit" value="Log Out" name= "logOut">Log Out</button>
+							</div>
+						</td>
+						<td>
+							<div class= "submitButton" style="margin-top: 0px">
+								<button type="submit" value="Title Page" name= "titlePage">Title Page</button>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</form>
+			</div>
+		</div>
+		</c:if>
+	<div style="height: 100%; width: 100%; display: flex; background-color: black; justify-content: center; align-items: center; position: absolute; z-index: 1;">
 		<!-- Login Overlay -->
 		<c:if test= "${! user.created}">
 			<div class="overlay"> 
@@ -95,7 +120,6 @@
 		</c:if>
 
 		<!-- Create Account Overlay-->
-		<!-- Login Overlay -->
 		<c:if test= "${makeNewAccount}">
 			<div class="overlay" style="z-index: 3;"> 
 				
@@ -169,6 +193,60 @@
 			</div >
 		</c:if>
 
+		<!-- Select Game Overlay -->
+		<c:if test= "${playGameClicked}">
+			<div class="overlay"> 
+				
+				<form action="${pageContext.servletContext.contextPath}/titlePage" method="post" style="width: 100%; height: 100%;">
+					
+					<div id="loginBoxes" style="overflow: auto; height: 80%;">
+
+
+						<table>
+							<tr>
+								
+								<h1 style="margin: 0px;">Select Game</h1>
+								
+							</tr>
+
+							<tr>
+								<td width="20%">Game ID</td> <!-- Game ID -->
+								<td width="20%">Player Name</td> <!-- Player Name -->
+								<td width="20%">Time Remaining</td> <!-- Time Remaining -->	
+							</tr>
+
+							<!-- List all of the user's games. -->
+							<c:forEach items="${user.gameList}" var="g" >
+								
+								<tr>
+									<td width="20%">${g.idString}</td> <!-- Game ID -->
+									<td width="20%">${g.player.name}</td> <!-- Player Name -->
+									<td width="20%">${g.timer.time}</td> <!-- Time Remaining -->
+									<td width="20%"> <!-- Button to Select this Game -->
+										<div class= "submitButton">
+											<button type="submit" value="Load Game" onclick="off()" name= "${g.idString}">Load Game</button>
+												
+										</div>
+									</td> 
+								</tr>
+
+							</c:forEach>
+
+							<tr>
+								<td width="20%">
+									<div class= "submitButton">
+										<button type="submit" value="New Game" onclick="off()" name= "newGame">New Game</button>
+										
+									</div>
+								</td>
+							</tr>
+
+						</table>	
+					</div>
+				</form>
+			</div >
+		</c:if>
+
 		<!-- Title Page Buttons --> 
 
 		<div id="entire">
@@ -218,6 +296,6 @@
 
 			</table> 
 		</div>
-		
+	</div>
 	</body>
 </html>
