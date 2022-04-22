@@ -464,7 +464,7 @@ public class DerbyDatabase implements IDatabase {
 		});
 	}
 	
-	public Integer insertNewPlayerInventory(Player player, int player_rows, int playerInventory_rows) {
+	public Integer insertNewPlayerInventory(Player player, int player_rows, int item_rows) {
 		return executeTransaction(new Transaction<Integer>() {
 			@Override
 			public Integer execute(Connection conn) throws SQLException {
@@ -484,16 +484,51 @@ public class DerbyDatabase implements IDatabase {
 					
 					int playerId = player.getId() + player_rows;
 					
-					// Add each stat with matching playerId to the table, incremented by number of rows.
+					// Add each item with matching playerId to the table, incremented by number of rows in Item.
 					for (Item item : player.getInventory().values()) {
 						stmt1.setInt(1, playerId);
-						int itemId = item.getId() + playerInventory_rows;
+						int itemId = item.getId() + item_rows;
 						stmt1.setInt(2, itemId);
 						stmt1.addBatch();
 					}
 					stmt1.executeBatch();
 					
 					System.out.println("Player #" + playerId + " inserted into PlayerInventory table");
+									
+					
+					return 0;
+					
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Integer insertNewLocationToCombat(List<Pair<Integer, Integer>> ltcPairs, int location_rows, int combat_rows) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					// insert all location to combat pairs. 
+					// prepare SQL insert statement to add each pair.
+					stmt1 = conn.prepareStatement(
+							"insert into LocationToCombat (location_id, combat_id) " +
+							"  values(?, ?) "
+					);
+
+					// Add each pair, incremented by number of rows in their table.
+					for (Pair<Integer, Integer> p : ltcPairs) {
+						stmt1.setInt(1, p.getLeft() + location_rows);
+						stmt1.setInt(2, p.getRight() + combat_rows);
+						stmt1.addBatch();
+					}
+					stmt1.executeBatch();
+					
+					System.out.println("LocationToCombat table inserted.");
 									
 					
 					return 0;
@@ -610,6 +645,77 @@ public class DerbyDatabase implements IDatabase {
 			}
 		});
 	}
+	
+	public Integer insertOutputIntoGameLogByLogId(String output, int log_id, int log_size) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					// insert new string of output into the GameLog table. 
+					// prepare SQL insert statement to add new output.
+					stmt1 = conn.prepareStatement(
+							"insert into GameLog (log_id, order, output) " +
+							"  values(?, ?, ?) "
+					);
+					
+					stmt1.setInt(1, log_id);
+					// Order is the current length of the log (the next index in the list)
+					stmt1.setInt(2, log_size);
+					// Then add in the string. 
+					stmt1.setString(3, output);
+						
+					
+					stmt1.executeUpdate();
+					
+					System.out.println("Output #" + log_size + " inserted into GameLog table for Log #" + log_id);
+									
+					
+					return 0;
+					
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	
+	public Integer insertItemIntoPlayerInventoryByItemId(int player_id, int item_id) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					// insert new string of output into the GameLog table. 
+					// prepare SQL insert statement to add new output.
+					stmt1 = conn.prepareStatement(
+							"insert into PlayerInventory (player_id, item_id) " +
+							"  values(?, ?) "
+					);
+					
+					stmt1.setInt(1, player_id);
+					stmt1.setInt(2, item_id);
+						
+					stmt1.executeUpdate();
+					
+					System.out.println("Item #" + item_id + " inserted into PlayerInventory table for Player #" + player_id);
+									
+					
+					return 0;
+					
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+
 	
 	public boolean updateCombatByCombatId(Combat combat) {
 		return executeTransaction(new Transaction<Boolean>() {
