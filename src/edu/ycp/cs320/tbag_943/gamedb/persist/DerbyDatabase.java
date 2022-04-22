@@ -487,7 +487,205 @@ public class DerbyDatabase implements IDatabase {
 		});
 	}
 	
+	public Map findMapByMapID(int mapId) {
+		return executeTransaction(new Transaction<Map>() {
+			@Override 
+			public Map execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				ResultSet resultSet = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+							" select Map.* "
+							+ " from Map "
+							+ " where Map.map_id = ? "
+					);
+					stmt.setInt(mapId, 1);
+					
+					resultSet = stmt.executeQuery();
+					
+					Map map = new Map();
+					
+					boolean found = false;
+					
+					while(resultSet.next()) {
+						found = true;
+						
+						map.setId(resultSet.getInt(1));
+					}
+					
+					if (!found) {
+						System.out.println("<" + mapId + "> was not found in the Map table");
+					}
+					
+					return map;
+				} finally {
+					DBUtil.closeQuietly(resultSet);
+					DBUtil.closeQuietly(stmt);
+				}
+			}
+		});
+	}
 	
+	public Location findLocationByLocationID(int locationId) {
+		return executeTransaction(new Transaction<Location>() {
+			@Override
+			public Location execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				ResultSet resultSet = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+							" select Location.* "
+							+ " from Location "
+							+ " where location_id = ? "
+					);
+					stmt.setInt(locationId, 1);
+					
+					resultSet = stmt.executeQuery();
+					
+					Location location = new Location();
+					
+					boolean found = false;
+					
+					while(resultSet.next()) {
+						found = true;
+						
+						location.setId(resultSet.getInt(1));
+					}
+					
+					if (!found) {
+						System.out.println("<" + locationId + "> was not found in the Location table");
+					}
+					
+					return location;
+				} finally {
+					DBUtil.closeQuietly(resultSet);
+					DBUtil.closeQuietly(stmt);
+				}
+			}
+		});
+	}
+	
+	public List<Integer> findPuzzleIdsByLocationID(int locationId) {
+		return executeTransaction(new Transaction<List<Integer>>() {
+			@Override
+			public List<Integer> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				ResultSet resultSet = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+							"select Puzzle.puzzle_id "
+							+ " from Location, Puzzle, LocationToPuzzle "
+							+ " where Location.location_id = LocationToPuzzle.location_id "
+							+ " and Puzzle.puzzle_id = LocationToPuzzle.puzzle_id "
+							+ " and Location.location_id = ? "
+					);
+					stmt.setInt(locationId, 1);
+					
+					resultSet = stmt.executeQuery();
+					
+					ArrayList<Integer> puzzleIds = new ArrayList<Integer>();
+					
+					boolean found = false;
+					
+					while(resultSet.next()) {
+						found = true;
+						
+						puzzleIds.add(resultSet.getInt(1));
+					}
+					
+					if (!found) {
+						System.out.println("<" + locationId + "> was not found in the Location table");
+					}
+					
+					return puzzleIds;
+				} finally {
+					DBUtil.closeQuietly(resultSet);
+					DBUtil.closeQuietly(stmt);
+				}
+			}
+		});
+	}
+	
+	public Puzzle findPuzzleByPuzzleId(int puzzle_id) {
+		return executeTransaction(new Transaction <Puzzle>() {
+			@Override
+			public Puzzle execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				ResultSet resultSet = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+							" select Puzzle.* "
+							+ " from Puzzle "
+							+ " where Puzzle.puzzle_id = ? "
+					);
+					stmt.setInt(puzzle_id, 1);
+					
+					Puzzle puzzle = new Puzzle();
+					
+					boolean found = false;
+					
+					while(resultSet.next()) {
+						found = true;
+						
+						puzzle.setId(resultSet.getInt(1));
+					}
+					
+					if (!found) {
+						System.out.println("<" + puzzle_id + "> was not found in the Puzzle table");
+					}
+					
+					return puzzle;
+				} finally {
+					DBUtil.closeQuietly(resultSet);
+					DBUtil.closeQuietly(stmt);
+				}
+			}
+		});
+	}
+	
+	public WinCondition findWinConditionByWinConditionId(int winCondition_id) {
+		return executeTransaction(new Transaction<WinCondition>() {
+			@Override
+			public WinCondition execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				ResultSet resultSet = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+							"select WinCondition.*"
+							+ "from WinCondition"
+							+ "where WinCondition.winCondition_id = ?"
+					);
+					stmt.setInt(winCondition_id, 1);
+					
+					resultSet = stmt.executeQuery();
+					
+					WinCondition winCondition = new WinCondition();
+					
+					boolean found = false;
+					
+					while(resultSet.next()) {
+						found = true;
+						
+						winCondition.setId(resultSet.getInt(1));
+					}
+					
+					if (!found) {
+						System.out.println("<" + winCondition_id + "> was not found in the Puzzle table");
+					}
+					
+					return winCondition;
+				} finally {
+					DBUtil.closeQuietly(resultSet);
+					DBUtil.closeQuietly(stmt);
+				}
+			}
+		});
+	}
 	
 	
 	
