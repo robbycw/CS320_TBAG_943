@@ -1,0 +1,6 @@
+1|Axe|description1|FALSE|TRUE|FALSE|FALSE|5|0|1|2|0|0
+2|Sword|description2|FALSE|TRUE|FALSE|FALSE|7|0|1|2|0|0
+3|Coin|description3|FALSE|FALSE|FALSE|FALSE|0|0|1|2|0|0
+4|Shield|description4|FALSE|FALSE|TRUE|FALSE|0|0|1|2|5|0
+5|Dagger|description5|FALSE|TRUE|FALSE|FALSE|4|0|1|2|0|0
+6|Gold|description6|FALSE|FALSE|FALSE|FALSE|0|0|100|1|0|0

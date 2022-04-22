@@ -35,6 +35,7 @@ public class TitlePageServlet extends HttpServlet {
 			session.setAttribute("user", user);
 			session.setAttribute("loginErr", loginError);
 			session.setAttribute("makeNewAccount", false);
+			session.setAttribute("playGameClicked", false);
 			
 		}
 
@@ -50,14 +51,26 @@ public class TitlePageServlet extends HttpServlet {
 		
 		// Retrieve the session. 
 		HttpSession session = req.getSession(); 
+		
+		// Get the User class from the session. 
+		User user = (User) session.getAttribute("user"); 
+		
 		System.out.println("TitlePage Servlet: doPost");
 		
 		if(req.getParameter("game") != null) {
 			
-			System.out.println("TitlePage Servlet: Game");
+			System.out.println("TitlePage Servlet: Play Game");
+			// User has clicked Play Game. See if currentGame is null or if a Game is selected.
 			
-			resp.sendRedirect("/tbag_943/game");
-			return; 
+			if(user.getCurrentGame() == null) {
+				// Load the overlay for selecting a game. 
+				session.setAttribute("playGameClicked", true);
+			} else {
+				// Game was selected. 
+				// Redirect the user to the Game page! 
+				resp.sendRedirect("/tbag_943/game");
+				return;
+			} 
 			
 		} else if(req.getParameter("credits") != null) {
 			
@@ -83,7 +96,7 @@ public class TitlePageServlet extends HttpServlet {
 			
 			
 			// The User has attempted to log in. 
-			User user = (User) session.getAttribute("user"); 
+			
 			String username = (String) req.getParameter("username"); 
 			String password = (String) req.getParameter("password"); 
 			
@@ -108,6 +121,29 @@ public class TitlePageServlet extends HttpServlet {
 					user.setCreated(true);
 					user.setUsername(username);
 					user.setPassword(password);
+					
+					// Need to fetch the user's gameList from the database
+					// TODO
+					Game game1 = GameServlet.gameMaker(); 
+					game1.setId(1);
+					Game game2 = GameServlet.gameMaker(); 
+					game2.setId(2);
+					Game game3 = GameServlet.gameMaker(); 
+					game3.setId(3);
+					Game game4 = GameServlet.gameMaker(); 
+					game4.setId(4);
+					Game game5 = GameServlet.gameMaker(); 
+					game5.setId(5);
+					Game game6 = GameServlet.gameMaker(); 
+					game6.setId(6);
+					
+					
+					user.getGameList().add(game1);
+					user.getGameList().add(game2);
+					user.getGameList().add(game3);
+					user.getGameList().add(game4);
+					user.getGameList().add(game5);
+					user.getGameList().add(game6);
 					
 					// User is now logged in, store user data into session. 
 					session.setAttribute("user", user);
@@ -142,7 +178,6 @@ public class TitlePageServlet extends HttpServlet {
 			userPass.put("admin", "adminPassword"); 
 			
 			// The User has attempted to create an account. 
-			User user = (User) session.getAttribute("user"); 
 			String username = (String) req.getParameter("username"); 
 			String password = (String) req.getParameter("password"); 
 			
@@ -180,7 +215,39 @@ public class TitlePageServlet extends HttpServlet {
 			session.setAttribute("loggedIn", false); 
 			session.setAttribute("makeNewAccount", false);
 			session.setAttribute("loginErr", "");
+		} else if (req.getParameter("newGame") != null) {
+			// User selected New Game: 
+			
+		} else if (req.getParameter("logOut") != null) {
+			// User wants to log out. 
+			User u = new User(); 
+			String loginError = ""; 
+			
+			session.setAttribute("user", u);
+			session.setAttribute("loginErr", loginError);
+			session.setAttribute("makeNewAccount", false);
+			session.setAttribute("playGameClicked", false);
+			
+		} else if (req.getParameter("titlePage") != null) {
+			System.out.println("TitlePage Servlet: TitlePage");
+			
+			resp.sendRedirect("/tbag_943/titlePage");
+			return; 
 		}
+		
+		// Check for which Game was selected in the list, if it was selected: 
+		
+		for(Game g : user.getGameList()) {
+			if(req.getParameter(g.getIdString()) != null) {
+				// User has selected this Game, so select this ID. 
+				// With DB, will need to load rest of Game! 
+				//TODO
+				user.setCurrentGame(g);
+				session.setAttribute("playGameClicked", false);
+			}
+		}
+		
+		
 		
 		
 		// decode POSTed form parameters and dispatch to controller

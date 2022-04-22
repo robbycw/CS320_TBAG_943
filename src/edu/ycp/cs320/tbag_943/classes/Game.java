@@ -39,6 +39,10 @@ public class Game {
 	public int getId() {
 		return id;
 	}
+	
+	public String getIdString() {
+		return "Game" + Integer.toString(id); 
+	}
 
 	public boolean isInCombat() {
 		return inCombat;

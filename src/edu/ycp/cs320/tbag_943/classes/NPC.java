@@ -173,6 +173,10 @@ public class NPC implements Comparable {
 		return stats; 
 	}
 	
+	public void setStats(HashMap<String, Stat> stats) {
+		this.stats = stats;
+	}
+
 	public boolean isCombat() {
 		return combat;
 	}

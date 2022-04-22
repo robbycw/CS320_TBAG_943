@@ -45,9 +45,30 @@ public class EndCreditsServlet extends HttpServlet {
 		
 		System.out.println("EndCredits Servlet: doPost");
 		
+		// Retrieve the session. 
+		HttpSession session = req.getSession(); 
+				
+		// Get the User class from the session. 
+		User user = (User) session.getAttribute("user");
+		
 		if(req.getParameter("submit") != null) {
 			System.out.println("Title Screen Servlet: ");
 			req.getRequestDispatcher("/servlet/TitleScreen.java").forward(req, resp);
+		} else if (req.getParameter("logOut") != null) {
+			// User wants to log out. 
+			User u = new User(); 
+			String loginError = ""; 
+			
+			session.setAttribute("user", u);
+			session.setAttribute("loginErr", loginError);
+			session.setAttribute("makeNewAccount", false);
+			session.setAttribute("playGameClicked", false);
+			
+		} else if (req.getParameter("titlePage") != null) {
+			System.out.println("TitlePage Servlet: TitlePage");
+			
+			resp.sendRedirect("/tbag_943/titlePage");
+			return; 
 		}
 		
 		// Forward to view to render the result HTML document
