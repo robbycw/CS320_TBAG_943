@@ -505,6 +505,112 @@ public class DerbyDatabase implements IDatabase {
 		});
 	}
 	
+	public Integer insertNewMap(Map map, int game_rows, int location_rows) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					// insert new Map
+					// prepare SQL insert statement to add new Map
+					stmt1 = conn.prepareStatement(
+							"insert into Map (map_id, location_id, north, east, south, west, extra) " +
+							"  values(?, ?, ?, ?, ?, ?, ?) "
+					);
+
+					// We want to insert all of the Map's locations and their connections.
+					// Hence, we need a batch of inserts!
+					
+					int mapId = map.getId() + game_rows;
+					
+					// Add each stat with matching playerId to the table, incremented by number of rows.
+					for (Location loc : map.getLocations().values()) {
+						stmt1.setInt(1, mapId);
+						
+						// Compute the values for each column in the row first. 
+						int locId = loc.getId() + location_rows;
+						ArrayList<String> locationConn = map.getConnections().get(loc.getName().toLowerCase());
+						String northName = locationConn.get(0); 
+						String eastName = locationConn.get(1);
+						String southName = locationConn.get(2);
+						String westName = locationConn.get(3);
+						String extraName = locationConn.get(4);
+						
+						int northId = map.getLocations().get(northName).getId(); 
+						int eastId = map.getLocations().get(eastName).getId();
+						int southId = map.getLocations().get(southName).getId();
+						int westId = map.getLocations().get(westName).getId();
+						int extraId = map.getLocations().get(extraName).getId();
+						
+						// Assign these values. 
+						stmt1.setInt(2, locId);
+						stmt1.setInt(3, northId);
+						stmt1.setInt(4, eastId);
+						stmt1.setInt(5, southId);
+						stmt1.setInt(6, westId);
+						stmt1.setInt(7, extraId);
+						stmt1.addBatch();
+					}
+					stmt1.executeBatch();
+					
+					System.out.println("Map #" + mapId + " inserted into Map table");
+									
+					
+					return 0;
+					
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Integer insertNewGameLog(ArrayList<String> log, int game_rows) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					// insert new player_id and item_id
+					// prepare SQL insert statement to add new player_id and item_id
+					stmt1 = conn.prepareStatement(
+							"insert into GameLog (log_id, order, output) " +
+							"  values(?, ?, ?) "
+					);
+
+					// We want to insert all of the outputs stored in the log individually. 
+					// Hence, we need a batch of inserts!
+					
+					// log_id is always same as game ID, which will be 1 greater than current # of games.
+					int logId = 1 + game_rows;
+					
+					// Iterate through ArrayList.
+					for (int j = 0; j < log.size(); j++) {
+						stmt1.setInt(1, logId);
+						// Order is the index of the string.
+						stmt1.setInt(2, j);
+						// Then add in the string. 
+						stmt1.setString(3, log.get(j));
+						stmt1.addBatch();
+					}
+					stmt1.executeBatch();
+					
+					System.out.println("Log #" + logId + " inserted into GameLog table");
+									
+					
+					return 0;
+					
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
 	public boolean updateCombatByCombatId(Combat combat) {
 		return executeTransaction(new Transaction<Boolean>() {
 			@Override
@@ -1431,7 +1537,7 @@ public class DerbyDatabase implements IDatabase {
 						"	description varchar(500)," +
 						"	hidden varchar(5)," +
 						"	blocked varchar(5)," +
-						"	loot_id integer constraint loot_id references Loot," +
+						"	loot_id integer," +
 						"	winCondition_id integer constraint winCondition_id references WinCondition" +
 						")"
 					);
@@ -1495,7 +1601,7 @@ public class DerbyDatabase implements IDatabase {
 						"		generated always as identity (start with 1, increment by 1), " +
 						"	name varchar(50)," +
 						"	combat varchar(5)," +
-						"	item_id integer constraint item_id references Item," +
+						"	item_id integer," +
 						"	speech_id integer constraint speech_id references Speech," +
 						"	isIntimidated varchar(5)," +
 						"	canIntimidate varchar(5)," +

@@ -23,7 +23,7 @@ public class InitialData {
 				// Iterates over tuple.
 				Iterator<String> i = tuple.iterator();
 				User user = new User();
-
+				
 				user.setId(Integer.parseInt(i.next()));
 				user.setUsername(i.next());
 				user.setPassword(i.next());
@@ -101,7 +101,13 @@ public class InitialData {
 				game.setOutputLog(logs.get(Integer.parseInt(i.next()) - 1));
 				game.setPlayer(players.get(Integer.parseInt(i.next()) - 1));
 				game.setMap(maps.get(Integer.parseInt(i.next()) - 1));
-				game.setCurrentCombat(combats.get(Integer.parseInt(i.next()) - 1));
+				// Game doesn't always load with current combat.
+				int ccId = Integer.parseInt(i.next()) - 1;
+				if(ccId == -2) {
+					game.setCurrentCombat(null);
+				} else {
+					game.setCurrentCombat(combats.get(ccId));
+				}
 				
 
 				// Add Game to list of Games. 
@@ -331,6 +337,7 @@ public class InitialData {
 					HashMap<String, ArrayList<String>> connectionsMap = map.getConnections(); 
 					
 					// Get the location from list of Locations with ID
+					// If the incoming integer is -1, assign the string "-1" to this value. 
 					Location loc = locations.get(Integer.parseInt(i.next()) - 1);
 					
 					// Add new Location
@@ -340,11 +347,21 @@ public class InitialData {
 					ArrayList<String> con = new ArrayList<String>(); 
 					
 					// Need to get location names for each connection
+					// OR set connection to -1 if no connection in direction.
 					for(int j = 0; j < 4; j++) {
-						Location c = locations.get(Integer.parseInt(i.next()) - 1);
-						con.add(c.getName().toLowerCase()); 
+						int conId = Integer.parseInt(i.next()) - 1; 
+						if(conId == -2) {
+							con.add("-1"); 
+						} else {
+							Location c = locations.get(conId);
+							con.add(c.getName().toLowerCase()); 
+						}
 					}
 					connectionsMap.put(loc.getName().toLowerCase(), con); 
+					
+					// Put locationsMap and connectionsMap back in map
+					map.setLocations(locationsMap);
+					map.setConnections(connectionsMap);
 					
 				} else {
 					// Map doesn't exist in list yet, make a new map. 
@@ -370,7 +387,12 @@ public class InitialData {
 						con.add(c.getName().toLowerCase()); 
 					}
 					connectionsMap.put(loc.getName().toLowerCase(), con); 
+					
+					// Put locationsMap and connectionsMap back in map
+					map.setLocations(locationsMap);
+					map.setConnections(connectionsMap);
 				}
+				
 				
 				// Put the map into the list. 
 				mapList.put(map_id, map); 
@@ -413,7 +435,14 @@ public class InitialData {
 				loc.setHidden(Boolean.parseBoolean(i.next()));
 				loc.setBlocked(Boolean.parseBoolean(i.next()));
 				// the object with ID X will be stored in index X-1 within the list.
-				loc.setTreasure(loots.get(Integer.parseInt(i.next()) - 1));
+				// Locations may not have a Loot ID. ID will be set to -1 in such a case.
+				int lootId = Integer.parseInt(i.next()) - 1; 
+				if(lootId == -2) {
+					loc.setTreasure(null);
+				} else {
+					loc.setTreasure(loots.get(lootId));
+				}
+				
 				loc.setWinCondition(winCs.get(Integer.parseInt(i.next()) - 1));
 				
 				// Add NPCs
@@ -525,7 +554,7 @@ public class InitialData {
 	
 	public static List<Item> getItem() throws IOException {
 		List<Item> itemList = new ArrayList<Item>(); 
-		ReadCSV readItem = new ReadCSV("Item.csv"); 
+		ReadCSV readItem = new ReadCSV("item.csv"); 
 		
 		try {
 			while (true) {
@@ -628,7 +657,13 @@ public class InitialData {
 				npc.setId(Integer.parseInt(i.next()));
 				npc.setName(i.next());
 				npc.setCombat(Boolean.parseBoolean(i.next()));
-				npc.setWeapon(items.get(Integer.parseInt(i.next()) - 1));
+				// NPCs may not have a weapon. If so, value of weapon is -1. 
+				int weapon = Integer.parseInt(i.next()) - 1;
+				if(weapon != -2) {
+					npc.setWeapon(items.get(weapon));
+				} else {
+					npc.setWeapon(null);
+				}
 				npc.setSpeech(speeches.get(Integer.parseInt(i.next()) - 1));
 				npc.setIntimidated(Boolean.parseBoolean(i.next()));
 				npc.setCanIntimidate(Boolean.parseBoolean(i.next()));

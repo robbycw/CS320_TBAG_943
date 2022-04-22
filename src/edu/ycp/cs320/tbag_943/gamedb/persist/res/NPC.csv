@@ -1,2 +1,3 @@
-﻿1|Dave|false|2|1|false|true|5|false|true|5
-2|Earl|true|3|2|false|false|5|false|true|10
+﻿1|Dave|TRUE|2|1|FALSE|TRUE|5|FALSE|TRUE|5
+2|Earl|TRUE|1|2|FALSE|FALSE|5|FALSE|TRUE|10
+3|Carl|FALSE|-1|3|FALSE|TRUE|1|FALSE|FALSE|1
