@@ -67,6 +67,10 @@ public class Loot {
 		return id;
 	}
 	
+	public int getXp() {
+		return xp;
+	}
+	
 	// Setters 
 	
 	public void setCollected(boolean collected) {
