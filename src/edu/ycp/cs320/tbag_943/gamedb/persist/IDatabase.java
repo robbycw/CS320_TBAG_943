@@ -37,6 +37,10 @@ public interface IDatabase {
 	// Inserts
 	public Integer insertPlayerIntoPlayerTable(Player player); 
 	public Integer insertGameLogIntoGameLogTable(List<String> log);
+	public Integer insertNewNPCs(String name, int health, boolean combat, HashMap<String, Stat> stats); 
+	public Integer insertNewNPCStats(String name, int health, int armor, int strength, int speed);
+	public Integer InsertNewLocationToNPC(int NPC_Id);
+	public Integer InsertNewNPCToStats(int Stats_id);
 		// This method will need to fetch the most recently added player and log
 		// IDs when the game is first inserted (saved)
 	public Integer insertGameIntoGameTable(Game game); 
@@ -66,7 +70,7 @@ public interface IDatabase {
 	
 	
 	// Updates
-	
+	public Boolean UpdateNPCByNPCId(NPC npc);
 	// We could get away with only implementing updateGame, as Game
 	// already contains all of these classes. However, we need to 
 	// keep in mind that doing so will require the same queries that
@@ -88,7 +92,9 @@ public interface IDatabase {
 	
 	// Removals
 	public boolean removeGameByGameID(int gameID); 
-	public boolean removeItemFromInventoryByItemIDAndPlayerID(int itemID, int playerID); 
+	public boolean removeItemFromInventoryByItemIDAndPlayerID(int itemID, int playerID);
+
+	
 	
 	
 	// Other

@@ -129,6 +129,38 @@ public class FakeDatabase implements IDatabase {
 			throw new IllegalStateException("Couldn't read initial data", e);
 		}
 	}
+	public User findUserByUsernameAndPassword(String username, String password) {
+		// traverse the list of users and return the one that has the same 
+		// username and password
+		for(User i: userList) {
+			if(i.getUsername() == username && i.getPassword() == password) {
+				return i;
+			}
+		}
+		System.out.print("your account isn't present would you like to register?");
+	}
+	public List<Game> findGamesByUserID(int userID){
+		// traversing through the game list to compare if the
+		// user from the userID owns the particular games
+		ArrayList<Game> userGames = new ArrayList<Game>();
+		
+		for(Game i: gameList) {
+			if(i.getUser() == userList.get(userID - 1)) {
+				userGames.add(i);
+			}
+		}
+		return userGames;		
+	}
+	public List<NPC> findNPCsByLocationID(int locationID){
+		// returns the list of NPCs at the location ID
+		return (List<NPC>) locationList.get(locationID - 1).getNPCs().values();
+	
+	} 
+	public List<NPC> findNPCsByCombatID(int combatID){
+		// returns the list of NPCs at the combat ID
+		return (List<NPC>) combatList.get(combatID - 1).getNpcs().values();
+	}
+	
 	
 	// Finds
 	public Loot findLootByLocationID(int locationID) {
