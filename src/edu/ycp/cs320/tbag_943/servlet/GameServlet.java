@@ -588,6 +588,7 @@ public class GameServlet extends HttpServlet {
 		samplePuzzle4.setLoot(new Loot(new Item("Death of Death", 1000)));
 		r4.addPuzzle(samplePuzzle4);
 		
+
 		String samplePuzzlePrompt5 = "There is a large, metal door that lies in front of you, but maybe it can be broken...";
 		Puzzle samplePuzzle5 = new Puzzle(samplePuzzlePrompt5, "break");
 		samplePuzzle5.setBreakable(true);

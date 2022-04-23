@@ -18,10 +18,12 @@ public interface IDatabase {
 	public List<String> findGameLogByGameID(int gameID); 
 	public Player findPlayerByGameID(int gameID); 
 	public List<Combat> findCombatsByLocationID(int locationID); 
-	public List<Puzzle> findPuzzlesByLocationID(int locationID); 
-	public Map findMapByGameID(int gameID); 
+	public List<Integer> findPuzzleIDsByLocationID(int locationId);
+	public Puzzle findPuzzleByPuzzleId(int puzzle_id);
+	public Map findMapByMapID(int mapId);
 	public HashMap<String, ArrayList<String>> findConnectionsByMapID(int mapID); 
-	public List<Location> findLocationsByMapID(int mapID); 
+	public Location findLocationByLocationID(int locationId); 
+	public WinCondition findWinConditionByWinConditionId(int winCondition_id);
 	public Loot findLootByLocationID(int locationID); 
 	public List<Integer> findPlayerInventoryIdsByPlayerID(int playerID); 
 	public List<Integer> findPlayerStatsIdsByPlayerID(int playerID); 
@@ -52,6 +54,11 @@ public interface IDatabase {
 			int location_rows, int combat_rows);
 	public Integer insertOutputIntoGameLogByLogId(String output, int log_id, int log_size);
 	public Integer insertItemIntoPlayerInventoryByPlayerIdAndItemId(int player_id, int item_id);
+	
+	
+	public WinCondition insertNewWinConditions(WinCondition winCondition);
+	public Stat insertNewPlayerStats(Stat playerStats);
+	public Location insertNewLocations(Location location);
 	
 	
 	// When we go to implement insertNewGame in the SQL DB, remember that
@@ -87,6 +94,8 @@ public interface IDatabase {
 	public boolean updateCombatByCombatId(Combat combat); 
 	public boolean updatePuzzle(Puzzle puzzle);  
 	public boolean updateLootByLootId(Loot loot); 
+	public boolean updateLoot(Loot loot); 
+	public boolean updateWinConditionByWinConditionId(WinCondition winCondition);
 	
 	
 	// Removals
