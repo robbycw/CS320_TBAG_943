@@ -128,10 +128,20 @@ public class InitialDataTest {
 			this.playerList.addAll(InitialData.getPlayer(playerStatsList, playerToStats, 
 					itemList, playerInventory, locationList));
 			this.gameList.addAll(InitialData.getGame(playerList,gameLogList, mapList, combatList));
+			
+			
 		} catch (IOException e) {
 			throw new IllegalStateException("Couldn't read initial data", e);
 		}
 		
+		// Try printing out some of the game's information: 
+		for(ArrayList<String> i : gameLogList) {
+			for(String s : i) {
+				System.out.println(s);
+			}
+		}
+		
 	}
+
 
 }

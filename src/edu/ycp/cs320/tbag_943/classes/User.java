@@ -1,5 +1,7 @@
 package edu.ycp.cs320.tbag_943.classes;
 
+import java.util.ArrayList;
+
 public class User {
 
 	// Fields
@@ -7,16 +9,20 @@ public class User {
 	int id; 
 	Game currentGame; 
 	boolean created; 
+	ArrayList<Game> gameList; 
 	
 	
 	// Constructors
 	public User() {
 		this.created = false; 
+		this.currentGame = null; 
+		this.gameList = new ArrayList<Game>();
 	}
 	public User(String username, String password) {
 		this.username = username; 
 		this.password = password; 
 		this.created = true; 
+		this.gameList = new ArrayList<Game>();
 	}
 
 	
@@ -41,6 +47,10 @@ public class User {
 		return created;
 	}
 	
+	public ArrayList<Game> getGameList() {
+		return gameList;
+	}
+	
 	
 	// Setters
 	public void setUsername(String username) {
@@ -61,5 +71,9 @@ public class User {
 	
 	public void setCreated(boolean created) {
 		this.created = created;
+	}
+	
+	public void setGameList(ArrayList<Game> gameList) {
+		this.gameList = gameList;
 	}
 }

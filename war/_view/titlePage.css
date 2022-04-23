@@ -23,6 +23,21 @@
 	border-style: solid; 
 	border-color: blue; 
 	padding: 15px; 
+	justify-content: center; 
+	align-items: center;
+}
+
+#header{
+	position: absolute; /* Sit on top of the page content */
+  	display: flex; 
+  	width: 99%; 
+  	height: 30px;
+  	background-color: rgb(105, 0, 0); /* Black background with opacity */
+	z-index: 3; /* Specify a stack order in case you're using a different order for other elements */
+	color: white; 
+	font-size: 20px; 
+	text-align: left;
+	margin:auto;
 }
 
 .loginText{
@@ -46,6 +61,8 @@
 }
 #loginBoxes{
 	margin-top:5%;
+	overflow:auto;
+	position:relative;
 }
 #usernameBox{
 	vertical-align: middle;

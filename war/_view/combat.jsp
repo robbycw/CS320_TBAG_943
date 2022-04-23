@@ -40,12 +40,48 @@
   		font-size: 150%;
 		}
 		
-		
+		#header{
+			display: flex; 
+			width: 99%; 
+			height: 30px;
+			background-color: rgb(105, 0, 0); /* Black background with opacity */
+			z-index: 3; /* Specify a stack order in case you're using a different order for other elements */
+			color: white; 
+			font-size: 20px; 
+			text-align: left;
+			margin:auto;
+		}
 		
 		</style>
 	</head>
 
 	<body>
+
+		<!-- Page Header: Has log-out button, display on all pages when logged in. -->
+		<c:if test= "${user.created}">
+		<div>	
+			<div id="header">
+			<form action="${pageContext.servletContext.contextPath}/titlePage" method="post" style="width: 100%;">
+				<table style="width:100%">
+					<tr>
+						<td style="width:15%">${user.username}</td>
+						<td>
+							<div class= "submitButton" style="margin-top: 0px">
+								<button type="submit" value="Log Out" name= "logOut">Log Out</button>
+							</div>
+						</td>
+						<td>
+							<div class= "submitButton" style="margin-top: 0px">
+								<button type="submit" value="Title Page" name= "titlePage">Title Page</button>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</form>
+			</div>
+		<div>
+		</c:if>
+
 		<c:if test="${! empty errorMessage}">
 			<div class="error">${errorMessage}</div>
 		</c:if>

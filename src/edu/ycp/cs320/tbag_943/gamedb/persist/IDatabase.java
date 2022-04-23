@@ -18,10 +18,12 @@ public interface IDatabase {
 	public List<String> findGameLogByGameID(int gameID); 
 	public Player findPlayerByGameID(int gameID); 
 	public List<Combat> findCombatsByLocationID(int locationID); 
-	public List<Puzzle> findPuzzlesByLocationID(int locationID); 
-	public Map findMapByGameID(int gameID); 
+	public List<Integer> findPuzzleIDsByLocationID(int locationId);
+	public Puzzle findPuzzleByPuzzleId(int puzzle_id);
+	public Map findMapByMapID(int mapId);
 	public HashMap<String, ArrayList<String>> findConnectionsByMapID(int mapID); 
-	public List<Location> findLocationsByMapID(int mapID); 
+	public Location findLocationByLocationID(int locationId); 
+	public WinCondition findWinConditionByWinConditionId(int winCondition_id);
 	public Loot findLootByLocationID(int locationID); 
 	public HashMap<String, Item> findInventoryByPlayerID(int playerID); 
 	public HashMap<String, Stat> findPlayerStatsByPlayerID(int playerID); 
@@ -35,12 +37,23 @@ public interface IDatabase {
 	// Inserts
 	public Integer insertPlayerIntoPlayerTable(Player player); 
 	public Integer insertGameLogIntoGameLogTable(List<String> log);
+	public Integer insertNewNPCs(String name, int health, boolean combat, HashMap<String, Stat> stats); 
+	public Integer insertNewNPCStats(String name, int health, int armor, int strength, int speed);
+	public Integer InsertNewLocationToNPC(int NPC_Id);
+	public Integer InsertNewNPCToStats(int Stats_id);
+	Integer insertNewNPCStats(NPC npc); 
+	public Integer insertNewGame(User user, Player player); 
 		// This method will need to fetch the most recently added player and log
 		// IDs when the game is first inserted (saved)
 	public Integer insertGameIntoGameTable(Game game); 
 	public Integer insertPlayerIDAndItemIDIntoInventoryTable(int playerID, int itemID);
 	
 	public Integer insertNewPlayer(Player player, int loc_rows, int game_rows); 
+	
+	public WinCondition insertNewWinConditions(WinCondition winCondition);
+	public Stat insertNewPlayerStats(Stat playerStats);
+	public Location insertNewLocations(Location location);
+	
 	
 	// When we go to implement insertNewGame in the SQL DB, remember that
 	// creating a new game will require reading the CSVs and properly 
@@ -55,11 +68,11 @@ public interface IDatabase {
 	// Perhaps just by fetching the number of rows in the UserToGame table?
 	// Need # of rows in each subtable as well, starting the ID counts from 
 	// (# of rows in UserToGame) * (# of rows in a given table) + 1. 
-	public Integer insertNewGame(User user, Player player); 
+	
 	
 	
 	// Updates
-	
+	public Boolean UpdateNPCByNPCId(NPC npc);
 	// We could get away with only implementing updateGame, as Game
 	// already contains all of these classes. However, we need to 
 	// keep in mind that doing so will require the same queries that
@@ -76,15 +89,20 @@ public interface IDatabase {
 	public boolean updateCombatByCombatId(Combat combat); 
 	public boolean updatePuzzle(Puzzle puzzle);  
 	public boolean updateLoot(Loot loot); 
+	public boolean updateWinConditionByWinConditionId(WinCondition winCondition);
 	
 	
 	// Removals
 	public boolean removeGameByGameID(int gameID); 
-	public boolean removeItemFromInventoryByItemIDAndPlayerID(int itemID, int playerID); 
+	public boolean removeItemFromInventoryByItemIDAndPlayerID(int itemID, int playerID);
+
+	
 	
 	
 	// Other
-	public int getNumberRowsInTable(String table); 
+	public int getNumberRowsInTable(String table);
+	Integer insertNewNPCs(String name, boolean combat, HashMap<String, Stat> stats);
+	
 	
 	/* Library Example: 
 	// Finds

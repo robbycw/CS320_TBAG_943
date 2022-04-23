@@ -1,6 +1,7 @@
 package edu.ycp.cs320.tbag_943.gamedb.persist;
 
 import java.io.IOException;
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -15,7 +16,6 @@ import edu.ycp.cs320.booksdb.model.Book;
 import edu.ycp.cs320.booksdb.model.BookAuthor;
 import edu.ycp.cs320.booksdb.model.Pair;
 import edu.ycp.cs320.tbag_943.classes.*; 
-
 //Code comes from CS320 Library Example. 
 public class DerbyDatabase implements IDatabase {
 	static {
@@ -31,7 +31,346 @@ public class DerbyDatabase implements IDatabase {
 	}
 
 	private static final int MAX_ATTEMPTS = 10;
-
+	
+	
+	public User findUserByUsernameAndPassword(String username, String password) {
+		return executeTransaction(new Transaction<User>() {
+			@Override
+			public User execute(Connection conn) throws SQLException{
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				User user = new User();
+				boolean found = false;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select User.user_id, User.username, User.created" + 
+							"from User" +
+							"User.username = ? and User.password = ?");
+					stmt1.setString(1,username);
+					stmt1.setString(2, username);
+					
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					while(resultSet1.next()) {
+						found = true;
+						
+						user.setId(resultSet1.getInt(1));
+						user.setUsername(resultSet1.getString(2));
+						user.setCreated(resultSet1.getBoolean(3));
+						
+					}
+					if(!found) {
+						System.out.println("This user doesn't exist");
+					}
+					
+					return user;
+				}finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public List<Game> findGamesByUserID(int userID){
+		return executeTransaction(new Transaction<List<Game>>() {
+			@Override
+			public List<Game> execute(Connection conn) throws SQLException{
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				Boolean found = false;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select Game.difficulty, Game.timer, Game.player, Game.currentCombat, Game.inCombat, Game.playerTurnTaken, Player.name" +
+							"from User, Game, Map, Location, Combat, Player" +
+							"where User.user_id = ?" +
+							"and Game.User.user_id = User.user_id");
+					
+					stmt1.setInt(1, userID);
+					
+					ArrayList<Game> userGames = new ArrayList<Game>();
+					Game game = new Game();
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						
+						game.setDifficulty(resultSet1.getInt(1));
+						game.getTimer().setTime(resultSet1.getInt(3));
+						game.setPlayer(game.getPlayer());
+						game.setPlayerCreated(resultSet1.getBoolean(8));
+						game.getPlayer().setName(resultSet1.getString(9));
+						userGames.add(game);
+					}
+					
+					if(!found) {
+						System.out.println("user doesn't have any current games");
+					}
+					
+					return userGames;
+				}finally {
+					
+				}
+			}
+		});
+	}
+	
+	public List<Game> findGameByUserID(int userID){
+		return executeTransaction(new Transaction<List<Game>>() {
+			@Override
+			public List<Game> execute(Connection conn) throws SQLException{
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				Boolean found = false;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select Game.difficulty, Game.outputLog, Game.timer, Game.player, Game.currentCombat, Game.inCombat, Game.playerTurnTaken" +
+							"from User, Game, Map, Location, Combat" +
+							"where User.user_id = ?" +
+							"and Game.user_id = User.user_id");
+					
+					stmt1.setInt(1, userID);
+					
+					ArrayList<Game> userGames = new ArrayList<Game>();
+					Game game = new Game();
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						game.setDifficulty(resultSet1.getInt(1));
+						game.setOutputLog((ArrayList<String>) resultSet1.getArray(2));
+						game.getTimer().setTime(resultSet1.getInt(3));
+						game.getMap().setLocations((HashMap<String, Location>) resultSet1.getArray(4));
+						game.setPlayer(game.getPlayer());
+						game.getCurrentCombat().setNpcs((HashMap<String, NPC>) resultSet1.getArray(5));;
+						game.setInCombat(resultSet1.getBoolean(6));
+						game.setPlayerTurnTaken(resultSet1.getBoolean(7));
+						game.setPlayerCreated(resultSet1.getBoolean(8));
+						
+						userGames.add(game);
+					}
+					
+					if(!found) {
+						System.out.println("user doesn't have any current games");
+					}
+					
+					return userGames;
+				}finally {
+					
+				}
+			}
+		});
+	}
+	public List<Integer> findNPCIdsByLocationID(int locationID){
+		return executeTransaction(new Transaction<List<Integer>>() {
+			@Override
+			public List<Integer> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				Boolean found = false;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select LocationToNPC.npc_id " +
+							"from LocationToNPC " + 
+									"where LocationToNPC.location_id = ?"
+							);
+					stmt1.setInt(1, locationID);
+					
+					ArrayList<Integer> NPCsIds = new ArrayList<Integer>();
+					NPC npc = new NPC();
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					while(resultSet1.next()) {
+						found = true;
+						
+						npc.setId(resultSet1.getInt(1));
+						NPCsIds.add(npc.getId());
+					}
+					
+					if(!found) {
+						System.out.println("No NPCs in this location");
+					}
+					return NPCsIds;
+				}finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	public List<NPC> findNPCByNPCId(int NPCId){
+		return executeTransaction(new Transaction<List<NPC>>() {
+			@Override
+			public List<NPC> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				Boolean found = false;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select NPC.* " +
+							"from NPC " + 
+							"where NPC.NPC_id = ? "
+							);
+					stmt1.setInt(1, NPCId);
+					
+					ArrayList<NPC> NPCsIds = new ArrayList<NPC>();
+					NPC npc = new NPC();
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					while(resultSet1.next()) {
+						found = true;
+						
+						npc.setName(resultSet1.getString(1));
+						npc.setCombat(Boolean.parseBoolean(resultSet1.getString(2)));
+						npc.setIntimidated(Boolean.parseBoolean(resultSet1.getString(3)));
+						npc.setCanIntimidate(Boolean.parseBoolean(resultSet1.getString(4)));
+						npc.setIntimidationThreshold(resultSet1.getInt(5));
+						npc.setPersuaded(Boolean.parseBoolean(resultSet1.getString(6)));
+						npc.setCanPersuade(Boolean.parseBoolean(resultSet1.getString(7)));
+						npc.setPersuasionThreshold(resultSet1.getInt(8));
+						
+						NPCsIds.add(npc);
+					}
+					
+					if(!found) {
+						System.out.println("No NPCs in this location");
+					}
+					return NPCsIds;
+				}finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public List<Integer> findNPCStatsIdsByNPCId(int NPCId){
+		return executeTransaction(new Transaction<List<Integer>>() {
+			@Override
+			public List<Integer> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				Boolean found = false;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select NPCToStats.stat_id " +
+							"from NPCToStats " + 
+									"where NPCToStats.npc_id = ? "
+							);
+					stmt1.setInt(1, NPCId);
+					
+					ArrayList<Integer> NPCStatIds = new ArrayList<Integer>();
+					NPC npc = new NPC();
+					
+					while(resultSet1.next()) {
+						found = true;
+						
+						npc.getStat().setId(resultSet1.getInt(1));
+						NPCStatIds.add(npc.getStat().getId());
+					}
+					
+					if(!found) {
+						System.out.println("stats were not found for NPC");
+					}
+					
+					return NPCStatIds;
+				}finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	public Stat findNPCStatByStatId(int StatId){
+		return executeTransaction(new Transaction<Stat>() {
+			@Override
+			public Stat execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				Boolean found = false;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select Stat.name, Stat.rank " +
+							"from Stat " + 
+									"where Stat.stat_id = ? "
+							);
+					stmt1.setInt(1, StatId);
+					
+					Stat stat = new Stat();
+					
+					while(resultSet1.next()) {
+						found = true;
+						
+						stat.setName(resultSet1.getString(1));
+						stat.setRank(resultSet1.getInt(2));
+						
+					}
+					
+					if(!found) {
+						System.out.println("this ID doesn't have a pertaining stat");
+					}
+					
+					return stat;
+				}finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	public List<Integer> findNPCsIdByCombatID(int combatID){
+		return executeTransaction(new Transaction<List<Integer>>() {
+			@Override
+			public List<Integer> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				Boolean found = false;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select CombatToNPC.npc_id " +
+							"from CombatToNPC " + 
+								"where CombatToNPC.combat_id = ? " 
+							);
+					stmt1.setInt(1, combatID);
+					
+					ArrayList<Integer> NPCIds = new ArrayList<Integer>();
+					NPC npc = new NPC();
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					while(resultSet1.next()) {
+						found = true;
+						
+						npc.setId(resultSet1.getInt(1));
+						NPCIds.add(npc.getId());
+					}
+					
+					if(!found) {
+						System.out.println("No NPCs in this combat");
+					}
+					return NPCIds;
+				}finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
 	
 	public Loot findLootByLocationID(int locationID) {
 		return executeTransaction(new Transaction<Loot>() {
@@ -813,6 +1152,401 @@ public class DerbyDatabase implements IDatabase {
 		});
 	}
 	
+
+	public Speech findSpeechOptionsBySpeechId(int speechID) {
+		return executeTransaction(new Transaction<Speech>() {
+			@Override
+			public Speech execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				Boolean found = false;
+				try {
+					stmt1 = conn.prepareStatement(
+							"select Speech.speechOptions* " +
+							"  from  Speech " +
+							"  where Speech.speech_id = ? "
+					);
+					stmt1.setInt(1, speechID);
+					
+					Speech speech = new Speech(); 
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					// for testing that a result was returned
+					
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						// TODO : Need to set all fields in Item based on entries in table.
+						
+						speech.addToSpeech(resultSet1.getString(1));
+						
+					}
+					
+					// check if the playerID was found
+					if (!found) {
+						System.out.println("<" + speechID + "> was not found in the Item table");
+					}
+					
+					return speech;
+					
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		
+		});
+	}
+        
+        
+	public List<Integer> findPlayerInventoryIdsByPlayerId(int playerID) {
+		return executeTransaction(new Transaction<List<Integer>>() {
+			@Override
+			public List<Integer> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select PlayerInventory.item_id " +
+							"  from  PlayerInventory " +
+							"  where PlayerInventory.player_id = ? "
+					);
+          
+					stmt1.setInt(1, playerID);
+					
+					ArrayList<Integer> inventoryIds = new ArrayList<Integer>();
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+					
+					while (resultSet1.next()) {
+						found = true;
+						// Add each item_id to the list. 
+						
+						inventoryIds.add(resultSet1.getInt(1));
+						
+					}
+					
+					// check if the playerID was found
+					if (!found) {
+						System.out.println("<" + playerID + "> was not found in the PlayerInventory table");
+					}
+					
+					return inventoryIds;
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Integer insertNewNPCs(List<NPC> npcList, int loc_rows, int game_rows) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				// for saving NPC ID 
+
+				// try to retrieve author_id (if it exists) from DB, for Author's full name, passed into query
+				try {
+					stmt1 = conn.prepareStatement(
+							"insert into NPC (NPC.npc_id, NPC.name, NPC.combat, NPC.item_id, NPC.speech_id, "
+							+ "NPC.isIntimidatedm, NPC.canIntimidate, NPC.intimidationThreshold, "
+							+ "NPC.isPersuaded, NPC.canPersuade, NPC.persuasionThreshold)  " +
+							" values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+					);
+					
+					for(NPC npc : npcList) {
+						stmt1.setInt(1, npc.getId() + game_rows);
+						stmt1.setString(2, npc.getName());
+						stmt1.setString(3, Boolean.toString(npc.isCombat()));
+						stmt1.setInt(4, npc.getWeapon().getId());
+						stmt1.setInt(5, npc.getSpeech().getId());
+						stmt1.setString(6, Boolean.toString(npc.isIntimidated()));
+						stmt1.setString(7, Boolean.toString(npc.canIntimidate()));
+						stmt1.setInt(8, npc.getIntimidationThreshold());
+						stmt1.setString(9, Boolean.toString(npc.isPersuaded()));
+						stmt1.setString(10, Boolean.toString(npc.canPersuade()));
+						stmt1.setInt(11, npc.getPersuasionThreshold());
+						stmt1.addBatch();
+					}
+					
+					// execute the query, get the result
+					stmt1.executeBatch();
+					
+					System.out.println("NPCs #" + game_rows + " inserted into NPC table");	
+					return game_rows;
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+        });
+	}
+
+	public Map findMapByMapID(int mapId) {
+		return executeTransaction(new Transaction<Map>() {
+			@Override 
+			public Map execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				ResultSet resultSet = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+							" select Map.* "
+							+ " from Map "
+							+ " where Map.map_id = ? "
+					);
+					stmt.setInt(1, mapId);
+					
+					resultSet = stmt.executeQuery();
+					
+					Map map = new Map();
+					
+					boolean found = false;
+					
+					while(resultSet.next()) {
+						found = true;
+						
+						map.setId(resultSet.getInt(1));
+					}
+					
+					if (!found) {
+						System.out.println("<" + mapId + "> was not found in the Map table");
+					}
+					
+					return map;
+				} finally {
+					DBUtil.closeQuietly(resultSet);
+					DBUtil.closeQuietly(stmt);
+				}
+			}
+		});
+	}
+	
+	public Location findLocationByLocationID(int locationId) {
+		return executeTransaction(new Transaction<Location>() {
+			@Override
+			public Location execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				ResultSet resultSet = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+							" select Location.* "
+							+ " from Location "
+							+ " where location_id = ? "
+					);
+					stmt.setInt(1, locationId);
+					
+					resultSet = stmt.executeQuery();
+					
+					Location location = new Location();
+					
+					boolean found = false;
+					
+					while(resultSet.next()) {
+						found = true;
+						
+						location.setId(resultSet.getInt(1));
+						location.setName(resultSet.getString(2));
+						location.setDescription(resultSet.getString(3));
+						location.setHidden(resultSet.getBoolean(4));
+						location.setBlocked(resultSet.getBoolean(5));
+					}
+					
+					if (!found) {
+						System.out.println("<" + locationId + "> was not found in the Location table");
+					}
+					
+					return location;
+				} finally {
+					DBUtil.closeQuietly(resultSet);
+					DBUtil.closeQuietly(stmt);
+				}
+			}
+		});
+	}
+	
+	public List<Integer> findPuzzleIdsByLocationID(int locationId) {
+		return executeTransaction(new Transaction<List<Integer>>() {
+			@Override
+			public List<Integer> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				ResultSet resultSet = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+							"select Puzzle.puzzle_id "
+							+ " from Location, Puzzle, LocationToPuzzle "
+							+ " where Location.location_id = LocationToPuzzle.location_id "
+							+ " and Puzzle.puzzle_id = LocationToPuzzle.puzzle_id "
+							+ " and Location.location_id = ? "
+					);
+					stmt.setInt(1, locationId);
+					
+					resultSet = stmt.executeQuery();
+					
+					ArrayList<Integer> puzzleIds = new ArrayList<Integer>();
+					
+					boolean found = false;
+					
+					while(resultSet.next()) {
+						found = true;
+						
+						puzzleIds.add(resultSet.getInt(1));
+					}
+					
+					if (!found) {
+						System.out.println("<" + locationId + "> was not found in the Location table");
+					}
+					
+					return puzzleIds;
+				} finally {
+					DBUtil.closeQuietly(resultSet);
+					DBUtil.closeQuietly(stmt);
+				}
+			}
+		});
+	}
+	
+	public Puzzle findPuzzleByPuzzleId(int puzzle_id) {
+		return executeTransaction(new Transaction <Puzzle>() {
+			@Override
+			public Puzzle execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				ResultSet resultSet = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+							" select Puzzle.* "
+							+ " from Puzzle "
+							+ " where Puzzle.puzzle_id = ? "
+					);
+					stmt.setInt(1, puzzle_id);
+					
+					Puzzle puzzle = new Puzzle();
+					
+					boolean found = false;
+					
+					while(resultSet.next()) {
+						found = true;
+						
+						puzzle.setId(resultSet.getInt(1));
+						puzzle.setPrompt(resultSet.getString(2));
+						puzzle.setAnswer(resultSet.getString(3));
+						puzzle.setResult(resultSet.getBoolean(6));
+						puzzle.setCanSolve(resultSet.getBoolean(7));
+						puzzle.setSolved(resultSet.getBoolean(8));
+						puzzle.setBreakable(resultSet.getBoolean(9));
+						puzzle.setJumpable(resultSet.getBoolean(10));
+						puzzle.setRoomCon(resultSet.getString(11));
+					}
+					
+					if (!found) {
+						System.out.println("<" + puzzle_id + "> was not found in the Puzzle table");
+					}
+					
+					return puzzle;
+				} finally {
+					DBUtil.closeQuietly(resultSet);
+					DBUtil.closeQuietly(stmt);
+				}
+			}
+		});
+	}
+	
+	
+	public WinCondition findWinConditionByWinConditionId(int winCondition_id) {
+		return executeTransaction(new Transaction<WinCondition>() {
+			@Override
+			public WinCondition execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				ResultSet resultSet = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+							"select WinCondition.* "
+							+ " from WinCondition "
+							+ " where WinCondition.winCondition_id = ? "
+					);
+					stmt.setInt(1, winCondition_id);
+					
+					resultSet = stmt.executeQuery();
+					
+					WinCondition winCondition = new WinCondition();
+					
+					boolean found = false;
+					
+					while(resultSet.next()) {
+						found = true;
+						
+						winCondition.setId(resultSet.getInt(1));
+						winCondition.setComplete(resultSet.getBoolean(2));
+						winCondition.setLost(resultSet.getBoolean(3));
+						winCondition.setWonRooms(resultSet.getBoolean(4));
+						winCondition.setBestCase(resultSet.getBoolean(5));
+						winCondition.setDefaultCase(resultSet.getBoolean(6));
+					}
+					
+					if (!found) {
+						System.out.println("<" + winCondition_id + "> was not found in the Puzzle table");
+					}
+					
+					return winCondition;
+				} finally {
+					DBUtil.closeQuietly(resultSet);
+					DBUtil.closeQuietly(stmt);
+				}
+			}
+		});
+	}
+	
+	public HashMap<String, ArrayList<String>> findConnectionsByMapID(int mapID) {
+		return executeTransaction(new Transaction <HashMap<String, ArrayList<String>>>() {
+			@Override
+			public HashMap<String, ArrayList<String>> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				ResultSet resultSet = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+						"select Map.* "
+						+ " from Map "
+						+ " where Map.map_id = ?"	
+					);
+					stmt.setInt(1,  mapID);
+					
+					resultSet = stmt.executeQuery();
+					
+					HashMap<String, ArrayList<String>> connections = new HashMap<String, ArrayList<String>>();
+					Map m = new Map();
+					
+					boolean found = false;
+					
+					while(resultSet.next()) {
+						found = true;
+						
+						m.setId(resultSet.getInt(1));
+						connections = m.getConnections();
+					}
+					
+					if (!found) {
+						System.out.println("<" + mapID + "> was not found in the  table");
+					}
+					
+					return connections;
+				} finally {
+					DBUtil.closeQuietly(resultSet);
+					DBUtil.closeQuietly(stmt);
+				}
+			}
+		});
+	}
+
 	public Integer insertNewPlayer(Player player, int loc_rows, int game_rows) {
 		// Note, this method inserts a new row for the new player and default values.
 		// Character creation should call an update for the Player class! 
@@ -848,6 +1582,376 @@ public class DerbyDatabase implements IDatabase {
 					
 				} finally {
 					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+      
+	public Integer InsertNewNPCStats(NPC npc, int npc_rows, int npcStat_rows) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				int resultSet1 = 0;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"insert into NPCToStats (NPC_id, stat_id)  " +
+							" values(?, ?) "
+					);
+  					
+  					int NPCId = npc.getId() + npc_rows;
+		  			
+  					for(Stat stat: npc.getStats().values()) {
+  						stmt1.setInt(1, NPCId);
+  						int statId = stat.getId() + npcStat_rows;
+  						stmt1.setInt(2, statId);
+  						stmt1.addBatch();
+  					}
+  					stmt1.executeBatch();
+  					
+  					System.out.println("NPC #" + NPCId + " inserted into NPCToStats table");
+  					
+  					return 0;
+				}finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+				
+			}
+		});
+	}
+	public Integer insertNewPlayerToStats(Player player, int player_rows, int playerstat_rows) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					// insert new player_id and player_stats
+					// prepare SQL insert statement to add new player_id and stat_id
+					stmt1 = conn.prepareStatement(
+							"insert into PlayerToStats (player_id, stat_id) " +
+							"  values(?, ?) "
+					);
+
+					// We want to insert all of the stats stored in player. 
+					// Hence, we need a batch of inserts!
+					
+					int playerId = player.getId() + player_rows;
+					
+					// Add each stat with matching playerId to the table, incremented by number of rows.
+					for (Stat stat : player.getStats().values()) {
+						stmt1.setInt(1, playerId);
+						int statId = stat.getId() + playerstat_rows;
+						stmt1.setInt(2, statId);
+						stmt1.addBatch();
+					}
+					stmt1.executeBatch();
+					
+					System.out.println("Player #" + playerId + " inserted into PlayerToStats table");
+									
+					
+					return 0;
+					
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Integer insertNewPlayerInventory(Player player, int player_rows, int playerInventory_rows) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					// insert new player_id and item_id
+					// prepare SQL insert statement to add new player_id and item_id
+					stmt1 = conn.prepareStatement(
+							"insert into PlayerToStats (player_id, item_id) " +
+							"  values(?, ?) "
+					);
+
+					// We want to insert all of the items stored in player. 
+					// Hence, we need a batch of inserts!
+					
+					int playerId = player.getId() + player_rows;
+					
+					// Add each stat with matching playerId to the table, incremented by number of rows.
+					for (Item item : player.getInventory().values()) {
+						stmt1.setInt(1, playerId);
+						int itemId = item.getId() + playerInventory_rows;
+						stmt1.setInt(2, itemId);
+						stmt1.addBatch();
+					}
+					stmt1.executeBatch();
+					
+					System.out.println("Player #" + playerId + " inserted into PlayerInventory table");
+									
+					
+					return 0;
+					
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Integer insertNewMap(Map map, int game_rows, int location_rows) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					// insert new Map
+					// prepare SQL insert statement to add new Map
+					stmt1 = conn.prepareStatement(
+							"insert into Map (map_id, location_id, north, east, south, west, extra) " +
+							"  values(?, ?, ?, ?, ?, ?, ?) "
+					);
+
+					// We want to insert all of the Map's locations and their connections.
+					// Hence, we need a batch of inserts!
+					
+					int mapId = map.getId() + game_rows;
+					
+					// Add each stat with matching playerId to the table, incremented by number of rows.
+					for (Location loc : map.getLocations().values()) {
+						stmt1.setInt(1, mapId);
+						
+						// Compute the values for each column in the row first. 
+						int locId = loc.getId() + location_rows;
+						ArrayList<String> locationConn = map.getConnections().get(loc.getName().toLowerCase());
+						String northName = locationConn.get(0); 
+						String eastName = locationConn.get(1);
+						String southName = locationConn.get(2);
+						String westName = locationConn.get(3);
+						String extraName = locationConn.get(4);
+						
+						int northId = map.getLocations().get(northName).getId(); 
+						int eastId = map.getLocations().get(eastName).getId();
+						int southId = map.getLocations().get(southName).getId();
+						int westId = map.getLocations().get(westName).getId();
+						int extraId = map.getLocations().get(extraName).getId();
+						
+						// Assign these values. 
+						stmt1.setInt(2, locId);
+						stmt1.setInt(3, northId);
+						stmt1.setInt(4, eastId);
+						stmt1.setInt(5, southId);
+						stmt1.setInt(6, westId);
+						stmt1.setInt(7, extraId);
+						stmt1.addBatch();
+					}
+					stmt1.executeBatch();
+					
+					System.out.println("Map #" + mapId + " inserted into Map table");
+									
+					
+					return 0;
+					
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Integer insertNewGameLog(ArrayList<String> log, int game_rows) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					// insert new player_id and item_id
+					// prepare SQL insert statement to add new player_id and item_id
+					stmt1 = conn.prepareStatement(
+							"insert into GameLog (log_id, order, output) " +
+							"  values(?, ?, ?) "
+					);
+
+					// We want to insert all of the outputs stored in the log individually. 
+					// Hence, we need a batch of inserts!
+					
+					// log_id is always same as game ID, which will be 1 greater than current # of games.
+					int logId = 1 + game_rows;
+					
+					// Iterate through ArrayList.
+					for (int j = 0; j < log.size(); j++) {
+						stmt1.setInt(1, logId);
+						// Order is the index of the string.
+						stmt1.setInt(2, j);
+						// Then add in the string. 
+						stmt1.setString(3, log.get(j));
+						stmt1.addBatch();
+					}
+					stmt1.executeBatch();
+					
+					System.out.println("Log #" + logId + " inserted into GameLog table");
+									
+					
+					return 0;
+					
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+
+
+	public Boolean UpdateNPCByNPCId(NPC npc) {
+		return executeTransaction(new Transaction<Boolean>() {
+			@Override
+			public Boolean execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"Update NPC" +
+							"Set NPC.combat = ?, NPC.isIntimidated = ?, NPC.canIntimidate = ?, NPC.isPersuaded = ?, NPC.canPersuade = ?" + 
+									"where NPC.NPC_id = ?"
+					);
+  					stmt1.setString(1, Boolean.toString(npc.isIntimidated()));
+  					stmt1.setString(2, Boolean.toString(npc.getCanIntimidate()));
+  					stmt1.setString(3, Boolean.toString(npc.isPersuaded()));
+  					stmt1.setString(4, Boolean.toString(npc.getCanPersuade()));
+  					stmt1.setInt(5, npc.getId());
+  					
+					stmt1.executeUpdate();
+					
+					System.out.println("NPC #" + npc.getId() + " updated");		
+					
+					return true;
+				}finally{
+					DBUtil.closeQuietly(stmt1);
+        });
+	}
+
+	public WinCondition insertNewWinConditions(WinCondition winCondition) {
+		return executeTransaction(new Transaction<WinCondition>() {
+			@Override
+			public WinCondition execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+							"insert into WinCondition(winCondition_id, complete, lost, wonRooms, bestCase, defaultCase) "
+							+ " values(?, ?, ?, ?, ?, ?) "
+					);
+					stmt.setInt(1, winCondition.getId());
+					stmt.setBoolean(2, winCondition.getComplete());
+					stmt.setBoolean(3, winCondition.getLost());
+					stmt.setBoolean(4,  winCondition.getWonRooms());
+					stmt.setBoolean(5,  winCondition.getBestCase());
+					stmt.setBoolean(6,  winCondition.getDefaultCase());
+					
+					stmt.executeQuery();
+					
+					System.out.println("Win Condition: " + winCondition + " has been inserted into WinConditions table");
+					
+					return winCondition;
+				} finally {
+					DBUtil.closeQuietly(stmt);
+				}
+			}
+		});
+	}
+	
+	public Stat insertNewPlayerStats(Stat playerStats) {
+		return executeTransaction(new Transaction<Stat>() {
+			@Override
+			public Stat execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+						"insert into PlayerStats(stat_id, name, amount) "
+						+ " values(?, ?, ?)"	
+					);
+					stmt.setInt(1,  playerStats.getId());
+					stmt.setString(2,  playerStats.getName());
+					stmt.setInt(3,  playerStats.getRank());
+					
+					stmt.executeQuery();
+					
+					System.out.println("Player Stats: " + playerStats + " has been inserted into Stats table");
+					
+					return playerStats;
+				} finally {
+					DBUtil.closeQuietly(stmt);
+
+				}
+			}
+		});
+	}
+	
+
+	public Boolean updateNPCStatsByStatId(Stat stat) {
+		return executeTransaction(new Transaction<Boolean>() {
+			@Override
+			public Boolean execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"update Stat " +
+							"  set name = ?, rank = ?" +
+							"  where stat_id = ?"
+					);
+					
+					stmt1.setString(1, stat.getName());
+					stmt1.setInt(2, stat.getRank());
+					stmt1.setInt(3, stat.getId());
+					
+					stmt1.executeUpdate();
+					
+					System.out.println("Stat #" + stat.getId() + " updated");					
+					
+					return true;
+				}finally {
+					DBUtil.closeQuietly(stmt1);
+        });
+      }
+   }
+
+      
+	public Location insertNewLocations(Location location) {
+		return executeTransaction(new Transaction<Location>() {
+			@Override
+			public Location execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+						"insert into Location(location_id, name, description, hidden, blocked) "
+						+ " values(?, ?, ?, ?, ?)"	
+					);
+					stmt.setInt(1,  location.getId());
+					stmt.setString(2,  location.getName());
+					stmt.setString(3,  location.getDescription());
+					stmt.setBoolean(4,  location.isHidden());
+					stmt.setBoolean(5,  location.getBlocked());
+					
+					
+					stmt.executeQuery();
+					
+					System.out.println("Location: " + location + " has been inserted into Location table");
+					
+					return location;
+				} finally {
+					DBUtil.closeQuietly(stmt);
+
 				}
 			}
 		});
@@ -1120,6 +2224,75 @@ public class DerbyDatabase implements IDatabase {
 			}
 		});
 	}
+
+	
+	public boolean updatePuzzleByPuzzleId(Puzzle puzzle) {
+		return executeTransaction(new Transaction<Boolean>() {
+			@Override
+			public Boolean execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+						"update Puzzle "
+						+ " set prompt = ?, answer = ?, requiredSkill = ?, requiredItem = ?, result = ?, canSolve = ?, solved = ?, breakable = ?, jumpable = ?, roomCon = ? "
+						+ " where Puzzle.puzzle_id = ? "	
+					);
+					stmt.setString(1,  puzzle.getPrompt());
+					stmt.setString(2, puzzle.getAnswer());
+					stmt.setString(3,  puzzle.getRequiredSkill().toString());
+					stmt.setString(4,  puzzle.getRequiredItem().toString());
+					stmt.setBoolean(5,  puzzle.getResult());
+					stmt.setBoolean(6, puzzle.isCanSolve());
+					stmt.setBoolean(7,  puzzle.isSolved());
+					stmt.setBoolean(8,  puzzle.getBreakable());
+					stmt.setBoolean(9, puzzle.isJumpable());
+					stmt.setString(10, puzzle.getRoomCon());
+					stmt.setInt(11,  puzzle.getId());
+					
+					stmt.executeQuery();
+					
+					System.out.println("Puzzle #: " + puzzle.getId() + " has been updated");
+					
+					return true;
+				} finally {
+					DBUtil.closeQuietly(stmt);
+				}
+			}
+		});
+	}
+	
+	public boolean updateWinConditionByWinConditionId(WinCondition winCondition) {
+		return executeTransaction(new Transaction<Boolean>() {
+			@Override
+			public Boolean execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+						"update WinCondition "
+						+ " set winCondition_id = ?, complete = ?, lost = ?, wonRooms = ?, bestCase = ?, defaultCase = ? "
+						+ " where WinCondition.winCondition_id = ?"
+					);
+					stmt.setInt(1,  winCondition.getId());
+					stmt.setBoolean(2,  winCondition.getComplete());
+					stmt.setBoolean(3,  winCondition.getLost());
+					stmt.setBoolean(4,  winCondition.getWonRooms());
+					stmt.setBoolean(5,  winCondition.getBestCase());
+					stmt.setBoolean(6,  winCondition.getDefaultCase());
+					stmt.setInt(7,  winCondition.getId());
+					
+					stmt.executeQuery();
+					
+					System.out.println("Win Condition #: " + winCondition.getId() + " has been updated");
+					
+					return true;
+				} finally {
+					DBUtil.closeQuietly(stmt);
+				}
+			}
+		});
+	}
 	
 	public boolean removeItemFromInventoryByItemIdAndPlayerId(int itemID, int playerID) {
 		return executeTransaction(new Transaction<Boolean>() {
@@ -1196,9 +2369,122 @@ public class DerbyDatabase implements IDatabase {
 		});
 	}
 	
+
+	@Override
+	public Integer insertNewNPCs(final String name, final int health, final boolean combat, final HashMap<String, Stat> stats) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				int resultSet1 = 0;
+				PreparedStatement stmt2 = null;
+				ResultSet resultSet2 = null;			
+				
+				// for saving NPC ID 
+				Integer NPC_id   = -1;
+
+				// try to retrieve author_id (if it exists) from DB, for Author's full name, passed into query
+				try {
+					stmt1 = conn.prepareStatement(
+							"insert into authors (name, health, combat, stats)  " +
+							" values(?, ?, ?, ?) "
+					);
+					stmt1.setString(1, name);
+					stmt1.setInt(2, health);
+					stmt1.setBoolean(3 , combat);
+					stmt1.setArray(3, (Array) stats);
+					
+					// execute the query, get the result
+					stmt1.executeUpdate();
+					
+					stmt2 = conn.prepareStatement(
+							"select author_id from authors" +
+							" where name = ?"
+					);
+					stmt2.setString(1, name);
+					
+					resultSet2 = stmt2.executeQuery();
+					
+					
+					while(resultSet2.next()) {
+						NPC_id = resultSet2.getInt(1);
+					}
+					
+					
+					return NPC_id;
+				} finally {
+					
+					DBUtil.closeQuietly(resultSet2);
+					DBUtil.closeQuietly(stmt1);
+					DBUtil.closeQuietly(stmt2);
+				}
+			}
+		});
+	}
+
 	
 	
 	
+	
+	
+  	public Void InsertNewLocationToNPC(NPC npc) {
+  		return executeTransaction(new Transaction<Void>() {
+  			@Override
+			public Void execute(Connection conn) throws SQLException {
+  				PreparedStatement stmt1 = null;
+				int resultSet1 = 0;
+  				
+  				try {
+  					stmt1 = conn.prepareStatement(
+							"insert into Location(name, canIntimidate, intimidationThreshold, canPersuade, persuausionThreshold)  " +
+							" values(?, ?, ?, ?, ?, ?)"
+					);
+  					
+  					
+  					stmt1.setString(1, npc.getName());
+					stmt1.setString(3 , Boolean.toString(npc.getCanIntimidate()));
+					stmt1.setInt(4, npc.getIntimidationThreshold());
+					stmt1.setString(5, Boolean.toString(npc.getCanPersuade()));
+					stmt1.setInt(6, npc.getPersuasionThreshold());
+  					
+		  			// execute the query, get the result
+					stmt1.executeUpdate();
+  					
+  				}finally {
+  					DBUtil.closeQuietly(stmt1);
+  				}
+				return null;
+  			}
+  		});
+  	}
+
+	
+
+	public Void InsertNewCombatToNPC(NPC npc) {
+		return executeTransaction(new Transaction<Void>() {
+			@Override
+			public Void execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				int resultSet1 = 0;
+				try {
+					stmt1 = conn.prepareStatement(
+							"insert into authors (name, attackMoves, combat)  " +
+							" values(?, ?, ?) "
+					);
+  						stmt1.setString(1, npc.getName());
+  						stmt1.setArray(2, (Array) npc.getAttacks());
+  						stmt1.setString(3, Boolean.toString(npc.isCombat()));
+  					
+		  				// execute the query, get the result
+						stmt1.executeUpdate();
+				}finally{
+					DBUtil.closeQuietly(stmt1);
+				}
+				return null;
+			}
+		});
+	}
+
 	
 	// transaction that retrieves a Book, and its Author by Title
 	@Override
@@ -2012,7 +3298,7 @@ public class DerbyDatabase implements IDatabase {
 						"	description varchar(500)," +
 						"	hidden varchar(5)," +
 						"	blocked varchar(5)," +
-						"	loot_id integer constraint loot_id references Loot," +
+						"	loot_id integer," +
 						"	winCondition_id integer constraint winCondition_id references WinCondition" +
 						")"
 					);
@@ -2076,7 +3362,7 @@ public class DerbyDatabase implements IDatabase {
 						"		generated always as identity (start with 1, increment by 1), " +
 						"	name varchar(50)," +
 						"	combat varchar(5)," +
-						"	item_id integer constraint item_id references Item," +
+						"	item_id integer," +
 						"	speech_id integer constraint speech_id references Speech," +
 						"	isIntimidated varchar(5)," +
 						"	canIntimidate varchar(5)," +

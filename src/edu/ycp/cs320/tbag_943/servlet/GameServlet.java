@@ -67,7 +67,8 @@ public class GameServlet extends HttpServlet {
 		HttpSession session = req.getSession(); 
 		System.out.println("GameServlet: doPost");
 
-		
+		// Get the User class from the session. 
+		User user = (User) session.getAttribute("user");
 		
 		if(req.getParameter("characterSubmit") != null) {
 			Game model = (Game) session.getAttribute("model"); 
@@ -141,6 +142,21 @@ public class GameServlet extends HttpServlet {
 			
 			resp.sendRedirect("/tbag_943/combat");
 			
+		} else if (req.getParameter("logOut") != null) {
+			// User wants to log out. 
+			User u = new User(); 
+			String loginError = ""; 
+			
+			session.setAttribute("user", u);
+			session.setAttribute("loginErr", loginError);
+			session.setAttribute("makeNewAccount", false);
+			session.setAttribute("playGameClicked", false);
+			
+		} else if (req.getParameter("titlePage") != null) {
+			System.out.println("TitlePage Servlet: TitlePage");
+			
+			resp.sendRedirect("/tbag_943/titlePage");
+			return; 
 		}
 		// Once we have a Game model that persists each request, we can have it so the Servlet will
 		// store Strings from the user input into the outputLog in Game. 
@@ -572,6 +588,7 @@ public class GameServlet extends HttpServlet {
 		samplePuzzle4.setLoot(new Loot(new Item("Death of Death", 1000)));
 		r4.addPuzzle(samplePuzzle4);
 		
+
 		String samplePuzzlePrompt5 = "There is a large, metal door that lies in front of you, but maybe it can be broken...";
 		Puzzle samplePuzzle5 = new Puzzle(samplePuzzlePrompt5, "break");
 		samplePuzzle5.setBreakable(true);
