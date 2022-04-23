@@ -2376,140 +2376,138 @@ public class DerbyDatabase implements IDatabase {
 		executeTransaction(new Transaction<Boolean>() {
 			@Override
 			public Boolean execute(Connection conn) throws SQLException {
-				List<Author> authorList;
-				List<Book> bookList;
-				List<BookAuthor> bookAuthorList;
+				//
+				// Load Initial Data from the CSVs. 
+				//
+				List<User> userList;
+				List<Pair<Integer, Integer>> userToGame; 
+				List<Game> gameList;  
+				List<ArrayList<String>> gameLogList; 
+				List<Player> playerList; 
+				List<Map> mapList; 
+				List<Pair<Integer, Integer>> playerToStats;
+				List<Pair<Integer, Integer>> playerInventory; 
+				List<Stat> playerStatsList; 
+				List<Item> itemList; 
+				List<Loot> lootList;
+				List<Location> locationList; 
+				List<Pair<Integer, Integer>> locationToNPC; 
+				List<WinCondition> winConditionList;
+				List<NPC> npcList; 
+				List<Pair<Integer, Integer>> npcToStats; 
+				List<Stat> npcStatsList; 
+				List<Speech> speechList; 
+				HashMap<Integer, ArrayList<String>> speechOptions;
+				HashMap<Integer, ArrayList<String>> speechResponses; 
+				List<Pair<Integer, Integer>> locationToCombat; 
+				List<Pair<Integer, Integer>> combatToNPC; 
+				List<Pair<Integer, Integer>> locationToPuzzle; 
+				List<Combat> combatList; 
+				List<Puzzle> puzzleList; 
+				
+				userList = new ArrayList<User>();
+				userToGame = new ArrayList<Pair<Integer, Integer>>();
+				gameList = new ArrayList<Game>();
+				gameLogList = new ArrayList<ArrayList<String>>();
+				playerList = new ArrayList<Player>();
+				mapList = new ArrayList<Map>();
+				playerToStats = new ArrayList<Pair<Integer, Integer>>();
+				playerInventory = new ArrayList<Pair<Integer, Integer>>();
+				playerStatsList = new ArrayList<Stat>();
+				itemList = new ArrayList<Item>();
+				lootList = new ArrayList<Loot>();
+				locationList = new ArrayList<Location>();
+				locationToNPC = new ArrayList<Pair<Integer, Integer>>();
+				winConditionList = new ArrayList<WinCondition>();
+				npcList = new ArrayList<NPC>();
+				npcToStats = new ArrayList<Pair<Integer, Integer>>();
+				npcStatsList = new ArrayList<Stat>();
+				speechList = new ArrayList<Speech>();
+				speechOptions = new HashMap<Integer, ArrayList<String>>();
+				speechResponses = new HashMap<Integer, ArrayList<String>>();
+				locationToCombat = new ArrayList<Pair<Integer, Integer>>();
+				combatToNPC = new ArrayList<Pair<Integer, Integer>>();
+				locationToPuzzle = new ArrayList<Pair<Integer, Integer>>();
+				combatList = new ArrayList<Combat>();
+				puzzleList = new ArrayList<Puzzle>();
 				
 				try {
-					authorList     = InitialData.getAuthors();
-					bookList       = InitialData.getBooks();
-					bookAuthorList = InitialData.getBookAuthors();					
+					userList.addAll(InitialData.getUser());
+					userToGame.addAll(InitialData.getUserToGame());
+					 
+					gameLogList.addAll(InitialData.getGameLog());
+					
+					playerToStats.addAll(InitialData.getPlayerToStats());
+					playerInventory.addAll(InitialData.getPlayerInventory());
+					playerStatsList.addAll(InitialData.getPlayerStats()); 
+					itemList.addAll(InitialData.getItem());
+					lootList.addAll(InitialData.getLoot(itemList));
+					
+					locationToNPC.addAll(InitialData.getLocationToNPC());
+					winConditionList.addAll(InitialData.getWinCondition());
+					
+					npcToStats.addAll(InitialData.getNPCToStats());
+					npcStatsList.addAll(InitialData.getNPCStats());
+					
+					speechOptions = InitialData.getSpeechOptions(); 
+					speechResponses = InitialData.getSpeechResponses(); 
+					speechList.addAll(InitialData.getSpeech(speechOptions, speechResponses)); 
+					
+					locationToCombat.addAll(InitialData.getLocationToCombat());
+					combatToNPC.addAll(InitialData.getCombatToNPC());
+					locationToPuzzle.addAll(InitialData.getLocationToPuzzle()); 
+					puzzleList.addAll(InitialData.getPuzzle(playerStatsList, itemList));
+					
+					npcList.addAll(InitialData.getNPC(itemList, speechList, npcToStats, npcStatsList));
+					combatList.addAll(InitialData.getCombat(npcList, combatToNPC));
+					locationList.addAll(InitialData.getLocation(lootList, winConditionList, 
+							locationToNPC, npcList, locationToCombat, combatList, locationToPuzzle, puzzleList));
+					mapList.addAll(InitialData.getMap(locationList));
+					playerList.addAll(InitialData.getPlayer(playerStatsList, playerToStats, 
+							itemList, playerInventory, locationList));
+					gameList.addAll(InitialData.getGame(playerList,gameLogList, mapList, combatList));
 				} catch (IOException e) {
 					throw new SQLException("Couldn't read initial data", e);
 				}
 
-				PreparedStatement insertAuthor     = null;
-				PreparedStatement insertBook       = null;
-				PreparedStatement insertBookAuthor = null;
-
-				try {
-					// must completely populate Authors table before populating BookAuthors table because of primary keys
-					insertAuthor = conn.prepareStatement("insert into authors (lastname, firstname) values (?, ?)");
-					for (Author author : authorList) {
-//						insertAuthor.setInt(1, author.getAuthorId());	// auto-generated primary key, don't insert this
-						insertAuthor.setString(1, author.getLastname());
-						insertAuthor.setString(2, author.getFirstname());
-						insertAuthor.addBatch();
-					}
-					insertAuthor.executeBatch();
-					
-					System.out.println("Authors table populated");
-					
-					// must completely populate Books table before populating BookAuthors table because of primary keys
-					insertBook = conn.prepareStatement("insert into books (title, isbn, published) values (?, ?, ?)");
-					for (Book book : bookList) {
-//						insertBook.setInt(1, book.getBookId());		// auto-generated primary key, don't insert this
-//						insertBook.setInt(1, book.getAuthorId());	// this is now in the BookAuthors table
-						insertBook.setString(1, book.getTitle());
-						insertBook.setString(2, book.getIsbn());
-						insertBook.setInt(3, book.getPublished());
-						insertBook.addBatch();
-					}
-					insertBook.executeBatch();
-					
-					System.out.println("Books table populated");					
-					
-					// must wait until all Books and all Authors are inserted into tables before creating BookAuthor table
-					// since this table consists entirely of foreign keys, with constraints applied
-					insertBookAuthor = conn.prepareStatement("insert into bookAuthors (book_id, author_id) values (?, ?)");
-					for (BookAuthor bookAuthor : bookAuthorList) {
-						insertBookAuthor.setInt(1, bookAuthor.getBookId());
-						insertBookAuthor.setInt(2, bookAuthor.getAuthorId());
-						insertBookAuthor.addBatch();
-					}
-					insertBookAuthor.executeBatch();	
-					
-					System.out.println("BookAuthors table populated");					
-					
-					return true;
-				} finally {
-					DBUtil.closeQuietly(insertBook);
-					DBUtil.closeQuietly(insertAuthor);
-					DBUtil.closeQuietly(insertBookAuthor);					
-				}
-			}
-		});
-	}
-	
-	// loads data retrieved from CSV files into DB tables in batch mode
-	public void loadInitialData() {
-		executeTransaction(new Transaction<Boolean>() {
-			@Override
-			public Boolean execute(Connection conn) throws SQLException {
-				List<Author> authorList;
-				List<Book> bookList;
-				List<BookAuthor> bookAuthorList;
+				//	
+				// Get constants for the largest ID in each table, as this will determine the
+				// shift forward for the IDs in the new game, as to avoid overwritten data. 
+				//
 				
-				try {
-					authorList     = InitialData.getAuthors();
-					bookList       = InitialData.getBooks();
-					bookAuthorList = InitialData.getBookAuthors();					
-				} catch (IOException e) {
-					throw new SQLException("Couldn't read initial data", e);
-				}
+				int userMax, gameMax, gameLogMax, playerMax, playerStatsMax, itemMax, lootMax, mapMax, locationMax, 
+					npcMax, npcStatsMax, speechMax, combatMax, puzzleMax, winConditionMax; 
+				
+				gameMax = getLargestIdInTable("Game", "game_id");
+				gameLogMax = getLargestIdInTable("GameLog", "log_id");
+				playerMax = getLargestIdInTable("Player", "player_id");
+				playerStatsMax = getLargestIdInTable("PlayerStats", "stat_id");
+				itemMax = getLargestIdInTable("Item", "item_id");
+				lootMax = getLargestIdInTable("Loot", "loot_id");
+				mapMax = getLargestIdInTable("Map", "map_id");
+				locationMax = getLargestIdInTable("Location", "location_id");
+				npcMax = getLargestIdInTable("NPC", "npc_id");
+				npcStatsMax = getLargestIdInTable("NPCStats", "stat_id");
+				//speechMax = getLargestIdInTable("Speech", "speech_id");
+				combatMax = getLargestIdInTable("Combat", "combat_id");
+				puzzleMax = getLargestIdInTable("Puzzle", "puzzle_id");
+				winConditionMax = getLargestIdInTable("WinCondition", "winCondition_id");
+				
+				
+				//
+				// Call the insert methods for inserting a new game. 
+				//
 
-				PreparedStatement insertAuthor     = null;
-				PreparedStatement insertBook       = null;
-				PreparedStatement insertBookAuthor = null;
-
-				try {
-					// must completely populate Authors table before populating BookAuthors table because of primary keys
-					insertAuthor = conn.prepareStatement("insert into authors (lastname, firstname) values (?, ?)");
-					for (Author author : authorList) {
-//						insertAuthor.setInt(1, author.getAuthorId());	// auto-generated primary key, don't insert this
-						insertAuthor.setString(1, author.getLastname());
-						insertAuthor.setString(2, author.getFirstname());
-						insertAuthor.addBatch();
-					}
-					insertAuthor.executeBatch();
-					
-					System.out.println("Authors table populated");
-					
-					// must completely populate Books table before populating BookAuthors table because of primary keys
-					insertBook = conn.prepareStatement("insert into books (title, isbn, published) values (?, ?, ?)");
-					for (Book book : bookList) {
-//						insertBook.setInt(1, book.getBookId());		// auto-generated primary key, don't insert this
-//						insertBook.setInt(1, book.getAuthorId());	// this is now in the BookAuthors table
-						insertBook.setString(1, book.getTitle());
-						insertBook.setString(2, book.getIsbn());
-						insertBook.setInt(3, book.getPublished());
-						insertBook.addBatch();
-					}
-					insertBook.executeBatch();
-					
-					System.out.println("Books table populated");					
-					
-					// must wait until all Books and all Authors are inserted into tables before creating BookAuthor table
-					// since this table consists entirely of foreign keys, with constraints applied
-					insertBookAuthor = conn.prepareStatement("insert into bookAuthors (book_id, author_id) values (?, ?)");
-					for (BookAuthor bookAuthor : bookAuthorList) {
-						insertBookAuthor.setInt(1, bookAuthor.getBookId());
-						insertBookAuthor.setInt(2, bookAuthor.getAuthorId());
-						insertBookAuthor.addBatch();
-					}
-					insertBookAuthor.executeBatch();	
-					
-					System.out.println("BookAuthors table populated");					
-					
-					return true;
-				} finally {
-					DBUtil.closeQuietly(insertBook);
-					DBUtil.closeQuietly(insertAuthor);
-					DBUtil.closeQuietly(insertBookAuthor);					
-				}
+				
+				
+				
+				
+				return true; 
+				
 			}
 		});
 	}
+
 	
 	// The main method creates the database tables and loads the initial data.
 	public static void main(String[] args) throws IOException {
@@ -2517,9 +2515,13 @@ public class DerbyDatabase implements IDatabase {
 		DerbyDatabase db = new DerbyDatabase();
 		db.createTables();
 		
-		System.out.println("Loading initial data...");
-		db.loadInitialData();
+		// Add default users: robbyw (tbags) and admin (admin)
+		System.out.println("Adding default users...");
 		
-		System.out.println("Library DB successfully initialized!");
+		System.out.println("Creating new game for User ID 1 and User ID 2...");
+		db.createNewGame(1);
+		db.createNewGame(2);
+		
+		System.out.println("Game DB successfully initialized!");
 	}
 }
