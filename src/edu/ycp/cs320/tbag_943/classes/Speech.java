@@ -13,7 +13,6 @@ public class Speech {
 	private String persuadeOption;
 	private String persuadeResponse;
 	private String persuadeResponseFail;
-	private String prompt;
 	
 	public Speech() {
 		this.speechOptions = new ArrayList<String>();
@@ -72,16 +71,6 @@ public class Speech {
 	public ArrayList<String> getResponses() 
 	{
 		return speechResponses;
-	}
-	
-	public void setPrompt(String promptIn)
-	{
-		prompt = promptIn;
-	}
-	
-	public String getPrompt()
-	{
-		return prompt;
 	}
 	
 	public void setIntimOp(String promptIn)
