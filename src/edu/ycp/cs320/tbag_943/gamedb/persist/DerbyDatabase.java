@@ -687,14 +687,44 @@ public class DerbyDatabase implements IDatabase {
 		});
 	}
 	
-	public List<Connections> findConnectionsByMapId(int map_id) {
-		return executeTransaction(new Transaction<List<Connections>>() {
+	public HashMap<String, ArrayList<String>> findConnectionsByMapID(int mapID) {
+		return executeTransaction(new Transaction <HashMap<String, ArrayList<String>>>() {
 			@Override
-			public List<Connections> execute(Connection conn) throws SQLException {
+			public HashMap<String, ArrayList<String>> execute(Connection conn) throws SQLException {
 				PreparedStatement stmt = null;
 				ResultSet resultSet = null;
 				
-				
+				try {
+					stmt = conn.prepareStatement(
+						"select Map.* "
+						+ " from Map "
+						+ " where Map.map_id = ?"	
+					);
+					stmt.setInt(1,  mapID);
+					
+					resultSet = stmt.executeQuery();
+					
+					HashMap<String, ArrayList<String>> connections = new HashMap<String, ArrayList<String>>();
+					Map m = new Map();
+					
+					boolean found = false;
+					
+					while(resultSet.next()) {
+						found = true;
+						
+						m.setId(resultSet.getInt(1));
+						connections = m.getConnections();
+					}
+					
+					if (!found) {
+						System.out.println("<" + mapID + "> was not found in the  table");
+					}
+					
+					return connections;
+				} finally {
+					DBUtil.closeQuietly(resultSet);
+					DBUtil.closeQuietly(stmt);
+				}
 			}
 		});
 	}
