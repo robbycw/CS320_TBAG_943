@@ -12,7 +12,7 @@ public class Player {
 	private Location location; 
 	private HashMap<String, Stat> stats; 
 	private String weapon, armor; 
-	private boolean playerCreated = false;
+	private boolean playerCreated;
 	private WinCondition winCondition;
 	
 	// Constructors
@@ -21,7 +21,8 @@ public class Player {
 		this.name = "John Johnson"; 
 		this.icon = "path"; 
 		this.location = null;
-		winCondition = new WinCondition();
+		this.winCondition = new WinCondition();
+		this.playerCreated = false;
 	}
 	
 	public Player(String name, Location location) { 
