@@ -41,6 +41,8 @@ public interface IDatabase {
 	public Integer insertNewNPCStats(String name, int health, int armor, int strength, int speed);
 	public Integer InsertNewLocationToNPC(int NPC_Id);
 	public Integer InsertNewNPCToStats(int Stats_id);
+	Integer insertNewNPCStats(NPC npc); 
+	public Integer insertNewGame(User user, Player player); 
 		// This method will need to fetch the most recently added player and log
 		// IDs when the game is first inserted (saved)
 	public Integer insertGameIntoGameTable(Game game); 
@@ -66,7 +68,7 @@ public interface IDatabase {
 	// Perhaps just by fetching the number of rows in the UserToGame table?
 	// Need # of rows in each subtable as well, starting the ID counts from 
 	// (# of rows in UserToGame) * (# of rows in a given table) + 1. 
-	public Integer insertNewGame(User user, Player player); 
+	
 	
 	
 	// Updates
@@ -98,7 +100,9 @@ public interface IDatabase {
 	
 	
 	// Other
-	public int getNumberRowsInTable(String table); 
+	public int getNumberRowsInTable(String table);
+	Integer insertNewNPCs(String name, boolean combat, HashMap<String, Stat> stats);
+	
 	
 	/* Library Example: 
 	// Finds
