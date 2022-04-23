@@ -23,8 +23,8 @@ public interface IDatabase {
 	public HashMap<String, ArrayList<String>> findConnectionsByMapID(int mapID); 
 	public List<Location> findLocationsByMapID(int mapID); 
 	public Loot findLootByLocationID(int locationID); 
-	public HashMap<String, Item> findInventoryByPlayerID(int playerID); 
-	public HashMap<String, Stat> findPlayerStatsByPlayerID(int playerID); 
+	public List<Integer> findPlayerInventoryIdsByPlayerID(int playerID); 
+	public List<Integer> findPlayerStatsIdsByPlayerID(int playerID); 
 	public HashMap<String, Stat> findNPCStatsByNPCID(int npcID); 
 	
 	public Item findItemByItemID(int itemID); 
@@ -38,9 +38,17 @@ public interface IDatabase {
 		// This method will need to fetch the most recently added player and log
 		// IDs when the game is first inserted (saved)
 	public Integer insertGameIntoGameTable(Game game); 
-	public Integer insertPlayerIDAndItemIDIntoInventoryTable(int playerID, int itemID);
 	
 	public Integer insertNewPlayer(Player player, int loc_rows, int game_rows); 
+	public Integer insertNewMap(Map map, int game_rows, int location_rows); 
+	public Integer insertNewGameLog(ArrayList<String> log, int game_rows);
+	public Integer insertNewPlayerToStats(Player player, int player_rows, int playerstat_rows);
+	public Integer insertNewPlayerInventory(Player player, int player_rows, int item_rows); 
+	public Integer insertNewLocationToCombat(List<Pair<Integer, Integer>> ltcPairs, 
+			int location_rows, int combat_rows);
+	public Integer insertOutputIntoGameLogByLogId(String output, int log_id, int log_size);
+	public Integer insertItemIntoPlayerInventoryByPlayerIdAndItemId(int player_id, int item_id);
+	
 	
 	// When we go to implement insertNewGame in the SQL DB, remember that
 	// creating a new game will require reading the CSVs and properly 
@@ -70,12 +78,11 @@ public interface IDatabase {
 	
 	// updatePlayer will need to include update to Inventory Table.
 	public boolean updateGame(Game game);
-	public boolean updateGameLog(ArrayList<String> log); 
 	public boolean updatePlayer(Player player); 
 	public boolean updateNPCs(List<NPC> npcs); 
 	public boolean updateCombatByCombatId(Combat combat); 
 	public boolean updatePuzzle(Puzzle puzzle);  
-	public boolean updateLoot(Loot loot); 
+	public boolean updateLootByLootId(Loot loot); 
 	
 	
 	// Removals

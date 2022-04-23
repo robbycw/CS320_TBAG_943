@@ -683,7 +683,7 @@ public class DerbyDatabase implements IDatabase {
 	}
 	
 	
-	public Integer insertItemIntoPlayerInventoryByItemId(int player_id, int item_id) {
+	public Integer insertItemIntoPlayerInventoryByPlayerIdAndItemId(int player_id, int item_id) {
 		return executeTransaction(new Transaction<Integer>() {
 			@Override
 			public Integer execute(Connection conn) throws SQLException {
@@ -752,6 +752,39 @@ public class DerbyDatabase implements IDatabase {
 		});
 	}
 	
+	public boolean updateLootByLootId(Loot loot) {
+		return executeTransaction(new Transaction<Boolean>() {
+			@Override
+			public Boolean execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					// Update Loot by Loot ID
+					stmt1 = conn.prepareStatement(
+							"update Loot " +
+							"  set collected = ? " +
+							"  where loot_id = ?"
+					);
+					
+					// Set based on fields in Loot
+					stmt1.setString(1, Boolean.toString(loot.isCollected()));
+					stmt1.setInt(2, loot.getId());
+					
+					// execute the update
+					stmt1.executeUpdate();
+					
+					System.out.println("Loot #" + loot.getId() + " updated");					
+					
+					return true;
+					
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
 	public boolean removeItemFromInventoryByItemIdAndPlayerId(int itemID, int playerID) {
 		return executeTransaction(new Transaction<Boolean>() {
 			@Override
@@ -786,7 +819,7 @@ public class DerbyDatabase implements IDatabase {
 	
 	
 	
-	public int getNumberRowsInTable(String table) {
+	public int getLargestIdInTable(String table, String idName) {
 		return executeTransaction(new Transaction<Integer>() {
 			@Override
 			public Integer execute(Connection conn) throws SQLException {
@@ -794,10 +827,14 @@ public class DerbyDatabase implements IDatabase {
 				ResultSet resultSet1 = null;
 				
 				try {
+					// This will get a list of all the IDs in the table. 
 					stmt1 = conn.prepareStatement(
-							"select COUNT(*) as total from ?"
+							"select ? from ?" + 
+								" sort by ? DESC"
 					);
-					stmt1.setString(1, table);
+					stmt1.setString(1, idName);
+					stmt1.setString(2, table);
+					stmt1.setString(3, idName);
 					
 					int rows = 0; 
 					
@@ -806,10 +843,11 @@ public class DerbyDatabase implements IDatabase {
 					// for testing that a result was returned
 					Boolean found = false;
 					
-					while (resultSet1.next()) {
+					// We only need to access the first row, as it will contain the largest ID. 
+					if (resultSet1.next()) {
 						found = true;
 						
-						rows = resultSet1.getInt("total");
+						rows = resultSet1.getInt(1);
 					}
 					
 					// check if the playerID was found
