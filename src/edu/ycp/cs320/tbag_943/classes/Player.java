@@ -146,6 +146,10 @@ public class Player {
 	public void setStats(HashMap<String, Stat> stats) {
 		this.stats = stats;
 	}
+	
+	public void setLocation(Location location) {
+		this.location = location;
+	}
 
 	public void collect(Item item) {
 		this.inventory.put(item.getName(), item); 

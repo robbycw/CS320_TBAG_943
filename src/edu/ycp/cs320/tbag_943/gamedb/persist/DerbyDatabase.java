@@ -80,6 +80,526 @@ public class DerbyDatabase implements IDatabase {
 		});
 	}
 	
+	public ArrayList<Integer> findCombatIdsByLocationID(int locationId) {
+		return executeTransaction(new Transaction<ArrayList<Integer>>() {
+			@Override
+			public ArrayList<Integer> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select combat_id " +
+							"  from  Location " +
+							"  where location_id = ? "
+					);
+					stmt1.setInt(1, locationId);
+					
+					ArrayList<Integer> combatIds = new ArrayList<Integer>();
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						combatIds.add(resultSet1.getInt(1));
+						
+					}
+					// check if the locationID was found
+					if (!found) {
+						System.out.println("<" + locationId + "> was not found in the Location table");
+					}
+					
+					return combatIds;
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Combat findCombatsByCombatID(int combatId) {
+		return executeTransaction(new Transaction<Combat>() {
+			@Override
+			public Combat execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select * " +
+							"  from  Combat " +
+							"  where combat_id = ? "
+					);
+					stmt1.setInt(1, combatId);
+					
+					Combat combat = new Combat();
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						combat.setId(resultSet1.getInt(1));
+						combat.setTurn(resultSet1.getInt(2));
+						combat.setDifficulty(resultSet1.getInt(3));
+						combat.setDead(resultSet1.getBoolean(4));
+						
+					}
+					// check if the locationID was found
+					if (!found) {
+						System.out.println("<" + combatId + "> was not found in the Combat table");
+					}
+					
+					return combat;
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Player findPlayerByPlayerId(int playerId) {
+		return executeTransaction(new Transaction<Player>() {
+			@Override
+			public Player execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select * " +
+							"  from  Player " +
+							"  where player_id = ? "
+					);
+					stmt1.setInt(1, playerId);
+					
+					Player player = new Player();
+					int locationId;
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						player.setId(resultSet1.getInt(1));
+						player.setName(resultSet1.getString(2));
+						player.setIcon(resultSet1.getString(3));
+						player.setWeapon(resultSet1.getString(4));
+						player.setArmor(resultSet1.getString(5));
+						player.setPlayerCreated(resultSet1.getBoolean(6));
+						//get location id from result, find location from id
+						locationId = resultSet1.getInt(7);
+						Location playerLoc = findLocationByLocationId(locationId);
+						player.setLocation(playerLoc);
+					}
+					// check if the locationID was found
+					if (!found) {
+						System.out.println("<" + playerId + "> was not found in the Combat table");
+					}
+					
+					return player;
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Loot findLootByLootID(int lootID) {
+		return executeTransaction(new Transaction<Loot>() {
+			@Override
+			public Loot execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select Loot.*" +
+							"  from  Loot " +
+							"  where loot_id = ?"
+					);
+					stmt1.setInt(1, lootID);
+					
+					Loot loot = new Loot(); 
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						loot.setId(resultSet1.getInt(1));
+						loot.setXP(resultSet1.getInt(2));
+						loot.setCollected(resultSet1.getBoolean(3)); 
+						loot.setItems(findItemByItemID(resultSet1.getInt(4)));
+						
+					}
+					
+					// check if the locationID was found
+					if (!found) {
+						System.out.println("<" + lootID + "> was not found in the Loot table");
+					}
+					
+					return loot;
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Stat findPlayerStatByStatId(int statId) {
+		return executeTransaction(new Transaction<Stat>() {
+			@Override
+			public Stat execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select *" +
+							"  from  PlayerStats " +
+							"  where stat_d = ?"
+					);
+					stmt1.setInt(1, statId);
+					
+					Stat stat = new Stat(); 
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						stat.setId(resultSet1.getInt(1));
+						stat.setName(resultSet1.getString(2));
+						stat.setRank(resultSet1.getInt(3));
+						
+					}
+					
+					// check if the locationID was found
+					if (!found) {
+						System.out.println("<" + statId + "> was not found in the Loot table");
+					}
+					
+					return stat;
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public GameLog findGameLogByGameLogId(int gameLogId) {
+		return executeTransaction(new Transaction<GameLog>() {
+			@Override
+			public GameLog execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select *" +
+							"  from  GameLog " +
+							"  where gameLog_id = ?"
+					);
+					stmt1.setInt(1, gameLogId);
+					
+					GameLog gameLog = new GameLog(); 
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						GameLog.setId(resultSet1.getInt(1));
+						GameLog.setOrder(resultSet1.getInt(2));
+						GameLog.setOutput(resultSet1.getString(3));
+						
+					}
+					
+					// check if the locationID was found
+					if (!found) {
+						System.out.println("<" + gameLog + "> was not found in the GameLog table");
+					}
+					
+					return gameLog;
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Item findItemByItemID(int itemId) {
+		return executeTransaction(new Transaction<Item>() {
+			@Override
+			public Item execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select Item.*" +
+							"  from  Item " +
+							"  where item_id = ?"
+					);
+					stmt1.setInt(1, itemId);
+					
+					Item item = new Item();
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						item.setId(resultSet1.getInt(1));
+						item.setName(resultSet1.getString(2));
+						item.setDes(resultSet1.getString(3));
+						item.setConsumable(resultSet1.getBoolean(4));
+						item.setWeapon(resultSet1.getBoolean(5));
+						item.setArmor(resultSet1.getBoolean(6));
+						item.setTool(resultSet1.getBoolean(7));
+						item.setDamage(resultSet1.getInt(8));
+						item.setHealthGain(resultSet1.getInt(9));
+						item.setValue(resultSet1.getInt(10));
+						item.setAmount(resultSet1.getInt(11));
+						item.setArmor(resultSet1.getInt(12));
+						item.setAccuracy(resultSet1.getDouble(13));
+						
+					}
+					
+					// check if the locationID was found
+					if (!found) {
+						System.out.println("<" + itemId + "> was not found in the Item table");
+					}
+					
+					return item;
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Speech findSpeechBySpeechId(int speechId) {
+		return executeTransaction(new Transaction<Speech>() {
+			@Override
+			public Speech execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select Speech.* " +
+							"  from  Speech" +
+							"  where speech_id = ? "
+					);
+					stmt1.setInt(1, speechId);
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+
+					Speech speechGet = new Speech(); 
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						speechGet.setId(resultSet1.getInt(1));
+						speechGet.setIntimOp(resultSet1.getString(2));
+						speechGet.setIntimRes(resultSet1.getString(3));
+						speechGet.setIntimResFail(resultSet1.getString(4));
+						speechGet.setPersOp(resultSet1.getString(5));
+						speechGet.setPersRes(resultSet1.getString(6));
+						speechGet.setPersResFail(resultSet1.getString(7));
+						
+					}
+					
+					// check if the speechID was found
+					if (!found) {
+						System.out.println("<" + speechId + "> was not found in the Speech table");
+					}
+					
+					return speechGet;
+					
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public ArrayList<String> findSpeechOptionsBySpeechId(int speechId) {
+		return executeTransaction(new Transaction<ArrayList<String>>() {
+			@Override
+			public ArrayList<String> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select SpeechOptions.* " +
+							"  from  SpeechOptions" +
+							"  where speech_id = ? "
+					);
+					stmt1.setInt(1, speechId);
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+
+					ArrayList<String> speechGet = new ArrayList<String>(); 
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						// add speech option to array list, then loop
+						speechGet.add(resultSet1.getString(1));
+					}
+					
+					// check if the speechID was found
+					if (!found) {
+						System.out.println("<" + speechId + "> was not found in the SpeechOptions table");
+					}
+					
+					return speechGet;
+					
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public ArrayList<String> findSpeechResponsesBySpeechId(int speechId) {
+		return executeTransaction(new Transaction<ArrayList<String>>() {
+			@Override
+			public ArrayList<String> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select SpeechResponses.* " +
+							"  from  SpeechResponses" +
+							"  where speech_id = ? "
+					);
+					stmt1.setInt(1, speechId);
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+
+					ArrayList<String> speechGet = new ArrayList<String>(); 
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						// add speech option to array list, then loop
+						speechGet.add(resultSet1.getString(1));
+					}
+					
+					// check if the speechID was found
+					if (!found) {
+						System.out.println("<" + speechId + "> was not found in the SpeechResponses table");
+					}
+					
+					return speechGet;
+					
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Speech findSpeechByNPCId(int npcId) {
+		return executeTransaction(new Transaction<Speech>() {
+			@Override
+			public Speech execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select Speech.* " +
+							"  from  Speech, NPC" +
+							"  where Speech.speech_id = NPC.speech_id " +
+							"  and Speech.speech_id = ?"
+					);
+					stmt1.setInt(1, npcId);
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+
+					Speech speechGet = new Speech(); 
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						// Set values of stat from current result set row. 
+						speechGet.setId(resultSet1.getInt(1));
+						speechGet.setIntimOp(resultSet1.getString(2));
+						speechGet.setIntimRes(resultSet1.getString(3));
+						speechGet.setIntimResFail(resultSet1.getString(4));
+						speechGet.setPersOp(resultSet1.getString(5));
+						speechGet.setPersRes(resultSet1.getString(6));
+						speechGet.setPersResFail(resultSet1.getString(7));
+						
+						// Add the stat to the npcStats HashMap
+					}
+					
+					// check if the playerID was found
+					if (!found) {
+						System.out.println("<" + npcId + "> was not found in the Speech table");
+					}
+					
+					return speechGet;
+					
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
 	public HashMap<String, Item> findInventoryByPlayerID(int playerID) {
 		return executeTransaction(new Transaction<HashMap<String, Item>>() {
 			@Override
@@ -191,6 +711,9 @@ public class DerbyDatabase implements IDatabase {
 		});
 	}
 	
+	
+	
+	
 	public HashMap<String, Stat> findNPCStatsByNPCID(int npcID) {
 		return executeTransaction(new Transaction<HashMap<String, Stat>>() {
 			@Override
@@ -235,53 +758,6 @@ public class DerbyDatabase implements IDatabase {
 					}
 					
 					return npcStats;
-					
-				} finally {
-					DBUtil.closeQuietly(resultSet1);
-					DBUtil.closeQuietly(stmt1);
-				}
-			}
-		});
-	}
-	
-	public Item findItemByItemID(int itemID) {
-		return executeTransaction(new Transaction<Item>() {
-			@Override
-			public Item execute(Connection conn) throws SQLException {
-				PreparedStatement stmt1 = null;
-				ResultSet resultSet1 = null;
-				
-				try {
-					stmt1 = conn.prepareStatement(
-							"select Item.* " +
-							"  from  Item " +
-							"  where Item.item_id = ? "
-					);
-					stmt1.setInt(1, itemID);
-					
-					Item item = new Item(); 
-					
-					resultSet1 = stmt1.executeQuery();
-					
-					// for testing that a result was returned
-					Boolean found = false;
-					
-					while (resultSet1.next()) {
-						found = true;
-						
-						// TODO : Need to set all fields in Item based on entries in table.
-						
-						item.setId(resultSet1.getInt(1));
-						item.setName(resultSet1.getString(2));
-						
-					}
-					
-					// check if the playerID was found
-					if (!found) {
-						System.out.println("<" + itemID + "> was not found in the Item table");
-					}
-					
-					return item;
 					
 				} finally {
 					DBUtil.closeQuietly(resultSet1);
@@ -370,6 +846,239 @@ public class DerbyDatabase implements IDatabase {
 					
 					return game_rows;
 					
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Integer insertNewPlayer(Item item) {
+		// Note, this method inserts a new row for the new player and default values.
+		// Character creation should call an update for the Player class! 
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					// insert new Player into Player table
+					// prepare SQL insert statement to add new Player to Player table
+					stmt1 = conn.prepareStatement(
+							"insert into Item (item_id, name, description, consumable, weapon, armor, tool, damage, health_gain, value, amount, armor, accuracy) " +
+							"  values(?,?,?, ?,?,?,?,?, ?,?,?,?,?) "
+					);
+					// Number of players = number of game_rows
+					stmt1.setInt(1, item.getId());
+					// Name will update upon character creation; this insert is called before creation.
+					stmt1.setString(2, item.getName());
+					stmt1.setString(3, item.getDes());
+					stmt1.setBoolean(4, item.isConsumable());
+					stmt1.setBoolean(5, item.getIsWeapon());
+					stmt1.setBoolean(6, item.getIsArmor());
+					stmt1.setBoolean(7, item.getIsTool());
+					stmt1.setInt(8, item.getDamage());
+					stmt1.setInt(9, item.getHealthGain());
+					stmt1.setInt(10, item.getValue());
+					stmt1.setInt(11, item.getAmount());
+					stmt1.setInt(12, item.getArmor());
+					stmt1.setDouble(13, item.getAccuracy());
+					
+					
+					// execute the update
+					stmt1.executeUpdate();
+					
+					System.out.println("item" + item.getName() + " inserted into Item table");					
+					
+					return item.getId();
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Integer insertNewLoot(Loot loot) {
+		// Note, this method inserts a new row for the new player and default values.
+		// Character creation should call an update for the Player class! 
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					// insert new Player into Player table
+					// prepare SQL insert statement to add new Player to Player table
+					stmt1 = conn.prepareStatement(
+							"insert into Loot (loot_id, xp, collected, item_id) " +
+							"  values(?,?,?,?) "
+					);
+					// Number of players = number of game_rows
+					stmt1.setInt(1, loot.getId());
+					// Name will update upon character creation; this insert is called before creation.
+					stmt1.setInt(2, loot.getXp());
+					stmt1.setBoolean(3, loot.isCollected());
+					stmt1.setInt(4, loot.getItem().getId());
+					
+					// execute the update
+					stmt1.executeUpdate();
+					
+					System.out.println("loot # " + loot.getId() + " inserted into Loot table");					
+					
+					return loot.getId();
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Integer insertNewPuzzle(Puzzle puzzle) {
+		// Note, this method inserts a new row for the new player and default values.
+		// Character creation should call an update for the Player class! 
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					// insert new Player into Player table
+					// prepare SQL insert statement to add new Player to Player table
+					stmt1 = conn.prepareStatement(
+							"insert into Puzzle (puzzle_id, prompt, answer, required_skill, required_item,"
+							+ " result, can_solve, solved, breakable, jumpable, "
+							+ " roomCon) " +
+							"  values(?,?,?,?,? ,?,?,?,?,? ,?) "
+					);
+					// Number of players = number of game_rows
+					stmt1.setInt(1,puzzle.getId());
+					// Name will update upon character creation; this insert is called before creation.
+					stmt1.setString(2, puzzle.getPrompt());
+					stmt1.setString(3, puzzle.getAnswer());
+					stmt1.setInt(4,puzzle.getRequiredSkill().getId());
+					stmt1.setInt(5,puzzle.getRequiredItem().getId());
+					stmt1.setBoolean(6, puzzle.getResult());
+					stmt1.setBoolean(7, puzzle.isCanSolve());
+					stmt1.setBoolean(8, puzzle.isSolved());
+					stmt1.setBoolean(9, puzzle.getBreakable());
+					stmt1.setBoolean(10, puzzle.isJumpable());
+					stmt1.setString(11, puzzle.getRoomCon());
+					
+					// execute the update
+					stmt1.executeUpdate();
+					
+					System.out.println("puzzle # " + puzzle.getId() + " inserted into puzzle table");					
+					
+					return puzzle.getId();
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Integer insertNewSpeech(Speech speech) {
+		// Note, this method inserts a new row for the new player and default values.
+		// Character creation should call an update for the Player class! 
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					// insert new Player into Player table
+					// prepare SQL insert statement to add new Player to Player table
+					stmt1 = conn.prepareStatement(
+							"insert into Speech (speech_id, intimidate_option, intimidate_response, intimidate_response_fail,"
+							+ " persuade_option, persuade_response, persuade_response_fail " +
+							"  values(?,?,?,?,? ,?,?) "
+					);
+					// Number of players = number of game_rows
+					stmt1.setInt(1,speech.getId());
+					// Name will update upon character creation; this insert is called before creation.
+					stmt1.setString(2, speech.getIntimOp());
+					stmt1.setString(3, speech.getIntimRes());
+					stmt1.setString(4, speech.getIntimResFail());
+					stmt1.setString(5, speech.getPersOp());
+					stmt1.setString(6, speech.getPersRes());
+					stmt1.setString(7, speech.getPersResFail());
+					
+					// execute the update
+					stmt1.executeUpdate();
+					
+					System.out.println("speech # " + speech.getId() + " inserted into speech table");					
+					
+					return speech.getId();
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Integer insertNewSpeechOption(Speech speech, int speechOp) {
+		// Note, this method inserts a new row for the new player and default values.
+		// Character creation should call an update for the Player class! 
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					// insert new Player into Player table
+					// prepare SQL insert statement to add new Player to Player table
+					stmt1 = conn.prepareStatement(
+							"insert into SpeechOptions (speech_id, order, response)" +
+							"  values(?) "
+					);
+					// Number of players = number of game_rows
+					stmt1.setInt(1, speech.getId());
+					stmt1.setInt(2, speechOp);
+					stmt1.setString(3, speech.getSpeech(speechOp));
+					// execute the update
+					stmt1.executeUpdate();
+					
+					System.out.println("speech # " + speech.getId() + " inserted into speech table");					
+					
+					return speech.getId();
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Integer insertNewSpeechResponse(Speech speech, int speechOp) {
+		// Note, this method inserts a new row for the new player and default values.
+		// Character creation should call an update for the Player class! 
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					// insert new Player into Player table
+					// prepare SQL insert statement to add new Player to Player table
+					stmt1 = conn.prepareStatement(
+							"insert into SpeechResponses (speech_id, order, response)" +
+							"  values(?) "
+					);
+					// Number of players = number of game_rows
+					stmt1.setInt(1, speech.getId());
+					stmt1.setInt(2, speechOp);
+					stmt1.setString(3, speech.getResponse(speechOp));
+					// execute the update
+					stmt1.executeUpdate();
+					
+					System.out.println("speech # " + speech.getId() + " inserted into speech table");					
+					
+					return speech.getId();
 				} finally {
 					DBUtil.closeQuietly(stmt1);
 				}
