@@ -839,6 +839,10 @@ public class DerbyDatabase implements IDatabase {
 						found = true;
 						
 						location.setId(resultSet.getInt(1));
+						location.setName(resultSet.getString(2));
+						location.setDescription(resultSet.getString(3));
+						location.setHidden(resultSet.getBoolean(4));
+						location.setBlocked(resultSet.getBoolean(5));
 					}
 					
 					if (!found) {
@@ -919,6 +923,14 @@ public class DerbyDatabase implements IDatabase {
 						found = true;
 						
 						puzzle.setId(resultSet.getInt(1));
+						puzzle.setPrompt(resultSet.getString(2));
+						puzzle.setAnswer(resultSet.getString(3));
+						puzzle.setResult(resultSet.getBoolean(6));
+						puzzle.setCanSolve(resultSet.getBoolean(7));
+						puzzle.setSolved(resultSet.getBoolean(8));
+						puzzle.setBreakable(resultSet.getBoolean(9));
+						puzzle.setJumpable(resultSet.getBoolean(10));
+						puzzle.setRoomCon(resultSet.getString(11));
 					}
 					
 					if (!found) {
@@ -933,6 +945,7 @@ public class DerbyDatabase implements IDatabase {
 			}
 		});
 	}
+	
 	
 	public WinCondition findWinConditionByWinConditionId(int winCondition_id) {
 		return executeTransaction(new Transaction<WinCondition>() {
@@ -959,6 +972,11 @@ public class DerbyDatabase implements IDatabase {
 						found = true;
 						
 						winCondition.setId(resultSet.getInt(1));
+						winCondition.setComplete(resultSet.getBoolean(2));
+						winCondition.setLost(resultSet.getBoolean(3));
+						winCondition.setWonRooms(resultSet.getBoolean(4));
+						winCondition.setBestCase(resultSet.getBoolean(5));
+						winCondition.setDefaultCase(resultSet.getBoolean(6));
 					}
 					
 					if (!found) {
@@ -1509,6 +1527,7 @@ public class DerbyDatabase implements IDatabase {
 		});
 	}
 	
+
 	@Override
 	public Integer insertNewNPCs(final String name, final int health, final boolean combat, final HashMap<String, Stat> stats) {
 		return executeTransaction(new Transaction<Integer>() {
