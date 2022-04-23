@@ -18,11 +18,11 @@ public interface IDatabase {
 	public List<String> findGameLogByGameID(int gameID); 
 	public Player findPlayerByGameID(int gameID); 
 	public List<Combat> findCombatsByLocationID(int locationID); 
-	public List<Puzzle> findPuzzleIDsByLocationID(int locationID);
-	public Puzzle findPuzzleByPuzzleId(int puzzle_ID);
-	public Map findMapByMapID(int gameID); 
+	public List<Integer> findPuzzleIDsByLocationID(int locationId);
+	public Puzzle findPuzzleByPuzzleId(int puzzle_id);
+	public Map findMapByMapID(int mapId);
 	public HashMap<String, ArrayList<String>> findConnectionsByMapID(int mapID); 
-	public Location findLocationByLocationID(int location_ID); 
+	public Location findLocationByLocationID(int locationId); 
 	public WinCondition findWinConditionByWinConditionId(int winCondition_id);
 	public Loot findLootByLocationID(int locationID); 
 	public HashMap<String, Item> findInventoryByPlayerID(int playerID); 
