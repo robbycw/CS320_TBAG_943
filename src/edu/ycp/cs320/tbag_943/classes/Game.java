@@ -6,6 +6,7 @@ public class Game {
 	private int difficulty; 
 	private ArrayList<String> outputLog; 
 	private Timer timer; 
+	private User user;
 	private Map map; 
 	private Player player; 
 	private Combat currentCombat; 
@@ -66,6 +67,9 @@ public class Game {
 	public Map getMap() {
 		return map;
 	}
+	public User getUser() {
+		return user;
+	}
 	
 	public Player getPlayer() {
 		return player;
@@ -102,7 +106,10 @@ public class Game {
 	public void setMap(Map map) {
 		this.map = map;
 	}
-
+	public void setUser(User user) {
+		this.user = user;
+	}
+	
 	public void setPlayer(Player player) {
 		this.player = player;
 	}
