@@ -11,7 +11,6 @@ public class NPC implements Comparable {
 	private HashMap<String, Stat> stats; 
 	private Item weapon; 
 	private Speech speech;
-	private Stat stat;
 	private boolean isIntimidated;
 	private boolean canIntimidate;
 	private int intimidationThreshold;
@@ -71,9 +70,6 @@ public class NPC implements Comparable {
 
 	public void setId(int id) {
 		this.id = id;
-	}
-	public Stat getStat() {
-		return stat;
 	}
 	
 	public Item getWeapon() {

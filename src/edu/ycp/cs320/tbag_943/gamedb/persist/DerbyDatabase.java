@@ -84,10 +84,11 @@ public class DerbyDatabase implements IDatabase {
 				
 				try {
 					stmt1 = conn.prepareStatement(
-							"select Game.difficulty, Game.timer, Game.player, Game.currentCombat, Game.inCombat, Game.playerTurnTaken, Player.name" +
-							"from User, Game, Map, Location, Combat, Player" +
-							"where User.user_id = ?" +
-							"and Game.User.user_id = User.user_id");
+							"select UserToGame.game_id, Game.difficulty, Game.timeRemaining, Player.name " +
+							"from UserToGame, Game, Player " +
+							"where UserToGame.user_id = ? " +
+							"and UserToGame.game_id = Game.game_id " +
+							"and Game.player_id = Player.player_id");
 					
 					stmt1.setInt(1, userID);
 					
@@ -99,12 +100,10 @@ public class DerbyDatabase implements IDatabase {
 					while (resultSet1.next()) {
 						found = true;
 						
-						
-						game.setDifficulty(resultSet1.getInt(1));
+						game.setId(resultSet1.getInt(1));
+						game.setDifficulty(resultSet1.getInt(2));
 						game.getTimer().setTime(resultSet1.getInt(3));
-						game.setPlayer(game.getPlayer());
-						game.setPlayerCreated(resultSet1.getBoolean(8));
-						game.getPlayer().setName(resultSet1.getString(9));
+						game.getPlayer().setName(resultSet1.getString(4));
 						userGames.add(game);
 					}
 					
@@ -120,24 +119,28 @@ public class DerbyDatabase implements IDatabase {
 		});
 	}
 	
-	public List<Game> findGameByUserID(int userID){
-		return executeTransaction(new Transaction<List<Game>>() {
+	public Game findGameByGameID(int gameId){
+		return executeTransaction(new Transaction<Game>() {
 			@Override
-			public List<Game> execute(Connection conn) throws SQLException{
+			public Game execute(Connection conn) throws SQLException{
 				PreparedStatement stmt1 = null;
 				ResultSet resultSet1 = null;
 				Boolean found = false;
+				int log_id, player_id, map_id, combat_id; 
+				
+				// TODO
+				// This method will need to call the other find methods in order to 
+				// load the entire game with properly assigned references. 
 				
 				try {
 					stmt1 = conn.prepareStatement(
-							"select Game.difficulty, Game.outputLog, Game.timer, Game.player, Game.currentCombat, Game.inCombat, Game.playerTurnTaken" +
-							"from User, Game, Map, Location, Combat" +
-							"where User.user_id = ?" +
-							"and Game.User.user_id = User.user_id");
+							"select Game.game_id, Game.difficulty, Game.inCombat, Game.playerTurnTaken, Game.playerCreated, " +
+							"Game.timeRemaining, Game.timerRate, Game.log_id, Game.player_id, Game.map_id, Game.combat_id " +
+							"from Game " +
+							"where Game.game_id = ? ");
 					
-					stmt1.setInt(1, userID);
+					stmt1.setInt(1, gameId);
 					
-					ArrayList<Game> userGames = new ArrayList<Game>();
 					Game game = new Game();
 					
 					resultSet1 = stmt1.executeQuery();
@@ -145,26 +148,59 @@ public class DerbyDatabase implements IDatabase {
 					while (resultSet1.next()) {
 						found = true;
 						
-						game.setDifficulty(resultSet1.getInt(1));
-						game.setOutputLog((ArrayList<String>) resultSet1.getArray(2));
-						game.getTimer().setTime(resultSet1.getInt(3));
-						game.getMap().setLocations((HashMap<String, Location>) resultSet1.getArray(4));
-						game.setPlayer(game.getPlayer());
-						game.getCurrentCombat().setNpcs((HashMap<String, NPC>) resultSet1.getArray(5));;
-						game.setInCombat(resultSet1.getBoolean(6));
-						game.setPlayerTurnTaken(resultSet1.getBoolean(7));
-						game.setPlayerCreated(resultSet1.getBoolean(8));
+						game.setId(resultSet1.getInt(1));
+						game.setDifficulty(resultSet1.getInt(2));
+						game.setInCombat(Boolean.parseBoolean(resultSet1.getString(3)));
+						game.setPlayerTurnTaken(Boolean.parseBoolean(resultSet1.getString(4)));
+						game.setPlayerCreated(Boolean.parseBoolean(resultSet1.getString(5)));
+						// Create a Timer based on the time remaining and timerRate. 
+						Timer timer = new Timer(); 
+						timer.setTime(resultSet1.getInt(6));
+						timer.setTimerRate(resultSet1.getInt(7));
 						
-						userGames.add(game);
+						// Get the IDs for the log, player, map, and combat. 
+						log_id = resultSet1.getInt(8); 
+						player_id = resultSet1.getInt(9); 
+						map_id = resultSet1.getInt(10); 
+						combat_id = resultSet1.getInt(11);
 					}
 					
 					if(!found) {
-						System.out.println("user doesn't have any current games");
+						System.out.println("Game #" + gameId + " not found.");
 					}
 					
-					return userGames;
-				}finally {
+					// Use the Find Methods and IDs to get the Player, Map, and Log. 
+					// These methods may need parameters so that subtables aren't loaded more than once!
+					// In fact, we may need to find all data and then use them as parameters. 
+					// Ex: Calling findLocationsByMapId to have a list of locations
+					Map map = findMapByMapId(map_id);
+					Player player = findPlayerByPlayerId(player_id); 
+					ArrayList<String> log = findGameLogByGameLogId(log_id);
 					
+					
+					// Load the current Combat by accessing the player's location and searching for it, if
+					// it is not equal to -1. -1 means there is no current combat! 
+					Location current = player.getLocation(); 
+					if(combat_id != -1) {
+						ArrayList<Combat> combats = current.getCombats(); 
+						if(combats.isEmpty()) {
+							game.setCurrentCombat(null);
+						} else {
+							for(Combat c : combats) {
+								if (c.getId() == combat_id) {
+									game.setCurrentCombat(c);
+									break; 
+								}
+							}
+						}
+					} else {
+						game.setCurrentCombat(null);
+					}
+					
+					return game;
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
 				}
 			}
 		});

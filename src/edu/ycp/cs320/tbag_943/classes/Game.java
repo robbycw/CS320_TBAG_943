@@ -5,8 +5,7 @@ import java.util.ArrayList;
 public class Game {
 	private int difficulty; 
 	private ArrayList<String> outputLog; 
-	private Timer timer; 
-	private User user;
+	private Timer timer;
 	private Map map; 
 	private Player player; 
 	private Combat currentCombat; 
@@ -19,9 +18,9 @@ public class Game {
 	public Game() {
 		this.difficulty = 1; 
 		this.outputLog = new ArrayList<String>(); 
-		this.timer = null; 
+		this.timer = new Timer(); 
 		this.map = null; 
-		this.player = null; 
+		this.player = new Player(); 
 	}
 	
 	public Game(int difficulty, Map map, Player player) {
@@ -67,9 +66,6 @@ public class Game {
 	public Map getMap() {
 		return map;
 	}
-	public User getUser() {
-		return user;
-	}
 	
 	public Player getPlayer() {
 		return player;
@@ -105,9 +101,6 @@ public class Game {
 
 	public void setMap(Map map) {
 		this.map = map;
-	}
-	public void setUser(User user) {
-		this.user = user;
 	}
 	
 	public void setPlayer(Player player) {
