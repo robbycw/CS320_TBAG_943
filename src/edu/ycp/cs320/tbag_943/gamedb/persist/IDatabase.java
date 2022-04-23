@@ -18,10 +18,12 @@ public interface IDatabase {
 	public List<String> findGameLogByGameID(int gameID); 
 	public Player findPlayerByGameID(int gameID); 
 	public List<Combat> findCombatsByLocationID(int locationID); 
-	public List<Puzzle> findPuzzlesByLocationID(int locationID); 
-	public Map findMapByGameID(int gameID); 
+	public List<Integer> findPuzzleIDsByLocationID(int locationId);
+	public Puzzle findPuzzleByPuzzleId(int puzzle_id);
+	public Map findMapByMapID(int mapId);
 	public HashMap<String, ArrayList<String>> findConnectionsByMapID(int mapID); 
-	public List<Location> findLocationsByMapID(int mapID); 
+	public Location findLocationByLocationID(int locationId); 
+	public WinCondition findWinConditionByWinConditionId(int winCondition_id);
 	public Loot findLootByLocationID(int locationID); 
 	public HashMap<String, Item> findInventoryByPlayerID(int playerID); 
 	public HashMap<String, Stat> findPlayerStatsByPlayerID(int playerID); 
@@ -47,6 +49,11 @@ public interface IDatabase {
 	public Integer insertPlayerIDAndItemIDIntoInventoryTable(int playerID, int itemID);
 	
 	public Integer insertNewPlayer(Player player, int loc_rows, int game_rows); 
+	
+	public WinCondition insertNewWinConditions(WinCondition winCondition);
+	public Stat insertNewPlayerStats(Stat playerStats);
+	public Location insertNewLocations(Location location);
+	
 	
 	// When we go to implement insertNewGame in the SQL DB, remember that
 	// creating a new game will require reading the CSVs and properly 
@@ -82,6 +89,7 @@ public interface IDatabase {
 	public boolean updateCombatByCombatId(Combat combat); 
 	public boolean updatePuzzle(Puzzle puzzle);  
 	public boolean updateLoot(Loot loot); 
+	public boolean updateWinConditionByWinConditionId(WinCondition winCondition);
 	
 	
 	// Removals
