@@ -19,6 +19,30 @@
 	</head>
 
 	<body>
+
+		<!-- Page Header: Has log-out button, display on all pages when logged in. -->
+		<c:if test= "${user.created}">
+			
+			<div id="header">
+			<form action="${pageContext.servletContext.contextPath}/titlePage" method="post" style="width: 100%;">
+				<table style="width:100%">
+					<tr>
+						<td style="width:15%">${user.username}</td>
+						<td>
+							<div class= "submitButton" style="margin-top: 0px">
+								<button type="submit" value="Log Out" name= "logOut">Log Out</button>
+							</div>
+						</td>
+						<td>
+							<div class= "submitButton" style="margin-top: 0px">
+								<button type="submit" value="Title Page" name= "titlePage">Title Page</button>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</form>
+			</div>
+		</c:if>
 	
 		<%-- Based this script off of a tutorial from W3Schools. Link: https://www.w3schools.com/howto/howto_js_countdown.asp --%>
 		<script> 

@@ -15,6 +15,7 @@
 				right: 610px;
 				font-size:200%;
 			}
+			
 		</style>
 		<style type="text/css">
 		.error {
@@ -28,6 +29,9 @@
 	</head>
 
 	<body style="background-color: black;">
+
+		
+
 		<h1 style="color: red;font-size:300%;">
 			<center>-11:43-</center>
 		</h1>
