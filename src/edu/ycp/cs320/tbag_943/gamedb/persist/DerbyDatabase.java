@@ -218,6 +218,11 @@ public class DerbyDatabase implements IDatabase {
 						game.setCurrentCombat(null);
 					}
 					
+					// Set map, player, and log. 
+					game.setMap(map);
+					game.setPlayer(player);
+					game.setOutputLog(log);
+					
 					return game;
 				} finally {
 					DBUtil.closeQuietly(resultSet1);
@@ -327,7 +332,7 @@ public class DerbyDatabase implements IDatabase {
 				
 				try {
 					stmt = conn.prepareStatement(
-							" select Location.* "
+							"select Location.* "
 							+ " from Location "
 							+ " where location_id = ? "
 					);
@@ -801,7 +806,7 @@ public class DerbyDatabase implements IDatabase {
 					
 					// check if the locationID was found
 					if (!found) {
-						System.out.println("<" + locationID + "> was not found in the Location table");
+						System.out.println("<" + locationID + "> was not found in the Loot table");
 					}
 					
 					return loot;
@@ -944,7 +949,7 @@ public class DerbyDatabase implements IDatabase {
 					}
 					// check if the locationID was found
 					if (!found) {
-						System.out.println("<" + locationId + "> was not found in the Location table");
+						System.out.println("<" + locationId + "> was not found in the LocationToCombat table");
 					}
 					
 					return combatIds;
@@ -1029,7 +1034,7 @@ public class DerbyDatabase implements IDatabase {
 					}
 					
 					if (!found) {
-						System.out.println("<" + locationId + "> was not found in the Location table");
+						System.out.println("<" + locationId + "> was not found in the LocationToPuzzle table");
 					}
 					
 					return puzzleIds;
@@ -1060,6 +1065,8 @@ public class DerbyDatabase implements IDatabase {
 					
 					boolean found = false;
 					
+					resultSet = stmt.executeQuery();
+					
 					while(resultSet.next()) {
 						found = true;
 						
@@ -1067,6 +1074,17 @@ public class DerbyDatabase implements IDatabase {
 						puzzle.setPrompt(resultSet.getString(2));
 						puzzle.setAnswer(resultSet.getString(3));
 						//TODO: Set Required Skill and Item
+						if(resultSet.getInt(4) == -1) {
+							puzzle.setRequiredSkill(null);
+						} else {
+							puzzle.setRequiredSkill(null);
+						}
+						
+						if(resultSet.getInt(5) == -1) {
+							puzzle.setRequiredItem(null);
+						} else {
+							puzzle.setRequiredItem(findItemByItemID(resultSet.getInt(5)));
+						}
 						
 						puzzle.setResult(Boolean.parseBoolean(resultSet.getString(6)));
 						puzzle.setCanSolve(Boolean.parseBoolean(resultSet.getString(7)));

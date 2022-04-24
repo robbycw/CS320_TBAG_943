@@ -160,7 +160,6 @@ public class InitialDataTest {
 		for(Game game: gameList) {
 			System.out.println("____Game " + game.getId());
 			System.out.println("Game_ID: " + game.getId());
-			System.out.println("User: " + game.getUser());
 			System.out.println("Difficulty: " + game.getDifficulty());
 			System.out.println("Time: " + game.getTimer().getTime());
 			System.out.println("Character Created?: " + game.getPlayerNotCreated());
@@ -179,8 +178,22 @@ public class InitialDataTest {
 		}
 		
 		System.out.println("-------Map------");
-		for(Map map: mapList) {
+		for(Map map : mapList) {
 			System.out.println("Map ID: " + map.getId());
+			
+			// Print out Locations in Map with Connections
+			for(Location l : map.getLocations().values()) {
+				System.out.println("	Location ID: " + l.getId());
+				System.out.println("	Location Name: " + l.getName());
+				
+				for(String s : map.getConnections().get(l.getName().toLowerCase())) {
+					System.out.println(" 		Connection: " + s); 
+				}
+				
+			}
+			// Print out connections:
+			
+			
 			//System.out.println("Map ID: " + map.get);
 		}
 		
@@ -293,7 +306,6 @@ public class InitialDataTest {
 			System.out.println("speech_persOp: " + speech.getPersOp());
 			System.out.println("speech_persRes: " + speech.getPersRes());
 			System.out.println("speech_persResFail: " + speech.getPersResFail());
-			System.out.println("speech_prompt: " + speech.getPrompt());
 		}
 		
 		System.out.println("------speechOptions-------");
