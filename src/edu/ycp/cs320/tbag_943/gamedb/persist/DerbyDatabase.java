@@ -269,7 +269,7 @@ public class DerbyDatabase implements IDatabase {
 	}
 	// this method goes into the Stat table and retrieves the Stat attributes
 	// this method goes into the Stat table and retrieves the Stat attributes
-		public Stat findNPCStatByStatId(int StatId){
+	public Stat findNPCStatByStatId(int StatId){
 			return executeTransaction(new Transaction<Stat>() {
 				@Override
 				public Stat execute(Connection conn) throws SQLException {

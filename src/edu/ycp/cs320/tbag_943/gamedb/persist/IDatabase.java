@@ -97,7 +97,7 @@ public interface IDatabase {
 	// implemented. 
 	
 	// updatePlayer will need to include update to Inventory Table.
-	public boolean updateCombatByCombatId(Combat combat)
+	public boolean updateCombatByCombatId(Combat combat);
 	public boolean updatePuzzleByPuzzleId(Puzzle puzzle);
 	public boolean updateWinConditionByWinConditionId(WinCondition winCondition);
 	
@@ -120,7 +120,7 @@ public interface IDatabase {
 	
 	// Other
 	
-	public int getNumberRowsInTable(String table);
+	
 	
 	
 	
