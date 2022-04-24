@@ -57,7 +57,7 @@ public class InitialData {
 
 				userToGameList.add(userToGame);
 			}
-			System.out.println("userList loaded from CSV file");
+			System.out.println("userToGameList loaded from CSV file");
 			return userToGameList;
 		} finally {
 			readUserToGame.close();
@@ -87,7 +87,7 @@ public class InitialData {
 				game.setDifficulty(Integer.parseInt(i.next()));
 				game.setInCombat(Boolean.parseBoolean(i.next()));
 				game.setPlayerTurnTaken(Boolean.parseBoolean(i.next()));
-				game.setPlayerCreated(Boolean.parseBoolean(i.next()));
+				game.setPlayerNotCreated(Boolean.parseBoolean(i.next()));
 				
 				// Create a timer based on timeRemaining and timerRate
 				int timeRemaining = Integer.parseInt(i.next()); 
@@ -755,7 +755,7 @@ public class InitialData {
 	public static List<Speech> getSpeech(HashMap<Integer, ArrayList<String>> speechOptions, 
 			HashMap<Integer, ArrayList<String>> speechResponses) throws IOException {
 		List<Speech> speechList = new ArrayList<Speech>(); 
-		ReadCSV readSpeech = new ReadCSV("Speech.csv"); 
+		ReadCSV readSpeech = new ReadCSV("speech.csv"); 
 		
 		try {
 			while (true) {
@@ -778,7 +778,6 @@ public class InitialData {
 				speech.setPersOp(i.next());
 				speech.setPersRes(i.next());
 				speech.setPersResFail(i.next());
-				speech.setPrompt(i.next());
 			
 
 				// Add Speech to List
@@ -828,7 +827,7 @@ public class InitialData {
 				
 			}
 			
-			System.out.println("gameLogList loaded from CSV file");
+			System.out.println("speechOptionsList loaded from CSV file");
 			return speechOptionsList;
 		
 		} finally {
@@ -873,7 +872,7 @@ public class InitialData {
 				
 			}
 			
-			System.out.println("gameLogList loaded from CSV file");
+			System.out.println("speechResponsesList loaded from CSV file");
 			return speechResponsesList;
 		
 		} finally {
