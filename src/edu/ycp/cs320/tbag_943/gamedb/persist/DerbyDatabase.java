@@ -84,52 +84,6 @@ public class DerbyDatabase implements IDatabase {
 				
 				try {
 					stmt1 = conn.prepareStatement(
-							"select Game.difficulty, Game.timer, Game.player, Game.currentCombat, Game.inCombat, Game.playerTurnTaken, Player.name" +
-							"from User, Game, Map, Location, Combat, Player" +
-							"where User.user_id = ?" +
-							"and Game.User.user_id = User.user_id");
-					
-					stmt1.setInt(1, userID);
-					
-					ArrayList<Game> userGames = new ArrayList<Game>();
-					Game game = new Game();
-					
-					resultSet1 = stmt1.executeQuery();
-					
-					while (resultSet1.next()) {
-						found = true;
-						
-						
-						game.setDifficulty(resultSet1.getInt(1));
-						game.getTimer().setTime(resultSet1.getInt(3));
-						game.setPlayer(game.getPlayer());
-						game.setPlayerCreated(resultSet1.getBoolean(8));
-						game.getPlayer().setName(resultSet1.getString(9));
-						userGames.add(game);
-					}
-					
-					if(!found) {
-						System.out.println("user doesn't have any current games");
-					}
-					
-					return userGames;
-				}finally {
-					
-				}
-			}
-		});
-	}
-	
-	public List<Game> findGameByUserID(int userID){
-		return executeTransaction(new Transaction<List<Game>>() {
-			@Override
-			public List<Game> execute(Connection conn) throws SQLException{
-				PreparedStatement stmt1 = null;
-				ResultSet resultSet1 = null;
-				Boolean found = false;
-				
-				try {
-					stmt1 = conn.prepareStatement(
 							"select Game.difficulty, Game.outputLog, Game.timer, Game.player, Game.currentCombat, Game.inCombat, Game.playerTurnTaken" +
 							"from User, Game, Map, Location, Combat" +
 							"where User.user_id = ?" +
