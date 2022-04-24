@@ -10,20 +10,37 @@ public interface IDatabase {
 	
 	// Finds
 	public User findUserByUsernameAndPassword(String username, String password); 
-	public List<Game> findGamesByUserID(int userID); 
-	public List<NPC> findNPCsByLocationID(int locationID); 
-	public List<NPC> findNPCsByCombatID(int combatID);
-	
-	public List<Speech> findSpeechByNPCID(int npcID); 
-	public List<String> findGameLogByGameID(int gameID); 
-	public Player findPlayerByGameID(int gameID); 
-	public List<Combat> findCombatsByLocationID(int locationID); 
-	public List<Integer> findPuzzleIDsByLocationID(int locationId);
-	public Puzzle findPuzzleByPuzzleId(int puzzle_id);
+	public List<Game> findGamesByUserID(int userID);
+	public List<NPC> findNPCsIdsByLocationID(int locationID); 
+	public NPC findNPCByNPCId(int NPCId);
+	public List<Integer> findNPCStatsIdsByNPCId(int NPCId);
+	public Stat findNPCStatByStatId(int StatId);
+	public List<Integer> findNPCsIdByCombatID(int combatID);
+	public Loot findLootByLocationID(int locationID);
+	public ArrayList<Integer> findCombatIdsByLocationID(int locationId);
+	public Combat findCombatsByCombatID(int combatId);
+	public Player findPlayerByPlayerId(int playerId);
+	public Loot findLootByLootID(int lootID);
+	public Stat findPlayerStatByStatId(int statId);
+	public GameLog findGameLogByGameLogId(int gameLogId);
+	public Item findItemByItemID(int itemId);
+	public Speech findSpeechBySpeechId(int speechId);
+	public ArrayList<String> findSpeechOptionsBySpeechId(int speechId);
+	public ArrayList<String> findSpeechResponsesBySpeechId(int speechId);
+	public Speech findSpeechByNPCId(int npcId);
+	public HashMap<String, Item> findInventoryByPlayerID(int playerID);
+	public HashMap<String, Stat> findPlayerStatsByPlayerID(int playerID);
+	public HashMap<String, Stat> findNPCStatsByNPCID(int npcID);
+	public List<Integer> findPlayerStatIdsByPlayerId(int playerID);
+	public List<Integer> findPlayerInventoryIdsByPlayerId(int playerID);
 	public Map findMapByMapID(int mapId);
-	public HashMap<String, ArrayList<String>> findConnectionsByMapID(int mapID); 
-	public Location findLocationByLocationID(int locationId); 
+	public Location findLocationByLocationID(int locationId);
+	public List<Integer> findPuzzleIdsByLocationID(int locationId);
+	public Puzzle findPuzzleByPuzzleId(int puzzle_id);
 	public WinCondition findWinConditionByWinConditionId(int winCondition_id);
+
+	public HashMap<String, ArrayList<String>> findConnectionsByMapID(int mapID);
+
 	public Loot findLootByLocationID(int locationID); 
 	public List<Integer> findPlayerInventoryIdsByPlayerID(int playerID); 
 	public List<Integer> findPlayerStatsIdsByPlayerID(int playerID); 
@@ -32,21 +49,37 @@ public interface IDatabase {
 	public Item findItemByItemID(int itemID); 
 	
 	public List<Integer> findPlayerStatIdsByPlayerId(int playerID); 
+
 	
 	
 	// Inserts
-	public Integer insertPlayerIntoPlayerTable(Player player); 
-	public Integer insertGameLogIntoGameLogTable(List<String> log);
-	public Integer insertNewNPCs(String name, int health, boolean combat, HashMap<String, Stat> stats); 
-	public Integer insertNewNPCStats(String name, int health, int armor, int strength, int speed);
-	public Integer InsertNewLocationToNPC(int NPC_Id);
-	public Integer InsertNewNPCToStats(int Stats_id);
-	Integer insertNewNPCStats(NPC npc); 
-	public Integer insertNewGame(User user, Player player); 
+	public Integer insertNewNPCs(List<NPC> npcList, int loc_rows, int game_rows);
+	public Integer insertNewPlayer(Player player, int loc_rows, int game_rows);
+	public Integer InsertNewNPCStats(NPC npc, int npc_rows, int npcStat_rows);
+	public Integer insertNewPlayerToStats(Player player, int player_rows, int playerstat_rows);
+	public Integer insertNewPlayerInventory(Player player, int player_rows, int playerInventory_rows);
+	public Integer insertNewMap(Map map, int game_rows, int location_rows);
+	public Integer insertNewGameLog(ArrayList<String> log, int game_rows);
+	public Boolean UpdateNPCByNPCId(NPC npc);
+	public WinCondition insertNewWinConditions(WinCondition winCondition);
+	public Stat insertNewPlayerStats(Stat playerStats);
+	public Boolean updateNPCStatsByStatId(Stat stat);
+	public Location insertNewLocations(Location location);
+	public Integer insertNewPlayer(Item item);
+	public Integer insertNewLoot(Loot loot);
+	public Integer insertNewPuzzle(Puzzle puzzle);
+	public Integer insertNewSpeech(Speech speech);
+	public Integer insertNewSpeechOption(Speech speech, int speechOp);
+	public Integer insertNewSpeechResponse(Speech speech, int speechOp);
+	public Integer insertNewNPCs(final String name, final int health, final boolean combat, final HashMap<String, Stat> stats);
+	public Void InsertNewLocationToNPC(NPC npc);
+	public Void InsertNewCombatToNPC(NPC npc);
+	
 		// This method will need to fetch the most recently added player and log
 		// IDs when the game is first inserted (saved)
 	public Integer insertGameIntoGameTable(Game game); 
 	
+
 	public Integer insertNewPlayer(Player player, int loc_rows, int game_rows); 
 	public Integer insertNewMap(Map map, int game_rows, int location_rows); 
 	public Integer insertNewGameLog(ArrayList<String> log, int game_rows);
@@ -61,6 +94,7 @@ public interface IDatabase {
 	public WinCondition insertNewWinConditions(WinCondition winCondition);
 	public Stat insertNewPlayerStats(Stat playerStats);
 	public Location insertNewLocations(Location location);
+
 	
 	
 	// When we go to implement insertNewGame in the SQL DB, remember that
@@ -80,7 +114,6 @@ public interface IDatabase {
 	
 	
 	// Updates
-	public Boolean UpdateNPCByNPCId(NPC npc);
 	// We could get away with only implementing updateGame, as Game
 	// already contains all of these classes. However, we need to 
 	// keep in mind that doing so will require the same queries that
@@ -90,17 +123,21 @@ public interface IDatabase {
 	// implemented. 
 	
 	// updatePlayer will need to include update to Inventory Table.
+	public boolean updateCombatByCombatId(Combat combat);
+	public boolean updatePuzzleByPuzzleId(Puzzle puzzle);
+	public boolean updateWinConditionByWinConditionId(WinCondition winCondition);
+	
 	public boolean updateGame(Game game);
 	public boolean updatePlayer(Player player); 
 	public boolean updateNPCs(List<NPC> npcs); 
-	public boolean updateCombatByCombatId(Combat combat); 
 	public boolean updatePuzzle(Puzzle puzzle);  
 	public boolean updateLootByLootId(Loot loot); 
 	public boolean updateLoot(Loot loot); 
-	public boolean updateWinConditionByWinConditionId(WinCondition winCondition);
 	
 	
 	// Removals
+	public boolean removeItemFromInventoryByItemIdAndPlayerId(int itemID, int playerID);
+	
 	public boolean removeGameByGameID(int gameID); 
 	public boolean removeItemFromInventoryByItemIDAndPlayerID(int itemID, int playerID);
 
@@ -108,8 +145,9 @@ public interface IDatabase {
 	
 	
 	// Other
-	public int getNumberRowsInTable(String table);
-	Integer insertNewNPCs(String name, boolean combat, HashMap<String, Stat> stats);
+	
+	
+	
 	
 	
 	/* Library Example: 

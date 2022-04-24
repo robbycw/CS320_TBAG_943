@@ -91,6 +91,7 @@ public class DerbyDatabase implements IDatabase {
 				
 				try {
 					stmt1 = conn.prepareStatement(
+
 							"select UserToGame.game_id, Game.difficulty, Game.timeRemaining, Player.name " +
 							"from UserToGame, Game, Player " +
 							"where UserToGame.user_id = ? " +
@@ -150,6 +151,7 @@ public class DerbyDatabase implements IDatabase {
 							"Game.player_id, Game.map_id, Game.combat_id " +
 							"from Game " +
 							"where Game.game_id = ? ");
+
 					
 					stmt1.setInt(1, gameId);
 					
@@ -157,7 +159,9 @@ public class DerbyDatabase implements IDatabase {
 					
 					resultSet1 = stmt1.executeQuery();
 					
+					
 					while (resultSet1.next()) {
+
 						found = true;
 						
 						game.setId(resultSet1.getInt(1));
@@ -169,6 +173,7 @@ public class DerbyDatabase implements IDatabase {
 						Timer timer = new Timer(); 
 						timer.setTime(resultSet1.getInt(6));
 						timer.setTimerRate(resultSet1.getInt(7));
+
 						
 						// Get the IDs for the log, player, map, and combat. 
 						log_id = resultSet1.getInt(8); 
@@ -408,47 +413,57 @@ public class DerbyDatabase implements IDatabase {
 			}
 		});
 	}
-	
-	public List<Integer> findNPCIdsByLocationID(int locationID){
-		return executeTransaction(new Transaction<List<Integer>>() {
-			@Override
-			public List<Integer> execute(Connection conn) throws SQLException {
-				PreparedStatement stmt1 = null;
-				ResultSet resultSet1 = null;
-				Boolean found = false;
+
+
+		
+						// Location_ID input
+						// this method goes into the junction table and returns the corresponding NPC_ID from the 
+						// Location_ID input
+				public List<Integer> findNPCIdsByLocationID(int locationID){
+					return executeTransaction(new Transaction<List<Integer>>() {
+						@Override
+						public List<Integer> execute(Connection conn) throws SQLException {
+							PreparedStatement stmt1 = null;
+								ResultSet resultSet1 = null;
+								Boolean found = false;
+								
+								try {
+									stmt1 = conn.prepareStatement(
+											"select LocationToNPC.npc_id " +
+											"from LocationToNPC " + 
+													"where LocationToNPC.location_id = ?"
+											);
+									stmt1.setInt(1, locationID);
+									
+									// creating list and NPC object to set the ID and store the ID
+									ArrayList<Integer> NPCsIds = new ArrayList<Integer>();
+									NPC npc = new NPC();
+									
+									resultSet1 = stmt1.executeQuery();
+										
+									// running through the npc_id and assigning them to the NPC object and adding them
+									//to the array list
+									while(resultSet1.next()) {
+										found = true;
+											
+										npc.setId(resultSet1.getInt(1));
+										NPCsIds.add(npc.getId());
+									}
+										
+									if(!found) {
+										System.out.println("No NPCs in this location");
+									}
+									return NPCsIds;
+								}finally {
+									DBUtil.closeQuietly(resultSet1);
+									DBUtil.closeQuietly(stmt1);
+								}
+							}
+						});
+					}
 				
-				try {
-					stmt1 = conn.prepareStatement(
-							"select LocationToNPC.npc_id " +
-							"from LocationToNPC " + 
-									"where LocationToNPC.location_id = ?"
-							);
-					stmt1.setInt(1, locationID);
-					
-					ArrayList<Integer> NPCsIds = new ArrayList<Integer>();
-					NPC npc = new NPC();
-					
-					resultSet1 = stmt1.executeQuery();
-					
-					while(resultSet1.next()) {
-						found = true;
-						
-						npc.setId(resultSet1.getInt(1));
-						NPCsIds.add(npc.getId());
-					}
-					
-					if(!found) {
-						System.out.println("No NPCs in this location");
-					}
-					return NPCsIds;
-				}finally {
-					DBUtil.closeQuietly(resultSet1);
-					DBUtil.closeQuietly(stmt1);
-				}
-			}
-		});
-	}
-	
+	// this method finds the NPC by the NPC_ID and gets all of its passive attributes
+
 	public NPC findNPCByNPCId(int NPCId){
 		return executeTransaction(new Transaction<NPC>() {
 			@Override
@@ -465,13 +480,19 @@ public class DerbyDatabase implements IDatabase {
 							);
 					stmt1.setInt(1, NPCId);
 					
+
+					// creating NPC object to apply desired attributes 
+
 					NPC npc = new NPC();
 					
 					resultSet1 = stmt1.executeQuery();
 					
-					while(resultSet1.next()) {
+					
+					// applying the attributes to the NPC
+					if(resultSet1.next()) {
 						found = true;
 						
+
 						npc.setId(NPCId);
 						npc.setName(resultSet1.getString(2));
 						npc.setCombat(Boolean.parseBoolean(resultSet1.getString(3)));
@@ -496,12 +517,15 @@ public class DerbyDatabase implements IDatabase {
 					}
 					return npc;
 				} finally {
+
 					DBUtil.closeQuietly(resultSet1);
 					DBUtil.closeQuietly(stmt1);
+
 				}
 			}
 		});
 	}
+
 		
 	public HashMap<String, Stat> findNPCStatsByNPCID(int npcID) {
 		return executeTransaction(new Transaction<HashMap<String, Stat>>() {
@@ -519,6 +543,7 @@ public class DerbyDatabase implements IDatabase {
 					);
 					stmt1.setInt(1, npcID);
 					
+
 					HashMap<String, Stat> npcStats = new HashMap<String, Stat>(); 
 					
 					resultSet1 = stmt1.executeQuery();
@@ -527,6 +552,7 @@ public class DerbyDatabase implements IDatabase {
 					Boolean found = false;
 					
 					while (resultSet1.next()) {
+
 						found = true;
 						
 						Stat stat = new Stat(); 
@@ -555,41 +581,46 @@ public class DerbyDatabase implements IDatabase {
 			}
 		});
 	}
-	
+
+	// this method goes into the Stat table and retrieves the Stat attributes
+
 	public Stat findNPCStatByStatId(int StatId){
-		return executeTransaction(new Transaction<Stat>() {
-			@Override
-			public Stat execute(Connection conn) throws SQLException {
-				PreparedStatement stmt1 = null;
-				ResultSet resultSet1 = null;
-				Boolean found = false;
-				
-				try {
-					stmt1 = conn.prepareStatement(
-							"select Stat.name, Stat.rank " +
-							"from Stat " + 
-									"where Stat.stat_id = ? "
-							);
-					stmt1.setInt(1, StatId);
+			return executeTransaction(new Transaction<Stat>() {
+				@Override
+				public Stat execute(Connection conn) throws SQLException {
+					PreparedStatement stmt1 = null;
+					ResultSet resultSet1 = null;
+					Boolean found = false;
 					
-					Stat stat = new Stat();
-					
-					while(resultSet1.next()) {
-						found = true;
+					try {
+						stmt1 = conn.prepareStatement(
+								"select Stat.name, Stat.rank " +
+								"from Stat " + 
+										"where Stat.stat_id = ? "
+								);
+						stmt1.setInt(1, StatId);
 						
-						stat.setName(resultSet1.getString(1));
-						stat.setRank(resultSet1.getInt(2));
+						// creating stat object
+						Stat stat = new Stat();
 						
+						// running through and translating stat from the DB
+						while(resultSet1.next()) {
+							found = true;
+							
+							stat.setName(resultSet1.getString(1));
+							stat.setRank(resultSet1.getInt(2));
+							
+						}
+						
+						if(!found) {
+							System.out.println("this ID doesn't have a pertaining stat");
+						}
+						
+						return stat;
+					}finally {
+						DBUtil.closeQuietly(resultSet1);
+						DBUtil.closeQuietly(stmt1);
 					}
-					
-					if(!found) {
-						System.out.println("this ID doesn't have a pertaining stat");
-					}
-					
-					return stat;
-				}finally {
-					DBUtil.closeQuietly(resultSet1);
-					DBUtil.closeQuietly(stmt1);
 				}
 			}
 		});
@@ -647,9 +678,8 @@ public class DerbyDatabase implements IDatabase {
 					DBUtil.closeQuietly(resultSet1);
 					DBUtil.closeQuietly(stmt1);
 				}
-			}
-		});
-	}
+			});
+		}
 	
 	public ArrayList<String> findSpeechOptionsBySpeechId(int speechId) {
 		return executeTransaction(new Transaction<ArrayList<String>>() {
@@ -1455,6 +1485,7 @@ public class DerbyDatabase implements IDatabase {
 			}
 		});
 	}
+
 	
 
 	//
@@ -1492,6 +1523,7 @@ public class DerbyDatabase implements IDatabase {
 			}
 		});
 	}
+
 	
 	public Integer insertNewItem(List<Item> items, int itemMaxId) {
 		// Note, this method inserts a new row for the new player and default values.
@@ -1500,7 +1532,7 @@ public class DerbyDatabase implements IDatabase {
 			@Override
 			public Integer execute(Connection conn) throws SQLException {
 				PreparedStatement stmt1 = null;
-											
+
 				try {
 					
 					// insert new Player into Player table
@@ -2061,6 +2093,7 @@ public class DerbyDatabase implements IDatabase {
 		});
 	}
 	
+
 	public Integer insertNewPlayerToStats(List<Pair<Integer, Integer>> playerToStats, int player_rows, int playerstat_rows) {
 		return executeTransaction(new Transaction<Integer>() {
 			@Override
