@@ -10,8 +10,8 @@ import edu.ycp.cs320.tbag_943.classes.*;
 
 //Code is based on the CS320 Library Example. 
 public class InitialData {
-
 	public static List<User> getUser() throws IOException {
+		System.out.println("this is a test to see if the method needs to be started somewhere");
 		List<User> userList = new ArrayList<User>();
 		ReadCSV readUsers = new ReadCSV("User.csv");
 		try {
@@ -27,6 +27,8 @@ public class InitialData {
 				user.setId(Integer.parseInt(i.next()));
 				user.setUsername(i.next());
 				user.setPassword(i.next());
+				System.out.println("");
+				
 				userList.add(user);
 			}
 			System.out.println("userList loaded from CSV file");

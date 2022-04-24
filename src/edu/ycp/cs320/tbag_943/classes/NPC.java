@@ -6,12 +6,11 @@ import java.util.HashMap;
 public class NPC implements Comparable {
 
 	private String name; 
-	private String[] attackMoves;
+	private ArrayList<String> attackMoves;
 	private boolean combat;
 	private HashMap<String, Stat> stats; 
 	private Item weapon; 
 	private Speech speech;
-	private Stat stat;
 	private boolean isIntimidated;
 	private boolean canIntimidate;
 	private int intimidationThreshold;
@@ -72,9 +71,6 @@ public class NPC implements Comparable {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public Stat getStat() {
-		return stat;
-	}
 	
 	public Item getWeapon() {
 		return weapon;
@@ -131,6 +127,9 @@ public class NPC implements Comparable {
 	public void setCanIntimidate(boolean bool) {
 		canIntimidate = bool;
 	}
+	public boolean getCanIntimidate() {
+		return canIntimidate;
+	}
 	
 	public boolean canPersuade() {
 		return canPersuade;
@@ -138,6 +137,10 @@ public class NPC implements Comparable {
 
 	public void setCanPersuade(boolean bool) {
 		canPersuade = bool;
+	}
+	
+	public boolean getCanPersuade() {
+		return canPersuade;
 	}
 	
 	public int getPersuasionThreshold() {
@@ -149,13 +152,13 @@ public class NPC implements Comparable {
 	}
 
 	public String getAttackMove(int get) {
-		return attackMoves[get];
+		return attackMoves.get(get);
 		
 	}
 	
-	public void setAttackMove(int set, String attackAdd) {
+	public void setAttackMove(String attackAdd) {
 		
-		attackMoves[set] = attackAdd;
+		attackMoves.add(attackAdd);
 		
 	}
 	
@@ -171,6 +174,10 @@ public class NPC implements Comparable {
 	
 	public HashMap<String, Stat> getStats(){
 		return stats; 
+	}
+	
+	public ArrayList<String> getAttacks() {
+		return attackMoves;
 	}
 	
 	public void setStats(HashMap<String, Stat> stats) {
