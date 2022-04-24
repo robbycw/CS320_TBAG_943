@@ -42,6 +42,7 @@ public interface IDatabase {
 	public Integer InsertNewLocationToNPC(int NPC_Id);
 	public Integer InsertNewNPCToStats(int Stats_id);
 	Integer insertNewNPCStats(NPC npc); 
+	Integer insertNewNPCs(List<NPC> npcList, int loc_rows, int game_rows);
 	public Integer insertNewGame(User user, Player player); 
 		// This method will need to fetch the most recently added player and log
 		// IDs when the game is first inserted (saved)
@@ -101,7 +102,7 @@ public interface IDatabase {
 	
 	// Other
 	public int getNumberRowsInTable(String table);
-	Integer insertNewNPCs(String name, boolean combat, HashMap<String, Stat> stats);
+	
 	
 	
 	/* Library Example: 
