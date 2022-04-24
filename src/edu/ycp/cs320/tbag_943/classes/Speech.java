@@ -132,6 +132,22 @@ public class Speech {
 	{
 		return persuadeResponseFail;
 	}
+
+	public ArrayList<String> getSpeechOptions() {
+		return speechOptions;
+	}
+
+	public ArrayList<String> getSpeechResponses() {
+		return speechResponses;
+	}
+
+	public void setSpeechOptions(ArrayList<String> speechOptions) {
+		this.speechOptions = speechOptions;
+	}
+
+	public void setSpeechResponses(ArrayList<String> speechResponses) {
+		this.speechResponses = speechResponses;
+	}
 	
 	
 	
