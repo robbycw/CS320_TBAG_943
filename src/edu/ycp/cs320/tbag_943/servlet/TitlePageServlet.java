@@ -1,7 +1,9 @@
 package edu.ycp.cs320.tbag_943.servlet;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -10,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import edu.ycp.cs320.tbag_943.classes.*;
+import edu.ycp.cs320.tbag_943.controller.DBController;
 
 public class TitlePageServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -55,6 +58,9 @@ public class TitlePageServlet extends HttpServlet {
 		// Get the User class from the session. 
 		User user = (User) session.getAttribute("user"); 
 		
+		// Initialize DBController
+		DBController dbc = new DBController(); 
+		
 		System.out.println("TitlePage Servlet: doPost");
 		
 		if(req.getParameter("game") != null) {
@@ -87,13 +93,6 @@ public class TitlePageServlet extends HttpServlet {
 			return; 
 			
 		} else if(req.getParameter("loginSubmit") != null) {
-			// This map will represent the Database Table of usernames/passwords until implemented. 
-			HashMap<String, String> userPass = new HashMap<String, String>(); 
-			
-			userPass.put("robbyw", "tbags"); 
-			userPass.put("admin", "adminPassword"); 
-			
-			
 			
 			// The User has attempted to log in. 
 			
@@ -106,58 +105,35 @@ public class TitlePageServlet extends HttpServlet {
 			if(username == null || password == null || username.isEmpty() || password.isEmpty()) {
 				String loginError = "Please specify a username and password."; 
 				session.setAttribute("loginErr", loginError);
+			} else {
+				
 			}
 			
 			// Check that the username and password matches a username and password
-			// within the database (for now, users are hardcoded). 
+			// within the database. 
+			User loginUser = dbc.login(username, password); 
 			
 			// Check if username exists. 
-			if(userPass.containsKey(username)) {
-				// Check if password matches. 
-				// Log in if so, otherwise supply proper error.
-				if(userPass.get(username).equals(password)) {
-					System.out.println("	User " + username + " has logged in."); 
-					
-					user.setCreated(true);
-					user.setUsername(username);
-					user.setPassword(password);
-					
-					// Need to fetch the user's gameList from the database
-					// TODO
-					Game game1 = GameServlet.gameMaker(); 
-					game1.setId(1);
-					Game game2 = GameServlet.gameMaker(); 
-					game2.setId(2);
-					Game game3 = GameServlet.gameMaker(); 
-					game3.setId(3);
-					Game game4 = GameServlet.gameMaker(); 
-					game4.setId(4);
-					Game game5 = GameServlet.gameMaker(); 
-					game5.setId(5);
-					Game game6 = GameServlet.gameMaker(); 
-					game6.setId(6);
-					
-					
-					user.getGameList().add(game1);
-					user.getGameList().add(game2);
-					user.getGameList().add(game3);
-					user.getGameList().add(game4);
-					user.getGameList().add(game5);
-					user.getGameList().add(game6);
-					
-					// User is now logged in, store user data into session. 
-					session.setAttribute("user", user);
-					session.setAttribute("loggedIn", true); 
-					
-				} else {
-					// Password does not match. 
-					String loginError = "Incorrect password."; 
-					session.setAttribute("loginErr", loginError);
-				}
+			if(loginUser != null) {			
+				// Query returned a User. 
 				
+				System.out.println("	User " + username + " has logged in."); 
+				
+				user = loginUser; 
+				
+				// Need to fetch the user's gameList from the database
+				List<Game> games = dbc.loadGamesInfo(user.getId()); 
+				ArrayList<Game> gameList = new ArrayList<Game>(); 
+				gameList.addAll(games); 
+				user.setGameList(gameList);
+								
+				// User is now logged in, store user data into session. 
+				session.setAttribute("user", user);
+				session.setAttribute("loggedIn", true); 
+
 			} else {
-				// Username does not exist. 
-				String loginError = "Username does not exist."; 
+				// The Query returned null. Supply error message. 
+				String loginError = "Username or password does not exist."; 
 				session.setAttribute("loginErr", loginError);
 			}
 			
@@ -170,12 +146,6 @@ public class TitlePageServlet extends HttpServlet {
 			session.setAttribute("loginErr", "");
 			
 		} else if (req.getParameter("attemptCreateAccount") != null){
-			
-			// This map will represent the Database Table of usernames/passwords until implemented. 
-			HashMap<String, String> userPass = new HashMap<String, String>(); 
-			
-			userPass.put("robbyw", "tbags"); 
-			userPass.put("admin", "adminPassword"); 
 			
 			// The User has attempted to create an account. 
 			String username = (String) req.getParameter("username"); 
@@ -191,22 +161,25 @@ public class TitlePageServlet extends HttpServlet {
 			
 			// The user has entered a username and password for their account. 
 			// We want to ensure a username does not already exist. 
-			else if (userPass.containsKey(username)) {
-				String loginError = username + " already exists. Pick a different username.";  
-				session.setAttribute("loginErr", loginError);
-			} else {
-				System.out.println("	Creating account for username: " + username); 
-				// The username does not yet exist. Make the account and log the user in. 
-				user.setUsername(username);
-				user.setPassword(password);
-				user.setCreated(true);
-				userPass.put(username, password); 
+			else {
+				System.out.println("	Attempting to create account for username: " + username); 
 				
-				// User is now logged in, store user data into session. 
-				session.setAttribute("user", user);
-				session.setAttribute("loggedIn", true); 
-				session.setAttribute("makeNewAccount", false);
+				User newUser = dbc.createAccount(username, password); 
 				
+				if(newUser == null) {
+					// Account not created due to matching username. 
+					String loginError = "This username already exists."; 
+					session.setAttribute("loginErr", loginError);
+				} else {
+					// New User successfully created. 
+					// User is now logged in, store user data into session. 
+					newUser.setCreated(true);
+					newUser.setCurrentGame(null);
+					newUser.setGameList(new ArrayList<Game>());
+					session.setAttribute("user", newUser);
+					session.setAttribute("loggedIn", true); 
+					session.setAttribute("makeNewAccount", false);
+				}
 			}
 			
 		} else if (req.getParameter("createCancel") != null) {
@@ -217,6 +190,20 @@ public class TitlePageServlet extends HttpServlet {
 			session.setAttribute("loginErr", "");
 		} else if (req.getParameter("newGame") != null) {
 			// User selected New Game: 
+			Game newGame = dbc.newGame(user.getId()); 
+			user.setCurrentGame(newGame);
+			
+			ArrayList<Game> gameList = user.getGameList(); 
+			
+			if(gameList == null) {
+				gameList = new ArrayList<Game>();
+				gameList.add(newGame); 
+			} else {
+				gameList.add(newGame); 
+			}
+			user.setGameList(gameList);
+			session.setAttribute("user", user);
+			session.setAttribute("playGameClicked", false);
 			
 		} else if (req.getParameter("logOut") != null) {
 			// User wants to log out. 
@@ -241,16 +228,13 @@ public class TitlePageServlet extends HttpServlet {
 			if(req.getParameter(g.getIdString()) != null) {
 				// User has selected this Game, so select this ID. 
 				// With DB, will need to load rest of Game! 
-				//TODO
-				user.setCurrentGame(g);
+
+				Game selected = dbc.loadGame(g.getId()); 
+				
+				user.setCurrentGame(selected);
 				session.setAttribute("playGameClicked", false);
 			}
 		}
-		
-		
-		
-		
-		// decode POSTed form parameters and dispatch to controller
 		
 		// Forward to view to render the result HTML document
 		req.getRequestDispatcher("/_view/titlePage.jsp").forward(req, resp);

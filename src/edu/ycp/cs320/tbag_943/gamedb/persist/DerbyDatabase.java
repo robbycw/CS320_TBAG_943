@@ -47,9 +47,9 @@ public class DerbyDatabase implements IDatabase {
 				
 				try {
 					stmt1 = conn.prepareStatement(
-							"select User.user_id, User.username, User.password" + 
-							"from User" +
-							"User.username = ? and User.password = ?");
+							"select Users.user_id, Users.username, Users.password " + 
+							"from Users " +
+							"where Users.username = ? and Users.password = ?");
 					stmt1.setString(1, username);
 					stmt1.setString(2, password);
 					
@@ -146,7 +146,7 @@ public class DerbyDatabase implements IDatabase {
 				try {
 					stmt1 = conn.prepareStatement(
 							"select Game.game_id, Game.difficulty, Game.inCombat, " +
-							"Game.playerTurnTaken, Game.playerCreated, " +
+							"Game.playerTurnTaken, Game.playerNotCreated, " +
 							"Game.timeRemaining, Game.timerRate, Game.log_id, " +
 							"Game.player_id, Game.map_id, Game.combat_id " +
 							"from Game " +
@@ -168,7 +168,7 @@ public class DerbyDatabase implements IDatabase {
 						game.setDifficulty(resultSet1.getInt(2));
 						game.setInCombat(Boolean.parseBoolean(resultSet1.getString(3)));
 						game.setPlayerTurnTaken(Boolean.parseBoolean(resultSet1.getString(4)));
-						game.setPlayerCreated(Boolean.parseBoolean(resultSet1.getString(5)));
+						game.setPlayerNotCreated(Boolean.parseBoolean(resultSet1.getString(5)));
 						// Create a Timer based on the time remaining and timerRate. 
 						Timer timer = new Timer(); 
 						timer.setTime(resultSet1.getInt(6));
@@ -217,6 +217,11 @@ public class DerbyDatabase implements IDatabase {
 					} else {
 						game.setCurrentCombat(null);
 					}
+					
+					// Set map, player, and log. 
+					game.setMap(map);
+					game.setPlayer(player);
+					game.setOutputLog(log);
 					
 					return game;
 				} finally {
@@ -327,7 +332,7 @@ public class DerbyDatabase implements IDatabase {
 				
 				try {
 					stmt = conn.prepareStatement(
-							" select Location.* "
+							"select Location.* "
 							+ " from Location "
 							+ " where location_id = ? "
 					);
@@ -416,51 +421,51 @@ public class DerbyDatabase implements IDatabase {
 
 
 		
-						// Location_ID input
-						// this method goes into the junction table and returns the corresponding NPC_ID from the 
-						// Location_ID input
-				public List<Integer> findNPCIdsByLocationID(int locationID){
-					return executeTransaction(new Transaction<List<Integer>>() {
-						@Override
-						public List<Integer> execute(Connection conn) throws SQLException {
-							PreparedStatement stmt1 = null;
-								ResultSet resultSet1 = null;
-								Boolean found = false;
+					// Location_ID input
+					// this method goes into the junction table and returns the corresponding NPC_ID from the 
+					// Location_ID input
+	public List<Integer> findNPCIdsByLocationID(int locationID){
+		return executeTransaction(new Transaction<List<Integer>>() {
+				@Override
+			public List<Integer> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+					ResultSet resultSet1 = null;
+					Boolean found = false;
+					
+					try {
+						stmt1 = conn.prepareStatement(
+								"select LocationToNPC.npc_id " +
+								"from LocationToNPC " + 
+										"where LocationToNPC.location_id = ?"
+								);
+						stmt1.setInt(1, locationID);
+						
+						// creating list and NPC object to set the ID and store the ID
+						ArrayList<Integer> NPCsIds = new ArrayList<Integer>();
+						NPC npc = new NPC();
+						
+						resultSet1 = stmt1.executeQuery();
+							
+						// running through the npc_id and assigning them to the NPC object and adding them
+						//to the array list
+						while(resultSet1.next()) {
+							found = true;
 								
-								try {
-									stmt1 = conn.prepareStatement(
-											"select LocationToNPC.npc_id " +
-											"from LocationToNPC " + 
-													"where LocationToNPC.location_id = ?"
-											);
-									stmt1.setInt(1, locationID);
-									
-									// creating list and NPC object to set the ID and store the ID
-									ArrayList<Integer> NPCsIds = new ArrayList<Integer>();
-									NPC npc = new NPC();
-									
-									resultSet1 = stmt1.executeQuery();
-										
-									// running through the npc_id and assigning them to the NPC object and adding them
-									//to the array list
-									while(resultSet1.next()) {
-										found = true;
-											
-										npc.setId(resultSet1.getInt(1));
-										NPCsIds.add(npc.getId());
-									}
-										
-									if(!found) {
-										System.out.println("No NPCs in this location");
-									}
-									return NPCsIds;
-								}finally {
-									DBUtil.closeQuietly(resultSet1);
-									DBUtil.closeQuietly(stmt1);
-								}
-							}
-						});
+							npc.setId(resultSet1.getInt(1));
+							NPCsIds.add(npc.getId());
+						}
+							
+						if(!found) {
+							System.out.println("No NPCs in this location");
+						}
+						return NPCsIds;
+					}finally {
+						DBUtil.closeQuietly(resultSet1);
+						DBUtil.closeQuietly(stmt1);
 					}
+				}
+			});
+	}
 				
 	// this method finds the NPC by the NPC_ID and gets all of its passive attributes
 
@@ -526,7 +531,6 @@ public class DerbyDatabase implements IDatabase {
 		});
 	}
 
-		
 	public HashMap<String, Stat> findNPCStatsByNPCID(int npcID) {
 		return executeTransaction(new Transaction<HashMap<String, Stat>>() {
 			@Override
@@ -582,50 +586,6 @@ public class DerbyDatabase implements IDatabase {
 		});
 	}
 
-	// this method goes into the Stat table and retrieves the Stat attributes
-
-	public Stat findNPCStatByStatId(int StatId){
-			return executeTransaction(new Transaction<Stat>() {
-				@Override
-				public Stat execute(Connection conn) throws SQLException {
-					PreparedStatement stmt1 = null;
-					ResultSet resultSet1 = null;
-					Boolean found = false;
-					
-					try {
-						stmt1 = conn.prepareStatement(
-								"select Stat.name, Stat.rank " +
-								"from Stat " + 
-										"where Stat.stat_id = ? "
-								);
-						stmt1.setInt(1, StatId);
-						
-						// creating stat object
-						Stat stat = new Stat();
-						
-						// running through and translating stat from the DB
-						while(resultSet1.next()) {
-							found = true;
-							
-							stat.setName(resultSet1.getString(1));
-							stat.setRank(resultSet1.getInt(2));
-							
-						}
-						
-						if(!found) {
-							System.out.println("this ID doesn't have a pertaining stat");
-						}
-						
-						return stat;
-					}finally {
-						DBUtil.closeQuietly(resultSet1);
-						DBUtil.closeQuietly(stmt1);
-					}
-				}
-			}
-		});
-	}
-	
 	public Speech findSpeechBySpeechId(int speechId) {
 		return executeTransaction(new Transaction<Speech>() {
 			@Override
@@ -678,8 +638,9 @@ public class DerbyDatabase implements IDatabase {
 					DBUtil.closeQuietly(resultSet1);
 					DBUtil.closeQuietly(stmt1);
 				}
-			});
-		}
+			}
+		});
+	}
 	
 	public ArrayList<String> findSpeechOptionsBySpeechId(int speechId) {
 		return executeTransaction(new Transaction<ArrayList<String>>() {
@@ -690,10 +651,10 @@ public class DerbyDatabase implements IDatabase {
 				
 				try {
 					stmt1 = conn.prepareStatement(
-							"select SpeechOptions.option " +
+							"select SpeechOptions.speechOption " +
 							"  from  SpeechOptions " +
 							"  where speech_id = ? " +
-							"  order by SpeechOptions.order ASC"
+							"  order by SpeechOptions.subOrder ASC"
 					);
 					stmt1.setInt(1, speechId);
 					
@@ -738,7 +699,7 @@ public class DerbyDatabase implements IDatabase {
 							"select SpeechResponses.response " +
 							"  from  SpeechResponses" +
 							"  where speech_id = ? " +
-							"  order by SpeechResponses.order ASC"
+							"  order by SpeechResponses.subOrder ASC"
 					);
 					stmt1.setInt(1, speechId);
 					
@@ -845,7 +806,7 @@ public class DerbyDatabase implements IDatabase {
 					
 					// check if the locationID was found
 					if (!found) {
-						System.out.println("<" + locationID + "> was not found in the Location table");
+						System.out.println("<" + locationID + "> was not found in the Loot table");
 					}
 					
 					return loot;
@@ -988,7 +949,7 @@ public class DerbyDatabase implements IDatabase {
 					}
 					// check if the locationID was found
 					if (!found) {
-						System.out.println("<" + locationId + "> was not found in the Location table");
+						System.out.println("<" + locationId + "> was not found in the LocationToCombat table");
 					}
 					
 					return combatIds;
@@ -1028,7 +989,7 @@ public class DerbyDatabase implements IDatabase {
 						combat.setId(resultSet1.getInt(1));
 						combat.setTurn(resultSet1.getInt(2));
 						combat.setDifficulty(resultSet1.getInt(3));
-						combat.setDead(resultSet1.getBoolean(4));
+						combat.setDead(Boolean.parseBoolean(resultSet1.getString(4)));
 						
 					}
 					// check if the combatID was found
@@ -1073,7 +1034,7 @@ public class DerbyDatabase implements IDatabase {
 					}
 					
 					if (!found) {
-						System.out.println("<" + locationId + "> was not found in the Location table");
+						System.out.println("<" + locationId + "> was not found in the LocationToPuzzle table");
 					}
 					
 					return puzzleIds;
@@ -1104,6 +1065,8 @@ public class DerbyDatabase implements IDatabase {
 					
 					boolean found = false;
 					
+					resultSet = stmt.executeQuery();
+					
 					while(resultSet.next()) {
 						found = true;
 						
@@ -1111,6 +1074,17 @@ public class DerbyDatabase implements IDatabase {
 						puzzle.setPrompt(resultSet.getString(2));
 						puzzle.setAnswer(resultSet.getString(3));
 						//TODO: Set Required Skill and Item
+						if(resultSet.getInt(4) == -1) {
+							puzzle.setRequiredSkill(null);
+						} else {
+							puzzle.setRequiredSkill(null);
+						}
+						
+						if(resultSet.getInt(5) == -1) {
+							puzzle.setRequiredItem(null);
+						} else {
+							puzzle.setRequiredItem(findItemByItemID(resultSet.getInt(5)));
+						}
 						
 						puzzle.setResult(Boolean.parseBoolean(resultSet.getString(6)));
 						puzzle.setCanSolve(Boolean.parseBoolean(resultSet.getString(7)));
@@ -1133,8 +1107,7 @@ public class DerbyDatabase implements IDatabase {
 			}
 		});
 	}
-	
-	
+		
 	public WinCondition findWinConditionByWinConditionId(int winCondition_id) {
 		return executeTransaction(new Transaction<WinCondition>() {
 			@Override
@@ -1396,7 +1369,6 @@ public class DerbyDatabase implements IDatabase {
 		});
 	}*/
 	
-	
 	public List<Integer> findPlayerInventoryIdsByPlayerId(int playerID) {
 		return executeTransaction(new Transaction<List<Integer>>() {
 			@Override
@@ -1451,10 +1423,10 @@ public class DerbyDatabase implements IDatabase {
 				
 				try {
 					stmt1 = conn.prepareStatement(
-							"select output " +
+							"select userEntry " +
 							"  from  GameLog " +
 							"  where log_id = ?" +
-							"  order by GameLog.order ASC"
+							"  order by GameLog.subOrder ASC"
 					);
 					stmt1.setInt(1, gameLogId);
 					
@@ -1503,7 +1475,7 @@ public class DerbyDatabase implements IDatabase {
 					// insert new string of output into the GameLog table. 
 					// prepare SQL insert statement to add new output.
 					stmt1 = conn.prepareStatement(
-							"insert into User (username, password) " +
+							"insert into Users (username, password) " +
 							"  values(?, ?) "
 					);
 					
@@ -1512,11 +1484,14 @@ public class DerbyDatabase implements IDatabase {
 						
 					stmt1.executeUpdate();
 					
-					System.out.println("User " + username + " inserted into User table");
+					System.out.println("User " + username + " inserted into Users table");
 									
-					
+					 
 					return 0;
 					
+				} catch (SQLException e) {
+					// User could not be inserted. 
+					return -1; 
 				} finally {
 					DBUtil.closeQuietly(stmt1);
 				}
@@ -1524,6 +1499,120 @@ public class DerbyDatabase implements IDatabase {
 		});
 	}
 
+	
+	public Integer insertUserToGameByUserIdAndGameId(int userId, int gameId) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					stmt1 = conn.prepareStatement(
+							"insert into UserToGame (user_id, game_id) " +
+							"  values(?, ?) "
+					);
+					
+					stmt1.setInt(1, userId);
+					stmt1.setInt(2, gameId);
+				
+					
+					// execute the update
+					stmt1.executeUpdate();					
+					
+					System.out.println("User #" + userId + " matched to Game #" + gameId + " in UserToGame");					
+					
+					return 0;
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Integer insertNewUser(List<User> users) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					// insert new Player into Player table
+					// prepare SQL insert statement to add new Player to Player table
+					stmt1 = conn.prepareStatement(
+							"insert into Users (username, password) " +
+							"  values(?, ?) "
+					);
+					
+					for(User user : users) {
+						// Need to insert all Users in. 
+						// ID is auto-generated. 
+						
+						stmt1.setString(1, user.getUsername());
+						stmt1.setString(2, user.getPassword());
+						stmt1.addBatch();
+					}
+					
+					// execute the batch
+					stmt1.executeBatch();					
+					
+					System.out.println("New User Entries inserted into Users table");					
+					
+					return 0;
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Integer insertNewGame(Game game, int gameMax) {
+		// Note, this method inserts a new row for the new player and default values.
+		// Character creation should call an update for the Player class! 
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					// insert new Player into Player table
+					// prepare SQL insert statement to add new Player to Player table
+					stmt1 = conn.prepareStatement(
+							"insert into Game (game_id, difficulty, inCombat, playerTurnTaken, " +
+							"playerNotCreated, timeRemaining, timerRate, log_id, player_id, " +
+							"map_id, combat_id) " +
+							"  values(?,?,?, ?,?,?,?,?, ?,?,?) "
+					);
+					
+					
+					stmt1.setInt(1, game.getId() + gameMax);
+					stmt1.setInt(2, game.getDifficulty());
+					stmt1.setString(3, Boolean.toString(game.isInCombat()));
+					stmt1.setString(4, Boolean.toString(game.isPlayerTurnTaken()));
+					stmt1.setString(5, Boolean.toString(game.getPlayerNotCreated()));
+					stmt1.setInt(6, game.getTimer().getTime());
+					stmt1.setInt(7, game.getTimer().getTimerRate());
+					stmt1.setInt(8, game.getId() + gameMax);
+					stmt1.setInt(9, game.getId() + gameMax);
+					stmt1.setInt(10, game.getId() + gameMax);
+					stmt1.setInt(11, -1);
+					
+					
+					
+					// execute the update
+					stmt1.executeUpdate();					
+					
+					System.out.println("New Game Entries inserted into Game table");					
+					
+					return 0;
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
 	
 	public Integer insertNewItem(List<Item> items, int itemMaxId) {
 		// Note, this method inserts a new row for the new player and default values.
@@ -1628,7 +1717,7 @@ public class DerbyDatabase implements IDatabase {
 					for(Loot loot : loots) {
 						stmt1.setInt(1, loot.getId() + lootMaxId);
 						stmt1.setInt(2, loot.getXp());
-						stmt1.setBoolean(3, loot.isCollected());
+						stmt1.setString(3, Boolean.toString(loot.isCollected()));
 						stmt1.setInt(4, loot.getItem().getId());
 						stmt1.addBatch();
 					}
@@ -1646,7 +1735,7 @@ public class DerbyDatabase implements IDatabase {
 		});
 	}
 	
-	public Integer insertNewPuzzle(List<Puzzle> puzzles, int puzzleMaxId) {
+	public Integer insertNewPuzzle(List<Puzzle> puzzles, int puzzleMaxId, int statMax, int itemMax) {
 		// Note, this method inserts a new row for the new player and default values.
 		// Character creation should call an update for the Player class! 
 		return executeTransaction(new Transaction<Integer>() {
@@ -1658,17 +1747,17 @@ public class DerbyDatabase implements IDatabase {
 					
 					
 					stmt1 = conn.prepareStatement(
-							"insert into Puzzle (puzzle_id, prompt, answer, requiredSkill, requiredItem,"
+							"insert into Puzzle (puzzle_id, prompt, answer, stat_id, item_id,"
 							+ " result, canSolve, solved, breakable, jumpable, "
 							+ " roomCon) " +
 							"  values(?,?,?,?,? ,?,?,?,?,? ,?) "
 					);
 					for(Puzzle puzzle : puzzles) {
-						stmt1.setInt(1,puzzle.getId());
+						stmt1.setInt(1, puzzle.getId() + puzzleMaxId);
 						stmt1.setString(2, puzzle.getPrompt());
 						stmt1.setString(3, puzzle.getAnswer());
-						stmt1.setInt(4,puzzle.getRequiredSkill().getId());
-						stmt1.setInt(5,puzzle.getRequiredItem().getId());
+						stmt1.setInt(4,puzzle.getRequiredSkill().getId() + statMax);
+						stmt1.setInt(5,puzzle.getRequiredItem().getId() + itemMax);
 						stmt1.setString(6, Boolean.toString(puzzle.getResult()));
 						stmt1.setString(7, Boolean.toString(puzzle.isCanSolve()));
 						stmt1.setString(8, Boolean.toString(puzzle.isSolved()));
@@ -1692,6 +1781,43 @@ public class DerbyDatabase implements IDatabase {
 		});
 	}
 	
+	public Integer insertNewCombat(List<Combat> combats, int combatMax) {
+		// Note, this method inserts a new row for the new player and default values.
+		// Character creation should call an update for the Player class! 
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					
+					stmt1 = conn.prepareStatement(
+							"insert into Combat (combat_id, turn, difficulty, dead) " +
+							"  values(?, ?, ?, ?) "
+					);
+					for(Combat combat : combats) {
+						stmt1.setInt(1, combat.getId() + combatMax);
+						stmt1.setInt(2, combat.getTurn());
+						stmt1.setInt(3, combat.getDifficulty());
+						stmt1.setString(4, Boolean.toString(combat.isDead()));
+						stmt1.addBatch();
+					}
+					
+					
+					// execute the update
+					stmt1.executeBatch();
+					
+					System.out.println("New Combats inserted into Combat table");					
+					
+					return 0;
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
 	public Integer insertNewSpeech(List<Speech> speeches) {
 		// Note, this method inserts a new row for the new player and default values.
 		// Character creation should call an update for the Player class! 
@@ -1704,7 +1830,7 @@ public class DerbyDatabase implements IDatabase {
 					
 					stmt1 = conn.prepareStatement(
 							"insert into Speech (speech_id, intimidateOption, intimidateResponse, intimidateResponseFail,"
-							+ " persuadeOption, persuadeResponse, persuadeResponseFail " +
+							+ " persuadeOption, persuadeResponse, persuadeResponseFail) " +
 							"  values(?,?,?,?,? ,?,?) "
 					);
 					for(Speech speech : speeches) {
@@ -1743,7 +1869,7 @@ public class DerbyDatabase implements IDatabase {
 				try {
 					
 					stmt1 = conn.prepareStatement(
-							"insert into SpeechOptions (speech_id, order, option)" +
+							"insert into SpeechOptions (speech_id, subOrder, speechOption)" +
 							"  values(?, ?, ?) "
 					);
 					
@@ -1759,7 +1885,7 @@ public class DerbyDatabase implements IDatabase {
 					}
 					
 					// execute the update
-					stmt1.executeUpdate();
+					stmt1.executeBatch();
 					
 					System.out.println("New SpeechOptions inserted into SpeechOptions table");					
 					
@@ -1780,7 +1906,7 @@ public class DerbyDatabase implements IDatabase {
 				try {
 					
 					stmt1 = conn.prepareStatement(
-							"insert into SpeechResponses (speech_id, order, response)" +
+							"insert into SpeechResponses (speech_id, subOrder, response)" +
 							"  values(?, ?, ?) "
 					);
 					
@@ -1796,7 +1922,7 @@ public class DerbyDatabase implements IDatabase {
 					}
 					
 					// execute the update
-					stmt1.executeUpdate();
+					stmt1.executeBatch();
 					
 					System.out.println("New SpeechResponses inserted into SpeechResponses table");					
 					
@@ -1819,7 +1945,7 @@ public class DerbyDatabase implements IDatabase {
 				try {
 					stmt1 = conn.prepareStatement(
 							"insert into NPC (NPC.npc_id, NPC.name, NPC.combat, NPC.item_id, NPC.speech_id, "
-							+ "NPC.isIntimidatedm, NPC.canIntimidate, NPC.intimidationThreshold, "
+							+ "NPC.isIntimidated, NPC.canIntimidate, NPC.intimidationThreshold, "
 							+ "NPC.isPersuaded, NPC.canPersuade, NPC.persuasionThreshold)  " +
 							" values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
 					);
@@ -1828,7 +1954,11 @@ public class DerbyDatabase implements IDatabase {
 						stmt1.setInt(1, npc.getId() + npcMaxId);
 						stmt1.setString(2, npc.getName());
 						stmt1.setString(3, Boolean.toString(npc.isCombat()));
-						stmt1.setInt(4, npc.getWeapon().getId() + itemMaxId);
+						if(npc.getWeapon() == null) {
+							stmt1.setInt(4, -1);
+						} else {
+							stmt1.setInt(4, npc.getWeapon().getId() + itemMaxId);
+						}
 						stmt1.setInt(5, npc.getSpeech().getId());
 						stmt1.setString(6, Boolean.toString(npc.isIntimidated()));
 						stmt1.setString(7, Boolean.toString(npc.canIntimidate()));
@@ -1933,7 +2063,12 @@ public class DerbyDatabase implements IDatabase {
 						stmt.setString(3,  location.getDescription());
 						stmt.setString(4,  Boolean.toString(location.isHidden()));
 						stmt.setString(5,  Boolean.toString(location.getBlocked()));
-						stmt.setInt(6, location.getTreasure().getId() + lootMaxId);
+						if(location.getTreasure() == null) {
+							stmt.setInt(6, -1);
+						} else {
+							stmt.setInt(6, location.getTreasure().getId() + lootMaxId);
+						}
+						
 						stmt.setInt(7, location.getWinCondition().getId() + winConditionMaxId);
 						stmt.addBatch();
 					}
@@ -1989,7 +2124,7 @@ public class DerbyDatabase implements IDatabase {
 								// No connection, assign value of -1. 
 								stmt1.setInt(3 + a, -1); 
 							} else {
-								int connId = map.getLocations().get(a).getId() + location_rows;
+								int connId = map.getLocations().get(name).getId() + location_rows;
 								stmt1.setInt(3 + a, connId);
 							}
 						}
@@ -2038,7 +2173,7 @@ public class DerbyDatabase implements IDatabase {
 					// execute the update
 					stmt1.executeUpdate();
 					
-					System.out.println("Player #" + game_rows + " inserted into Player table");					
+					System.out.println("Player #" + (game_rows + player.getId()) + " inserted into Player table");					
 					
 					return game_rows;
 					
@@ -2060,11 +2195,11 @@ public class DerbyDatabase implements IDatabase {
 					// insert new player_id and item_id
 					// prepare SQL insert statement to add new player_id and item_id
 					stmt1 = conn.prepareStatement(
-							"insert into GameLog (log_id, order, output) " +
+							"insert into GameLog (log_id, subOrder, userEntry) " +
 							"  values(?, ?, ?) "
 					);
 
-					// We want to insert all of the outputs stored in the log individually. 
+					// We want to insert all of the userEntrys stored in the log individually. 
 					// Hence, we need a batch of inserts!
 					
 					// log_id is always same as game ID, which will be 1 greater than current # of games.
@@ -2073,7 +2208,7 @@ public class DerbyDatabase implements IDatabase {
 					// Iterate through ArrayList.
 					for (int j = 0; j < log.size(); j++) {
 						stmt1.setInt(1, logId);
-						// Order is the index of the string.
+						// subOrder is the index of the string.
 						stmt1.setInt(2, j);
 						// Then add in the string. 
 						stmt1.setString(3, log.get(j));
@@ -2291,6 +2426,76 @@ public class DerbyDatabase implements IDatabase {
 					}
 					stmt1.executeBatch();
 					
+					System.out.println("New LocationToCombat table inserted.");
+									
+					
+					return 0;
+					
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Integer insertNewLocationToPuzzle(List<Pair<Integer, Integer>> ltpPairs, int location_rows, int puzzle_rows) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					// insert all location to combat pairs. 
+					// prepare SQL insert statement to add each pair.
+					stmt1 = conn.prepareStatement(
+							"insert into LocationToPuzzle (location_id, puzzle_id) " +
+							"  values(?, ?) "
+					);
+
+					// Add each pair, incremented by number of rows in their table.
+					for (Pair<Integer, Integer> p : ltpPairs) {
+						stmt1.setInt(1, p.getLeft() + location_rows);
+						stmt1.setInt(2, p.getRight() + puzzle_rows);
+						stmt1.addBatch();
+					}
+					stmt1.executeBatch();
+					
+					System.out.println("New LocationToPuzzle table inserted.");
+									
+					
+					return 0;
+					
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Integer insertNewUserToGame(List<Pair<Integer, Integer>> utgPairs) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					// insert all location to combat pairs. 
+					// prepare SQL insert statement to add each pair.
+					stmt1 = conn.prepareStatement(
+							"insert into UserToGame (user_id, game_id) " +
+							"  values(?, ?) "
+					);
+
+					// Add each pair, incremented by number of rows in their table.
+					for (Pair<Integer, Integer> p : utgPairs) {
+						stmt1.setInt(1, p.getLeft());
+						stmt1.setInt(2, p.getRight());
+						stmt1.addBatch();
+					}
+					stmt1.executeBatch();
+					
 					System.out.println("LocationToCombat table inserted.");
 									
 					
@@ -2303,7 +2508,7 @@ public class DerbyDatabase implements IDatabase {
 		});
 	}
 	
-	public Integer insertOutputIntoGameLogByLogId(String output, int log_id, int log_size) {
+	public Integer insertOutputIntoGameLogByLogId(String userEntry, int log_id, int log_size) {
 		return executeTransaction(new Transaction<Integer>() {
 			@Override
 			public Integer execute(Connection conn) throws SQLException {
@@ -2314,20 +2519,20 @@ public class DerbyDatabase implements IDatabase {
 					// insert new string of output into the GameLog table. 
 					// prepare SQL insert statement to add new output.
 					stmt1 = conn.prepareStatement(
-							"insert into GameLog (log_id, order, output) " +
+							"insert into GameLog (log_id, subOrder, userEntry) " +
 							"  values(?, ?, ?) "
 					);
 					
 					stmt1.setInt(1, log_id);
-					// Order is the current length of the log (the next index in the list)
+					// subOrder is the current length of the log (the next index in the list)
 					stmt1.setInt(2, log_size);
 					// Then add in the string. 
-					stmt1.setString(3, output);
+					stmt1.setString(3, userEntry);
 						
 					// Update GameLog table
 					stmt1.executeUpdate();
 					
-					System.out.println("Output #" + log_size + " inserted into GameLog table for Log #" + log_id);
+					System.out.println("userEntry #" + log_size + " inserted into GameLog table for Log #" + log_id);
 									
 					
 					return 0;
@@ -2521,15 +2726,16 @@ public class DerbyDatabase implements IDatabase {
 				
 				try {
 					stmt1 = conn.prepareStatement(
-							"Update NPC " +
-							" Set NPC.combat = ?, NPC.isIntimidated = ?, NPC.canIntimidate = ?, NPC.isPersuaded = ?, NPC.canPersuade = ?" + 
-									"where NPC.NPC_id = ?"
+							"update NPC " +
+							" set NPC.combat = ?, NPC.isIntimidated = ?, NPC.canIntimidate = ?, NPC.isPersuaded = ?, NPC.canPersuade = ? " + 
+									"where NPC.npc_id = ?"
 					);
-  					stmt1.setString(1, Boolean.toString(npc.isIntimidated()));
-  					stmt1.setString(2, Boolean.toString(npc.getCanIntimidate()));
-  					stmt1.setString(3, Boolean.toString(npc.isPersuaded()));
-  					stmt1.setString(4, Boolean.toString(npc.getCanPersuade()));
-  					stmt1.setInt(5, npc.getId());
+					stmt1.setString(1, Boolean.toString(npc.isCombat()));
+  					stmt1.setString(2, Boolean.toString(npc.isIntimidated()));
+  					stmt1.setString(3, Boolean.toString(npc.getCanIntimidate()));
+  					stmt1.setString(4, Boolean.toString(npc.isPersuaded()));
+  					stmt1.setString(5, Boolean.toString(npc.getCanPersuade()));
+  					stmt1.setInt(6, npc.getId());
   					
 					stmt1.executeUpdate();
 					
@@ -2552,7 +2758,7 @@ public class DerbyDatabase implements IDatabase {
 				try {
 					stmt1 = conn.prepareStatement(
 							"update NPCStats " +
-							"  set rank = ? " +
+							"  set amount = ? " +
 							"  where stat_id = ?"
 					);
 					
@@ -2622,7 +2828,7 @@ public class DerbyDatabase implements IDatabase {
 					stmt.setString(2, Boolean.toString(puzzle.isSolved()));
 					stmt.setInt(3,  puzzle.getId());
 					
-					stmt.executeQuery();
+					stmt.executeUpdate();
 					
 					System.out.println("Puzzle #: " + puzzle.getId() + " has been updated");
 					
@@ -2654,7 +2860,7 @@ public class DerbyDatabase implements IDatabase {
 					stmt.setString(6,  Boolean.toString(winCondition.getDefaultCase()));
 					stmt.setInt(7,  winCondition.getId());
 					
-					stmt.executeQuery();
+					stmt.executeUpdate();
 					
 					System.out.println("Win Condition #: " + winCondition.getId() + " has been updated");
 					
@@ -2751,12 +2957,9 @@ public class DerbyDatabase implements IDatabase {
 				try {
 					// This will get a list of all the IDs in the table. 
 					stmt1 = conn.prepareStatement(
-							"select ? from ?" + 
-								" sort by ? DESC"
+							"select " + idName + " from " + table + 
+								" order by " + idName + " DESC"
 					);
-					stmt1.setString(1, idName);
-					stmt1.setString(2, table);
-					stmt1.setString(3, idName);
 					
 					int rows = 0; 
 					
@@ -2880,7 +3083,7 @@ public class DerbyDatabase implements IDatabase {
 			
 				try {
 					user = conn.prepareStatement(
-						"create table User (" +
+						"create table Users (" +
 						"	user_id integer primary key " +
 						"		generated always as identity (start with 1, increment by 1), " +									
 						"	username varchar(40) unique," +
@@ -2889,137 +3092,36 @@ public class DerbyDatabase implements IDatabase {
 					);	
 					user.executeUpdate();
 					
-					System.out.println("User table created");
+					System.out.println("Users table created");		
 					
-					userToGame = conn.prepareStatement(
-						"create table UserToGame (" +
-						"	user_id integer constraint user_id references User, " +
-						"	game_id integer constraint game_id references Game" +
-						")"
-					);
-					userToGame.executeUpdate();
-					
-					System.out.println("UserToGame table created");					
-					
-					game = conn.prepareStatement(
-						"create table Game (" +
-						"	game_id integer primary key " +
-						"		generated always as identity (start with 1, increment by 1), " +
-						"	difficulty integer," +
-						"	inCombat varchar(5)," +
-						"	playerTurnTaken varchar(5)," +
-						"	playerCreated varchar(5)," +
-						"	timeRemaining integer," +
-						"	timerRate integer," +
-						"	log_id integer constraint log_id references GameLog," +
-						"	player_id integer constraint player_id references Player," +
-						"	map_id integer constraint map_id references Map," +
-						"	combat_id integer" +
-						")"
-					);
-					game.executeUpdate();
-					
-					System.out.println("Game table created");	
+
 					
 					gameLog = conn.prepareStatement(
 						"create table GameLog (" +
 						"	log_id integer, " +									
-						"	order integer," +
-						"	output varchar(500)" +
+						"	subOrder integer," +
+						"	userEntry varchar(500)" +
 						")"
 					);	
 					gameLog.executeUpdate();
 					
 					System.out.println("GameLog table created");
 					
-					player = conn.prepareStatement(
-						"create table Player (" +
-						"	player_id integer primary key " +
-						"		generated always as identity (start with 1, increment by 1), " +
-						"	name varchar(50)," +
-						"	icon varchar(200)," +
-						"	weapon varchar(50)," +
-						"	armor varchar(50)," +
-						"	playerCreated varchar(5)," +
-						"	location_id integer constraint location_id references Location" +
-						")"
-					);
-					player.executeUpdate();
-					
-					System.out.println("Player table created");
-					
-					playerToStats = conn.prepareStatement(
-						"create table PlayerToStats (" +
-						"	player_id integer constraint player_id references Player, " +
-						"	stat_id integer constraint stat_id references PlayerStats" +
-						")"
-					);
-					playerToStats.executeUpdate();
-					
-					System.out.println("PlayerToStats table created");
-						
-					
-					playerInventory = conn.prepareStatement(
-						"create table PlayerInventory (" +
-						"	player_id integer constraint player_id references Player, " +
-						"	item_id integer constraint item_id references Item" +
-						")"
-					);
-					playerInventory.executeUpdate();
-					
-					System.out.println("PlayerInventory table created");
-					
-					
-					playerStats = conn.prepareStatement(
-						"create table PlayerStats (" +
-						"	stat_id integer primary key " +
-						"		generated always as identity (start with 1, increment by 1), " +
-						"	name varchar(50)," +
-						"	amount integer" +
-						")"
-					);
-					playerStats.executeUpdate();
-					
-					System.out.println("PlayerStats table created");
-					
-					npcStats = conn.prepareStatement(
-						"create table NPCStats (" +
-						"	stat_id integer primary key " +
-						"		generated always as identity (start with 1, increment by 1), " +
-						"	name varchar(50)," +
-						"	amount integer" +
-						")"
-					);
-					npcStats.executeUpdate();
-					
-					System.out.println("NPCStats table created");
-					
-					npcToStats = conn.prepareStatement(
-						"create table NPCToStats (" +
-						"	npc_id integer constraint npc_id references NPC, " +
-						"	stat_id integer constraint stat_id references NPCStats" +
-						")"
-					);
-					npcToStats.executeUpdate();
-					
-					System.out.println("NPCToStats table created");
-					
 					
 					item = conn.prepareStatement(
 						"create table Item (" +
-						"	item_id integer primary key " +
-						"		generated always as identity (start with 1, increment by 1), " +
-						"	name varchar(50)," +
-						"	description varchar(300)," +
-						"	isConsumable varchar(5)," +
-						"	isWeapon varchar(5)," +
-						"	isArmor varchar(5)," +
-						"	isTool varchar(5)," +
-						"	damage integer," +
-						"	healthGain integer," +
-						"	value integer," +
-						"	amount integer," +
-						"	armor integer," +
+						"	item_id integer primary key, " +
+						"	name varchar(50), " +
+						"	description varchar(300), " +
+						"	isConsumable varchar(5), " +
+						"	isWeapon varchar(5), " +
+						"	isArmor varchar(5), " +
+						"	isTool varchar(5), " +
+						"	damage integer, " +
+						"	healthGain integer, " +
+						"	value integer, " +
+						"	amount integer, " +
+						"	armor integer, " +
 						"	accuracy double" +
 						")"
 					);
@@ -3029,8 +3131,7 @@ public class DerbyDatabase implements IDatabase {
 					
 					loot = conn.prepareStatement(
 						"create table Loot (" +
-						"	loot_id integer primary key " +
-						"		generated always as identity (start with 1, increment by 1), " +
+						"	loot_id integer primary key, " +
 						"	xp integer," +
 						"	collected varchar(5)," +
 						"	item_id integer constraint item_id references Item" +
@@ -3040,25 +3141,11 @@ public class DerbyDatabase implements IDatabase {
 						
 					System.out.println("Loot table created");
 					
-					map = conn.prepareStatement(
-						"create table Map (" +
-						"	map_id integer," +
-						"	location_id integer constraint location_id references Location," +
-						"	north integer," +
-						"	east integer," +
-						"	south integer," +
-						"	west integer," +
-						"	extra integer" +
-						")"
-					);
-					map.executeUpdate();
-						
-					System.out.println("Map table created");
+					
 					
 					winCondition = conn.prepareStatement(
 						"create table WinCondition (" +
-						"	winCondition_id integer primary key " +
-						"		generated always as identity (start with 1, increment by 1), " +
+						"	winCondition_id integer primary key, " +
 						"	complete varchar(5)," +
 						"	lost varchar(5)," +
 						"	wonRooms varchar(5)," +
@@ -3072,8 +3159,7 @@ public class DerbyDatabase implements IDatabase {
 					
 					location = conn.prepareStatement(
 						"create table Location (" +
-						"	location_id integer primary key " +
-						"		generated always as identity (start with 1, increment by 1), " +
+						"	location_id integer primary key, " +
 						"	name varchar(50)," +
 						"	description varchar(500)," +
 						"	hidden varchar(5)," +
@@ -3086,60 +3172,143 @@ public class DerbyDatabase implements IDatabase {
 					
 					System.out.println("Location table created");
 					
-					locationToNPC = conn.prepareStatement(
-						"create table LocationToNPC (" +
-						"	location_id integer constraint location_id references Location, " +
-						"	npc_id integer constraint npc_id references NPC" +
+					map = conn.prepareStatement(
+						"create table Map (" +
+						"	map_id integer," +
+						"	location_id integer," +
+						"	north integer," +
+						"	east integer," +
+						"	south integer," +
+						"	west integer," +
+						"	extra integer" +
 						")"
 					);
-					locationToNPC.executeUpdate();
+					map.executeUpdate();
+						
+					System.out.println("Map table created");
 					
-					System.out.println("LocationToNPC table created");
-					
-					locationToCombat = conn.prepareStatement(
-						"create table LocationToCombat (" +
-						"	location_id integer constraint location_id references Location, " +
-						"	combat_id integer constraint combat_id references Combat" +
+					player = conn.prepareStatement(
+						"create table Player (" +
+						"	player_id integer primary key, " +
+						"	name varchar(50)," +
+						"	icon varchar(200)," +
+						"	weapon varchar(50)," +
+						"	armor varchar(50)," +
+						"	playerCreated varchar(5)," +
+						"	location_id integer constraint location_id references Location" +
 						")"
 					);
-					locationToCombat.executeUpdate();
+					player.executeUpdate();
 					
-					System.out.println("LocationToCombat table created");
+					System.out.println("Player table created");
 					
-					locationToPuzzle = conn.prepareStatement(
-						"create table LocationToPuzzle (" +
-						"	location_id integer constraint location_id references Location, " +
-						"	puzzle_id integer constraint puzzle_id references Puzzle" +
+					playerStats = conn.prepareStatement(
+						"create table PlayerStats (" +
+						"	stat_id integer primary key, " +
+						"	name varchar(50)," +
+						"	amount integer" +
 						")"
 					);
-					locationToPuzzle.executeUpdate();
+					playerStats.executeUpdate();
 					
-					System.out.println("LocationToPuzzle table created");
+					System.out.println("PlayerStats table created");
 					
-					combatToNPC = conn.prepareStatement(
-						"create table CombatToNPC (" +
-						"	combat_id integer constraint combat_id references Combat, " +
-						"	npc_id integer constraint npc_id references NPC" +
+					playerToStats = conn.prepareStatement(
+						"create table PlayerToStats (" +
+						"	player_id integer, " +
+						"	stat_id integer constraint stat_id references PlayerStats" +
 						")"
 					);
-					combatToNPC.executeUpdate();
+					playerToStats.executeUpdate();
 					
-					System.out.println("CombatToNPC table created");
+					System.out.println("PlayerToStats table created");
+						
 					
-					npcToStats = conn.prepareStatement(
-						"create table NPCToStats (" +
-						"	npc_id integer constraint npc_id references NPC," +
-						"	stat_id integer constraint stat_id references NPCStats" +
+					playerInventory = conn.prepareStatement(
+						"create table PlayerInventory (" +
+						"	player_id integer, " +
+						"	item_id integer" +
 						")"
 					);
-					npcToStats.executeUpdate();
+					playerInventory.executeUpdate();
 					
-					System.out.println("NPCToStats table created");
+					System.out.println("PlayerInventory table created");
+					
+					
+					combat = conn.prepareStatement(
+						"create table Combat (" +
+						"	combat_id integer primary key, " +
+						"	turn integer," +
+						"	difficulty integer," +
+						"	dead varchar(5)" +
+						")"
+					);
+					combat.executeUpdate();
+						
+					System.out.println("Combat table created");
+					
+					puzzle = conn.prepareStatement(
+						"create table Puzzle (" +
+						"	puzzle_id integer primary key, " +
+						"	prompt varchar(500)," +
+						"	answer varchar(50)," +
+						"	stat_id integer," +
+						"	item_id integer," +
+						"	result varchar(5)," +
+						"	canSolve varchar(5)," +
+						"	solved varchar(5)," +
+						"	breakable varchar(5)," +
+						"	jumpable varchar(5)," +
+						"	roomCon varchar(50)" +
+						")"
+					);
+					puzzle.executeUpdate();
+						
+					System.out.println("Puzzle table created");
+					
+					speech = conn.prepareStatement(
+						"create table Speech (" +
+						"	speech_id integer primary key, " +
+						"	intimidateOption varchar(200)," +
+						"	intimidateResponse varchar(200)," +
+						"	intimidateResponseFail varchar(200)," +
+						"	persuadeOption varchar(200)," +
+						"	persuadeResponse varchar(200)," +
+						"	persuadeResponseFail varchar(200)," +
+						"	prompt varchar(200)" +
+						")"
+					);
+					speech.executeUpdate();
+						
+					System.out.println("Speech table created");
+					
+					speechOptions = conn.prepareStatement(
+						"create table speechOptions (" +
+						"	speech_id integer," +								
+						"	subOrder integer," +
+						"	speechOption varchar(500)" +
+						")"
+					);	
+					speechOptions.executeUpdate();
+					
+					System.out.println("SpeechOptions table created");
+					
+					
+					speechResponses = conn.prepareStatement(
+						"create table speechResponses (" +
+						"	speech_id integer," +								
+						"	subOrder integer," +
+						"	response varchar(500)" +
+						")"
+					);	
+					speechResponses.executeUpdate();
+					
+					System.out.println("SpeechResponses table created");
+					
 					
 					npc = conn.prepareStatement(
 						"create table NPC (" +
-						"	npc_id integer primary key " +
-						"		generated always as identity (start with 1, increment by 1), " +
+						"	npc_id integer primary key, " +
 						"	name varchar(50)," +
 						"	combat varchar(5)," +
 						"	item_id integer," +
@@ -3156,78 +3325,99 @@ public class DerbyDatabase implements IDatabase {
 						
 					System.out.println("NPC table created");
 					
-					combat = conn.prepareStatement(
-						"create table Combat (" +
-						"	combat_id integer primary key " +
-						"		generated always as identity (start with 1, increment by 1), " +
-						"	turn integer," +
+
+					npcStats = conn.prepareStatement(
+						"create table NPCStats (" +
+						"	stat_id integer primary key, " +
+						"	name varchar(50)," +
+						"	amount integer" +
+						")"
+					);
+					npcStats.executeUpdate();
+					
+					System.out.println("NPCStats table created");
+					
+					
+					npcToStats = conn.prepareStatement(
+						"create table NPCToStats (" +
+						"	npc_id integer constraint npc_id references NPC, " +
+						"	stat_id integer" +
+						")"
+					);
+					npcToStats.executeUpdate();
+					
+					System.out.println("NPCToStats table created");
+					
+					locationToNPC = conn.prepareStatement(
+						"create table LocationToNPC (" +
+						"	location_id integer, " +
+						"	npc_id integer" +
+						")"
+					);
+					locationToNPC.executeUpdate();
+					
+					System.out.println("LocationToNPC table created");
+					
+					locationToCombat = conn.prepareStatement(
+						"create table LocationToCombat (" +
+						"	location_id integer, " +
+						"	combat_id integer constraint combat_id references Combat" +
+						")"
+					);
+					locationToCombat.executeUpdate();
+					
+					System.out.println("LocationToCombat table created");
+					
+					locationToPuzzle = conn.prepareStatement(
+						"create table LocationToPuzzle (" +
+						"	location_id integer, " +
+						"	puzzle_id integer constraint puzzle_id references Puzzle" +
+						")"
+					);
+					locationToPuzzle.executeUpdate();
+					
+					System.out.println("LocationToPuzzle table created");
+					
+					combatToNPC = conn.prepareStatement(
+						"create table CombatToNPC (" +
+						"	combat_id integer, " +
+						"	npc_id integer" +
+						")"
+					);
+					combatToNPC.executeUpdate();
+					
+					System.out.println("CombatToNPC table created");
+					
+					
+					game = conn.prepareStatement(
+						"create table Game (" +
+						"	game_id integer primary key, " +
 						"	difficulty integer," +
-						"	dead varchar(5)" +
+						"	inCombat varchar(5)," +
+						"	playerTurnTaken varchar(5)," +
+						"	playerNotCreated varchar(5)," +
+						"	timeRemaining integer," +
+						"	timerRate integer," +
+						"	log_id integer," +
+						"	player_id integer constraint player_id references Player," +
+						"	map_id integer," +
+						"	combat_id integer" +
 						")"
 					);
-					combat.executeUpdate();
-						
-					System.out.println("Combat table created");
+					game.executeUpdate();
 					
-					puzzle = conn.prepareStatement(
-						"create table Puzzle (" +
-						"	puzzle_id integer primary key " +
-						"		generated always as identity (start with 1, increment by 1), " +
-						"	prompt varchar(500)," +
-						"	answer varchar(50)," +
-						"	stat_id integer constraint stat_id references PlayerStats," +
-						"	item_id integer constraint item_id references Item," +
-						"	result varchar(5)," +
-						"	canSolve varchar(5)," +
-						"	solved varchar(5)," +
-						"	breakable varchar(5)," +
-						"	jumpable varchar(5)," +
-						"	roomCon varchar(50)" +
+					System.out.println("Game table created");
+					
+					
+					userToGame = conn.prepareStatement(
+						"create table UserToGame (" +
+						"	user_id integer constraint user_id references Users, " +
+						"	game_id integer constraint game_id references Game" +
 						")"
 					);
-					puzzle.executeUpdate();
-						
-					System.out.println("Puzzle table created");
+					userToGame.executeUpdate();
 					
-					speech = conn.prepareStatement(
-						"create table Speech (" +
-						"	speech_id integer primary key " +
-						"		generated always as identity (start with 1, increment by 1), " +
-						"	intimidateOption varchar(200)," +
-						"	intimidateResponse varchar(200)," +
-						"	intimidateResponseFail varchar(200)," +
-						"	persuadeOption varchar(200)," +
-						"	persuadeResponse varchar(200)," +
-						"	persuadeResponseFail varchar(200)," +
-						"	prompt varchar(200)" +
-						")"
-					);
-					speech.executeUpdate();
-						
-					System.out.println("Speech table created");
-					
-					speechOptions = conn.prepareStatement(
-						"create table speechOptions (" +
-						"	speech_id integer constraint speech_id references Speech," +								
-						"	order integer," +
-						"	option varchar(500)" +
-						")"
-					);	
-					speechOptions.executeUpdate();
-					
-					System.out.println("SpeechOptions table created");
-					
-					
-					speechResponses = conn.prepareStatement(
-						"create table speechResponses (" +
-						"	speech_id integer constraint speech_id references Speech," +								
-						"	order integer," +
-						"	response varchar(500)" +
-						")"
-					);	
-					speechResponses.executeUpdate();
-					
-					System.out.println("SpeechResponses table created");
+					System.out.println("UserToGame table created");	
 					
 					
 					return true;
@@ -3264,10 +3454,10 @@ public class DerbyDatabase implements IDatabase {
 	
 	// Create a new game, which will insert onto the existing table! 
 	// Takes a User's ID, which will be inserted as a new pair in the UserToGame table.
-	public void createNewGame(int user_id) {
-		executeTransaction(new Transaction<Boolean>() {
+	public int createNewGame(int user_id) {
+		return executeTransaction(new Transaction<Integer>() {
 			@Override
-			public Boolean execute(Connection conn) throws SQLException {
+			public Integer execute(Connection conn) throws SQLException {
 				//
 				// Load Initial Data from the CSVs. 
 				//
@@ -3367,16 +3557,16 @@ public class DerbyDatabase implements IDatabase {
 				// shift forward for the IDs in the new game, as to avoid overwritten data. 
 				//
 				
-				int userMax, gameMax, gameLogMax, playerMax, playerStatsMax, itemMax, lootMax, mapMax, locationMax, 
-					npcMax, npcStatsMax, speechMax, combatMax, puzzleMax, winConditionMax; 
+				int gameMax, playerMax, playerStatsMax, itemMax, lootMax, locationMax, 
+					npcMax, npcStatsMax, combatMax, puzzleMax, winConditionMax; 
 				
 				gameMax = getLargestIdInTable("Game", "game_id");
-				gameLogMax = getLargestIdInTable("GameLog", "log_id");
+				//gameLogMax = getLargestIdInTable("GameLog", "log_id");
 				playerMax = getLargestIdInTable("Player", "player_id");
 				playerStatsMax = getLargestIdInTable("PlayerStats", "stat_id");
 				itemMax = getLargestIdInTable("Item", "item_id");
 				lootMax = getLargestIdInTable("Loot", "loot_id");
-				mapMax = getLargestIdInTable("Map", "map_id");
+				//mapMax = getLargestIdInTable("Map", "map_id");
 				locationMax = getLargestIdInTable("Location", "location_id");
 				npcMax = getLargestIdInTable("NPC", "npc_id");
 				npcStatsMax = getLargestIdInTable("NPCStats", "stat_id");
@@ -3389,12 +3579,49 @@ public class DerbyDatabase implements IDatabase {
 				//
 				// Call the insert methods for inserting a new game. 
 				//
+				
+				// Order of Insertion due to Constraints: Item, Loot, Speech, SpeechOptions, SpeechResponses, 
+				// PlayerStats, NPCStats, WinCondition, Location, NPC, Combat, Puzzle, LocationToNPC, 
+				// LocationToCombat, LocationToPuzzle, CombatToNPC, NPCToStats, Player, 
+				// PlayerToStats, PlayerInventory, Map, GameLog, Game, UserToGame. 
 
+				insertNewItem(itemList, itemMax); 
+				insertNewLoot(lootList, lootMax); 
 				
+				// Only insert Speech tables if it is the very first insert of a Game. 
+				// Speech never changes across games, so no need to repopulate the table. 
+				if(gameMax == 0) {
+					insertNewSpeech(speechList); 
+					insertNewSpeechOption(speechOptions); 
+					insertNewSpeechResponse(speechResponses);
+				}
 				
+				insertNewPlayerStats(playerStatsList, playerStatsMax); 
+				InsertNewNPCStats(npcStatsList, npcStatsMax); 
+				insertNewWinConditions(winConditionList, winConditionMax); 
+				insertNewLocations(locationList, locationMax, lootMax, winConditionMax); 
+				insertNewNPCs(npcList, npcMax, itemMax);
+				insertNewCombat(combatList, combatMax); 
+				insertNewPuzzle(puzzleList, puzzleMax, playerStatsMax, itemMax); 
+				InsertNewLocationToNPC(locationToNPC, locationMax, npcMax); 
+				insertNewLocationToCombat(locationToCombat, locationMax, combatMax); 
+				insertNewLocationToPuzzle(locationToPuzzle, locationMax, puzzleMax); 
+				InsertNewCombatToNPC(combatToNPC, combatMax, npcMax);
+				InsertNewNPCToStats(npcToStats, npcMax, npcStatsMax); 
+				insertNewPlayer(playerList.get(0), locationMax, playerMax); 
+				insertNewPlayerToStats(playerToStats, playerMax, playerStatsMax); 
+				insertNewPlayerInventory(playerList.get(0), playerMax, itemMax);
+				insertNewMap(mapList.get(0), gameMax, locationMax); 
+				insertNewGameLog(gameLogList.get(0), gameMax); 
 				
+				insertNewGame(gameList.get(0), gameMax); 
 				
-				return true; 
+				// Insert UserToGame based on user_id and the new Game's ID
+				insertUserToGameByUserIdAndGameId(user_id, gameMax + 1); 
+				
+				System.out.println("New Game inserted for user #" + user_id);
+				
+				return gameMax + 1; 
 				
 			}
 		});
