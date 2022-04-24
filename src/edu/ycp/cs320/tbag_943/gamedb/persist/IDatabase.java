@@ -10,6 +10,7 @@ public interface IDatabase {
 	
 	// Finds
 	public User findUserByUsernameAndPassword(String username, String password); 
+	
 	public List<Game> findGamesByUserID(int userID); 
 	public List<NPC> findNPCsByLocationID(int locationID); 
 	public List<NPC> findNPCsByCombatID(int combatID);
@@ -40,8 +41,8 @@ public interface IDatabase {
 	public Integer insertNewNPCs(String name, int health, boolean combat, HashMap<String, Stat> stats); 
 	public Integer insertNewNPCStats(String name, int health, int armor, int strength, int speed);
 	public Integer InsertNewLocationToNPC(int NPC_Id);
-	public Integer InsertNewNPCToStats(int Stats_id);
-	Integer insertNewNPCStats(NPC npc); 
+	public Integer InsertNewNPCToStats(List<Pair<Integer, Integer>> NPCToStats, int maxNPCId, int maxNPCStatsId); 
+	public Integer insertNewNPCStats(NPC npc); 
 	public Integer insertNewGame(User user, Player player); 
 		// This method will need to fetch the most recently added player and log
 		// IDs when the game is first inserted (saved)
