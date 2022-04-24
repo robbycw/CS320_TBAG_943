@@ -28,5 +28,6 @@ public class Main {
         // wait until the server is done executing.
         // See http://docs.oracle.com/javase/7/docs/api/java/lang/Thread.html#join()
 		server.join();
+		System.out.println("this is a test to see if the method needs to be started somewhere");
 	}
 }

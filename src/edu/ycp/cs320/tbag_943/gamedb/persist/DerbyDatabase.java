@@ -169,208 +169,227 @@ public class DerbyDatabase implements IDatabase {
 			}
 		});
 	}
-	public List<Integer> findNPCIdsByLocationID(int locationID){
-		return executeTransaction(new Transaction<List<Integer>>() {
-			@Override
-			public List<Integer> execute(Connection conn) throws SQLException {
-				PreparedStatement stmt1 = null;
-				ResultSet resultSet1 = null;
-				Boolean found = false;
-				
-				try {
-					stmt1 = conn.prepareStatement(
-							"select LocationToNPC.npc_id " +
-							"from LocationToNPC " + 
-									"where LocationToNPC.location_id = ?"
-							);
-					stmt1.setInt(1, locationID);
+	// this method goes into the junction table and returns the corresponding NPC_ID from the 
+		// Location_ID input
+		public List<Integer> findNPCIdsByLocationID(int locationID){
+			return executeTransaction(new Transaction<List<Integer>>() {
+				@Override
+				public List<Integer> execute(Connection conn) throws SQLException {
+					PreparedStatement stmt1 = null;
+					ResultSet resultSet1 = null;
+					Boolean found = false;
 					
-					ArrayList<Integer> NPCsIds = new ArrayList<Integer>();
-					NPC npc = new NPC();
-					
-					resultSet1 = stmt1.executeQuery();
-					
-					while(resultSet1.next()) {
-						found = true;
+					try {
+						stmt1 = conn.prepareStatement(
+								"select LocationToNPC.npc_id " +
+								"from LocationToNPC " + 
+										"where LocationToNPC.location_id = ?"
+								);
+						stmt1.setInt(1, locationID);
 						
-						npc.setId(resultSet1.getInt(1));
-						NPCsIds.add(npc.getId());
+						// creating list and NPC object to set the ID and store the ID
+						ArrayList<Integer> NPCsIds = new ArrayList<Integer>();
+						NPC npc = new NPC();
+						
+						resultSet1 = stmt1.executeQuery();
+						
+						// running through the npc_id and assigning them to the NPC object and adding them
+						//to the array list
+						while(resultSet1.next()) {
+							found = true;
+							
+							npc.setId(resultSet1.getInt(1));
+							NPCsIds.add(npc.getId());
+						}
+						
+						if(!found) {
+							System.out.println("No NPCs in this location");
+						}
+						return NPCsIds;
+					}finally {
+						DBUtil.closeQuietly(resultSet1);
+						DBUtil.closeQuietly(stmt1);
 					}
-					
-					if(!found) {
-						System.out.println("No NPCs in this location");
-					}
-					return NPCsIds;
-				}finally {
-					DBUtil.closeQuietly(resultSet1);
-					DBUtil.closeQuietly(stmt1);
 				}
-			}
-		});
-	}
-	public List<NPC> findNPCByNPCId(int NPCId){
-		return executeTransaction(new Transaction<List<NPC>>() {
-			@Override
-			public List<NPC> execute(Connection conn) throws SQLException {
-				PreparedStatement stmt1 = null;
-				ResultSet resultSet1 = null;
-				Boolean found = false;
-				
-				try {
-					stmt1 = conn.prepareStatement(
-							"select NPC.* " +
-							"from NPC " + 
-							"where NPC.NPC_id = ? "
-							);
-					stmt1.setInt(1, NPCId);
+			});
+		}
+
+		// this method finds the NPC by the NPC_ID and gets all of its passive attributes
+		public NPC findNPCByNPCId(int NPCId){
+			return executeTransaction(new Transaction<NPC>() {
+				@Override
+				public NPC execute(Connection conn) throws SQLException {
+					PreparedStatement stmt1 = null;
+					ResultSet resultSet1 = null;
+					Boolean found = false;
 					
-					ArrayList<NPC> NPCsIds = new ArrayList<NPC>();
-					NPC npc = new NPC();
-					
-					resultSet1 = stmt1.executeQuery();
-					
-					while(resultSet1.next()) {
-						found = true;
+					try {
+						stmt1 = conn.prepareStatement(
+								"select NPC.* " +
+								"from NPC " + 
+								"where NPC.NPC_id = ? "
+								);
+						stmt1.setInt(1, NPCId);
 						
-						npc.setName(resultSet1.getString(1));
-						npc.setCombat(Boolean.parseBoolean(resultSet1.getString(2)));
-						npc.setIntimidated(Boolean.parseBoolean(resultSet1.getString(3)));
-						npc.setCanIntimidate(Boolean.parseBoolean(resultSet1.getString(4)));
-						npc.setIntimidationThreshold(resultSet1.getInt(5));
-						npc.setPersuaded(Boolean.parseBoolean(resultSet1.getString(6)));
-						npc.setCanPersuade(Boolean.parseBoolean(resultSet1.getString(7)));
-						npc.setPersuasionThreshold(resultSet1.getInt(8));
+						// creating NPC object to apply desired attributes 
+						NPC npc = new NPC();
 						
-						NPCsIds.add(npc);
+						resultSet1 = stmt1.executeQuery();
+						
+						
+						// applying the attributes to the NPC
+						if(resultSet1.next()) {
+							found = true;
+							
+							npc.setName(resultSet1.getString(1));
+							npc.setCombat(Boolean.parseBoolean(resultSet1.getString(2)));
+							npc.setIntimidated(Boolean.parseBoolean(resultSet1.getString(3)));
+							npc.setCanIntimidate(Boolean.parseBoolean(resultSet1.getString(4)));
+							npc.setIntimidationThreshold(resultSet1.getInt(5));
+							npc.setPersuaded(Boolean.parseBoolean(resultSet1.getString(6)));
+							npc.setCanPersuade(Boolean.parseBoolean(resultSet1.getString(7)));
+							npc.setPersuasionThreshold(resultSet1.getInt(8));
+						}
+						
+						if(!found) {
+							System.out.println("No NPC with this ID");
+						}
+						return npc;
+					}finally {
+						DBUtil.closeQuietly(resultSet1);
+						DBUtil.closeQuietly(stmt1);
 					}
-					
-					if(!found) {
-						System.out.println("No NPCs in this location");
-					}
-					return NPCsIds;
-				}finally {
-					DBUtil.closeQuietly(resultSet1);
-					DBUtil.closeQuietly(stmt1);
 				}
-			}
-		});
-	}
+			});
+		}
+
 	
-	public List<Integer> findNPCStatsIdsByNPCId(int NPCId){
-		return executeTransaction(new Transaction<List<Integer>>() {
-			@Override
-			public List<Integer> execute(Connection conn) throws SQLException {
-				PreparedStatement stmt1 = null;
-				ResultSet resultSet1 = null;
-				Boolean found = false;
-				
-				try {
-					stmt1 = conn.prepareStatement(
-							"select NPCToStats.stat_id " +
-							"from NPCToStats " + 
-									"where NPCToStats.npc_id = ? "
-							);
-					stmt1.setInt(1, NPCId);
+		// this method goes into the junction table for the NPC & Stats and returns the Stat_ID
+		// from the corresponding NPC_ID that is inserted
+		public List<Integer> findNPCStatsIdsByNPCId(int NPCId){
+			return executeTransaction(new Transaction<List<Integer>>() {
+				@Override
+				public List<Integer> execute(Connection conn) throws SQLException {
+					PreparedStatement stmt1 = null;
+					ResultSet resultSet1 = null;
+					Boolean found = false;
 					
-					ArrayList<Integer> NPCStatIds = new ArrayList<Integer>();
-					NPC npc = new NPC();
-					
-					while(resultSet1.next()) {
-						found = true;
+					try {
+						stmt1 = conn.prepareStatement(
+								"select NPCToStats.stat_id " +
+								"from NPCToStats " + 
+										"where NPCToStats.npc_id = ? "
+								);
+						stmt1.setInt(1, NPCId);
 						
-						npc.getStat().setId(resultSet1.getInt(1));
-						NPCStatIds.add(npc.getStat().getId());
+						// creating arraylist and object to store and apply attributes 
+						ArrayList<Integer> NPCStatIds = new ArrayList<Integer>();
+						NPC npc = new NPC();
+						
+						// applying the stat ID and storing it into the arraylist
+						while(resultSet1.next()) {
+							found = true;
+							
+							npc.getStat().setId(resultSet1.getInt(1));
+							NPCStatIds.add(npc.getStat().getId());
+						}
+						
+						if(!found) {
+							System.out.println("stats were not found for NPC");
+						}
+						
+						return NPCStatIds;
+					}finally {
+						DBUtil.closeQuietly(resultSet1);
+						DBUtil.closeQuietly(stmt1);
 					}
-					
-					if(!found) {
-						System.out.println("stats were not found for NPC");
-					}
-					
-					return NPCStatIds;
-				}finally {
-					DBUtil.closeQuietly(resultSet1);
-					DBUtil.closeQuietly(stmt1);
 				}
+			});
+		}
+
+
+		// this method goes into the Stat table and retrieves the Stat attributes
+			public Stat findNPCStatByStatId(int StatId){
+				return executeTransaction(new Transaction<Stat>() {
+					@Override
+					public Stat execute(Connection conn) throws SQLException {
+						PreparedStatement stmt1 = null;
+						ResultSet resultSet1 = null;
+						Boolean found = false;
+						
+						try {
+							stmt1 = conn.prepareStatement(
+									"select Stat.name, Stat.rank " +
+									"from Stat " + 
+											"where Stat.stat_id = ? "
+									);
+							stmt1.setInt(1, StatId);
+							
+							// creating stat object
+							Stat stat = new Stat();
+							
+							// running through and translating stat from the DB
+							while(resultSet1.next()) {
+								found = true;
+								
+								stat.setName(resultSet1.getString(1));
+								stat.setRank(resultSet1.getInt(2));
+								
+							}
+							
+							if(!found) {
+								System.out.println("this ID doesn't have a pertaining stat");
+							}
+							
+							return stat;
+						}finally {
+							DBUtil.closeQuietly(resultSet1);
+							DBUtil.closeQuietly(stmt1);
+						}
+					}
+				});
 			}
-		});
-	}
-	public Stat findNPCStatByStatId(int StatId){
-		return executeTransaction(new Transaction<Stat>() {
-			@Override
-			public Stat execute(Connection conn) throws SQLException {
-				PreparedStatement stmt1 = null;
-				ResultSet resultSet1 = null;
-				Boolean found = false;
-				
-				try {
-					stmt1 = conn.prepareStatement(
-							"select Stat.name, Stat.rank " +
-							"from Stat " + 
-									"where Stat.stat_id = ? "
-							);
-					stmt1.setInt(1, StatId);
+
+			
+		public List<Integer> findNPCsIdByCombatID(int combatID){
+			return executeTransaction(new Transaction<List<Integer>>() {
+				@Override
+				public List<Integer> execute(Connection conn) throws SQLException {
+					PreparedStatement stmt1 = null;
+					ResultSet resultSet1 = null;
+					Boolean found = false;
 					
-					Stat stat = new Stat();
-					
-					while(resultSet1.next()) {
-						found = true;
+					try {
+						stmt1 = conn.prepareStatement(
+								"select CombatToNPC.npc_id " +
+								"from CombatToNPC " + 
+									"where CombatToNPC.combat_id = ? " 
+								);
+						stmt1.setInt(1, combatID);
 						
-						stat.setName(resultSet1.getString(1));
-						stat.setRank(resultSet1.getInt(2));
+						ArrayList<Integer> NPCIds = new ArrayList<Integer>();
+						NPC npc = new NPC();
 						
+						resultSet1 = stmt1.executeQuery();
+						
+						while(resultSet1.next()) {
+							found = true;
+							
+							npc.setId(resultSet1.getInt(1));
+							NPCIds.add(npc.getId());
+						}
+						
+						if(!found) {
+							System.out.println("No NPCs in this combat");
+						}
+						return NPCIds;
+					}finally {
+						DBUtil.closeQuietly(resultSet1);
+						DBUtil.closeQuietly(stmt1);
 					}
-					
-					if(!found) {
-						System.out.println("this ID doesn't have a pertaining stat");
-					}
-					
-					return stat;
-				}finally {
-					DBUtil.closeQuietly(resultSet1);
-					DBUtil.closeQuietly(stmt1);
 				}
-			}
-		});
-	}
-	public List<Integer> findNPCsIdByCombatID(int combatID){
-		return executeTransaction(new Transaction<List<Integer>>() {
-			@Override
-			public List<Integer> execute(Connection conn) throws SQLException {
-				PreparedStatement stmt1 = null;
-				ResultSet resultSet1 = null;
-				Boolean found = false;
-				
-				try {
-					stmt1 = conn.prepareStatement(
-							"select CombatToNPC.npc_id " +
-							"from CombatToNPC " + 
-								"where CombatToNPC.combat_id = ? " 
-							);
-					stmt1.setInt(1, combatID);
-					
-					ArrayList<Integer> NPCIds = new ArrayList<Integer>();
-					NPC npc = new NPC();
-					
-					resultSet1 = stmt1.executeQuery();
-					
-					while(resultSet1.next()) {
-						found = true;
-						
-						npc.setId(resultSet1.getInt(1));
-						NPCIds.add(npc.getId());
-					}
-					
-					if(!found) {
-						System.out.println("No NPCs in this combat");
-					}
-					return NPCIds;
-				}finally {
-					DBUtil.closeQuietly(resultSet1);
-					DBUtil.closeQuietly(stmt1);
-				}
-			}
-		});
-	}
+			});
+		}
 	
 	public Loot findLootByLocationID(int locationID) {
 		return executeTransaction(new Transaction<Loot>() {
@@ -769,7 +788,6 @@ public class DerbyDatabase implements IDatabase {
 			}
 		});
 	}
-	
 	public Integer insertNewNPCs(List<NPC> npcList, int loc_rows, int game_rows) {
 		return executeTransaction(new Transaction<Integer>() {
 			@Override
@@ -808,8 +826,11 @@ public class DerbyDatabase implements IDatabase {
 					return game_rows;
 				} finally {
 					DBUtil.closeQuietly(stmt1);
-        });
+				}
+			}
+		});
 	}
+		
 
 	public Map findMapByMapID(int mapId) {
 		return executeTransaction(new Transaction<Map>() {
@@ -1359,7 +1380,9 @@ public class DerbyDatabase implements IDatabase {
 					return true;
 				}finally{
 					DBUtil.closeQuietly(stmt1);
-        });
+				}
+			}
+		});
 	}
 
 	public WinCondition insertNewWinConditions(WinCondition winCondition) {
@@ -1445,10 +1468,10 @@ public class DerbyDatabase implements IDatabase {
 					return true;
 				}finally {
 					DBUtil.closeQuietly(stmt1);
-        });
-      }
-   }
-
+				}
+			}
+		});
+	}
       
 	public Location insertNewLocations(Location location) {
 		return executeTransaction(new Transaction<Location>() {
