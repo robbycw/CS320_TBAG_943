@@ -47,9 +47,9 @@ public class DerbyDatabase implements IDatabase {
 				
 				try {
 					stmt1 = conn.prepareStatement(
-							"select Users.user_id, Users.username, Users.password" + 
-							"from Users" +
-							"Users.username = ? and Users.password = ?");
+							"select Users.user_id, Users.username, Users.password " + 
+							"from Users " +
+							"where Users.username = ? and Users.password = ?");
 					stmt1.setString(1, username);
 					stmt1.setString(2, password);
 					
@@ -1486,9 +1486,12 @@ public class DerbyDatabase implements IDatabase {
 					
 					System.out.println("User " + username + " inserted into Users table");
 									
-					
+					 
 					return 0;
 					
+				} catch (SQLException e) {
+					// User could not be inserted. 
+					return -1; 
 				} finally {
 					DBUtil.closeQuietly(stmt1);
 				}
@@ -2723,15 +2726,16 @@ public class DerbyDatabase implements IDatabase {
 				
 				try {
 					stmt1 = conn.prepareStatement(
-							"Update NPC " +
-							" Set NPC.combat = ?, NPC.isIntimidated = ?, NPC.canIntimidate = ?, NPC.isPersuaded = ?, NPC.canPersuade = ?" + 
-									"where NPC.NPC_id = ?"
+							"update NPC " +
+							" set NPC.combat = ?, NPC.isIntimidated = ?, NPC.canIntimidate = ?, NPC.isPersuaded = ?, NPC.canPersuade = ? " + 
+									"where NPC.npc_id = ?"
 					);
-  					stmt1.setString(1, Boolean.toString(npc.isIntimidated()));
-  					stmt1.setString(2, Boolean.toString(npc.getCanIntimidate()));
-  					stmt1.setString(3, Boolean.toString(npc.isPersuaded()));
-  					stmt1.setString(4, Boolean.toString(npc.getCanPersuade()));
-  					stmt1.setInt(5, npc.getId());
+					stmt1.setString(1, Boolean.toString(npc.isCombat()));
+  					stmt1.setString(2, Boolean.toString(npc.isIntimidated()));
+  					stmt1.setString(3, Boolean.toString(npc.getCanIntimidate()));
+  					stmt1.setString(4, Boolean.toString(npc.isPersuaded()));
+  					stmt1.setString(5, Boolean.toString(npc.getCanPersuade()));
+  					stmt1.setInt(6, npc.getId());
   					
 					stmt1.executeUpdate();
 					
@@ -2754,7 +2758,7 @@ public class DerbyDatabase implements IDatabase {
 				try {
 					stmt1 = conn.prepareStatement(
 							"update NPCStats " +
-							"  set rank = ? " +
+							"  set amount = ? " +
 							"  where stat_id = ?"
 					);
 					
@@ -2824,7 +2828,7 @@ public class DerbyDatabase implements IDatabase {
 					stmt.setString(2, Boolean.toString(puzzle.isSolved()));
 					stmt.setInt(3,  puzzle.getId());
 					
-					stmt.executeQuery();
+					stmt.executeUpdate();
 					
 					System.out.println("Puzzle #: " + puzzle.getId() + " has been updated");
 					
@@ -2856,7 +2860,7 @@ public class DerbyDatabase implements IDatabase {
 					stmt.setString(6,  Boolean.toString(winCondition.getDefaultCase()));
 					stmt.setInt(7,  winCondition.getId());
 					
-					stmt.executeQuery();
+					stmt.executeUpdate();
 					
 					System.out.println("Win Condition #: " + winCondition.getId() + " has been updated");
 					
@@ -3450,10 +3454,10 @@ public class DerbyDatabase implements IDatabase {
 	
 	// Create a new game, which will insert onto the existing table! 
 	// Takes a User's ID, which will be inserted as a new pair in the UserToGame table.
-	public void createNewGame(int user_id) {
-		executeTransaction(new Transaction<Boolean>() {
+	public int createNewGame(int user_id) {
+		return executeTransaction(new Transaction<Integer>() {
 			@Override
-			public Boolean execute(Connection conn) throws SQLException {
+			public Integer execute(Connection conn) throws SQLException {
 				//
 				// Load Initial Data from the CSVs. 
 				//
@@ -3617,7 +3621,7 @@ public class DerbyDatabase implements IDatabase {
 				
 				System.out.println("New Game inserted for user #" + user_id);
 				
-				return true; 
+				return gameMax + 1; 
 				
 			}
 		});

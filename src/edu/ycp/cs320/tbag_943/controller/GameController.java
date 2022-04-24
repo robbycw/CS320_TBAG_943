@@ -196,13 +196,15 @@ public class GameController {
 		model.addOutput(s);
 	}
 	
-	public void collect(String item) {
+	public int collect(String item) {
 		Player p = model.getPlayer();
 		if(p.getLocation().getTreasure().pickUpItem(p, item)) {
 			String s = p.getName() + " picked up " + item + "."; 
 			model.addOutput(s);
+			return p.getInventory().get(item).getId();
 		} else {
 			model.addOutput(item + " does not exist here.");
+			return -1; 
 		}
 	}
 	

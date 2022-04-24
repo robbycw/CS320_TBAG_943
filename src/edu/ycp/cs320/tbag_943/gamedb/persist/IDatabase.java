@@ -114,7 +114,7 @@ public interface IDatabase {
 	// 
 	
 	public int getLargestIdInTable(String table, String idName);
-	public void createNewGame(int user_id);
+	public int createNewGame(int user_id);
 
 	
 	/*
