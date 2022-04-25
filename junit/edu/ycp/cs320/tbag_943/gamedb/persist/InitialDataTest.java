@@ -407,12 +407,12 @@ public class InitialDataTest {
 	}
 	
 	@Test
-	public void testFindNPCsByLocationID() {
-		System.out.println("\n*** Testing findNPCsByLocationID***");
+	public void testFindNPCIDsByLocationID() {
+		System.out.println("\n*** Testing findNPCIDsByLocationID***");
 		
 		int locationID = 1;
 
-		npcList = db.findNPCsByLocationID(locationID);
+		List<Integer> npcList = db.findNPCIdsByLocationID(locationID);
 		
 		// NOTE: this is a simple test to check if no results were found in the DB
 		if (npcList.isEmpty()) {
@@ -422,19 +422,20 @@ public class InitialDataTest {
 		// NOTE: assembling the results into Author and Book lists so that they could be
 		//       inspected for correct content - well-formed objects with correct content
 		else {			
-			for (NPC npc : npcList) {
-				System.out.println(npc);
+			for (int npcID : npcList) {
+				System.out.println(npcID);
 			}			
 		}
 	}
 	
 	@Test
-	public void testFindNPCsByCombatID() {
-		System.out.println("\n*** Testing findNPCsByCombatID***");
+	public void testFindNPCsIdByCombatID() {
+		System.out.println("\n*** Testing findNPCsIdByCombatID***");
 		
 		int combatID = 1;
 
-		npcList = db.findNPCsByCombatID(combatID);
+		//npcList = db.findNPCsByCombatID(combatID);
+		List<Integer> npcList = db.findNPCsIdByCombatID(combatID);
 		
 		// NOTE: this is a simple test to check if no results were found in the DB
 		if (npcList.isEmpty()) {
@@ -444,24 +445,25 @@ public class InitialDataTest {
 		// NOTE: assembling the results into Author and Book lists so that they could be
 		//       inspected for correct content - well-formed objects with correct content
 		else {			
-			for (NPC npc : npcList) {
-				System.out.println(npc);
+			for (int npcID : npcList) {
+				System.out.println(npcID);
 			}			
 		}
 	}
 	
 	@Test
-	public void testFindSpeechByNPCID() {
-		System.out.println("\n*** Testing findSpeechByNPCID***");
+	public void testFindSpeechBySpeechId() {
+		System.out.println("\n*** Testing findSpeechBySpeechId***");
 		
-		int npcID = 1;
+		int speechID = 1;
 
-		speechList = db.findSpeechByNPCID(npcID);
+		//speechList = db.findSpeechByNPCID(npcID);
+		speechList.add(db.findSpeechBySpeechId(speechID));
 		
 		// NOTE: this is a simple test to check if no results were found in the DB
 		if (speechList.isEmpty()) {
-			System.out.println("NPC ID: <" + npcID + "> does not exist");
-			fail("NPC ID does not exist <" + npcID + "> returned from DB");
+			System.out.println("NPC ID: <" + speechID + "> does not exist");
+			fail("NPC ID does not exist <" + speechID + "> returned from DB");
 		}
 		// NOTE: assembling the results into Author and Book lists so that they could be
 		//       inspected for correct content - well-formed objects with correct content
@@ -473,17 +475,17 @@ public class InitialDataTest {
 	}
 	
 	@Test
-	public void testFindGameLogByGameID() {
-		System.out.println("\n*** Testing findGameLogByGameID***");
+	public void testFindGameLogByGameLogID() {
+		System.out.println("\n*** Testing findGameLogByGameLogID***");
 		
 		int gameID = 1;
 
-		List<String> gameLogList = db.findGameLogByGameID(gameID);
+		List<String> gameLogList = db.findGameLogByGameLogId(gameID);
 		
 		// NOTE: this is a simple test to check if no results were found in the DB
 		if (gameLogList.isEmpty()) {
-			System.out.println("Game ID: <" + gameID + "> does not exist");
-			fail("Game ID does not exist <" + gameID + "> returned from DB");
+			System.out.println("Gamelog ID: <" + gameID + "> does not exist");
+			fail("Gamelog ID does not exist <" + gameID + "> returned from DB");
 		}
 		// NOTE: assembling the results into Author and Book lists so that they could be
 		//       inspected for correct content - well-formed objects with correct content
@@ -495,34 +497,12 @@ public class InitialDataTest {
 	}
 	
 	@Test
-	public void testFindPlayerByGameID() {
-		System.out.println("\n*** Testing findPlayerByGameID***");
-		
-		int gameID = 1;
-
-		playerList.add(db.findPlayerByGameID(gameID));
-		
-		// NOTE: this is a simple test to check if no results were found in the DB
-		if (playerList.isEmpty()) {
-			System.out.println("Game ID: <" + gameID + "> does not exist");
-			fail("Game ID does not exist <" + gameID + "> returned from DB");
-		}
-		// NOTE: assembling the results into Author and Book lists so that they could be
-		//       inspected for correct content - well-formed objects with correct content
-		else {			
-			for (Player player : playerList) {
-				System.out.println(player);
-			}			
-		}
-	}
-	
-	@Test
-	public void testFindCombatsByLocationID() {
-		System.out.println("\n*** Testing findCombatsByLocationID***");
+	public void testFindCombatIdsByLocationID() {
+		System.out.println("\n*** Testing findCombatIdsByLocationID***");
 		
 		int locationID = 1;
 
-		combatList = db.findCombatsByLocationID(locationID);
+		ArrayList<Integer> combatList = db.findCombatIdsByLocationID(locationID);
 		
 		// NOTE: this is a simple test to check if no results were found in the DB
 		if (combatList.isEmpty()) {
@@ -532,8 +512,8 @@ public class InitialDataTest {
 		// NOTE: assembling the results into Author and Book lists so that they could be
 		//       inspected for correct content - well-formed objects with correct content
 		else {			
-			for (Combat combat : combatList) {
-				System.out.println(combat);
+			for (int combatID : combatList) {
+				System.out.println(combatID);
 			}			
 		}
 	}
@@ -544,7 +524,7 @@ public class InitialDataTest {
 		
 		int locationID = 1;
 
-		List<Integer> puzzleIDs = db.findPuzzleIDsByLocationID(locationID);
+		List<Integer> puzzleIDs = db.findPuzzleIdsByLocationID(locationID);
 		
 		// NOTE: this is a simple test to check if no results were found in the DB
 		if (puzzleIDs.isEmpty()) {
@@ -600,28 +580,6 @@ public class InitialDataTest {
 		else {			
 			for (Map map : mapList) {
 				System.out.println(map);
-			}			
-		}
-	}
-	
-	@Test
-	public void testFindConnectionsByMapID() {
-		System.out.println("\n*** Testing findConnectionsByMapID***");
-		
-		int mapID = 1;
-
-		ArrayList<String> connectionsList = db.findConnectionsByMapID(mapID).get(mapID);
-		
-		// NOTE: this is a simple test to check if no results were found in the DB
-		if (connectionsList.isEmpty()) {
-			System.out.println("Map ID: <" + mapID + "> does not exist");
-			fail("Map ID does not exist <" + mapID + "> returned from DB");
-		}
-		// NOTE: assembling the results into Author and Book lists so that they could be
-		//       inspected for correct content - well-formed objects with correct content
-		else {			
-			for (String con : connectionsList) {
-				System.out.println(con);
 			}			
 		}
 	}
@@ -693,13 +651,12 @@ public class InitialDataTest {
 	}
 	
 	@Test
-	public void testFindInventoryByPlayerID() {
-		System.out.println("\n*** Testing findInventoryByPlayerID***");
+	public void testFindPlayerInventoryByPlayerID() {
+		System.out.println("\n*** Testing findPlayerInventoryByPlayerID***");
 		
 		int playerID = 1;
 
-		ArrayList<Item> inventoryList = null;
-		inventoryList.add(db.findInventoryByPlayerID(playerID).get(playerID));
+		List<Integer> inventoryList = db.findPlayerInventoryIdsByPlayerId(playerID);
 		
 		// NOTE: this is a simple test to check if no results were found in the DB
 		if (inventoryList.isEmpty()) {
@@ -709,8 +666,8 @@ public class InitialDataTest {
 		// NOTE: assembling the results into Author and Book lists so that they could be
 		//       inspected for correct content - well-formed objects with correct content
 		else {			
-			for (Item item : inventoryList) {
-				System.out.println(item);
+			for (int itemID : inventoryList) {
+				System.out.println(itemID);
 			}			
 		}
 	}
@@ -720,8 +677,8 @@ public class InitialDataTest {
 		System.out.println("\n*** Testing findPlayerStatsByPlayerID***");
 		
 		int playerID = 1;
-
-		List<Integer> playerStatsList = db.findPlayerStatIdsByPlayerId(playerID);
+		
+		playerStatsList.add(db.findPlayerStatsByPlayerID(playerID).get(playerID));
 		
 		// NOTE: this is a simple test to check if no results were found in the DB
 		if (playerStatsList.isEmpty()) {
@@ -731,7 +688,7 @@ public class InitialDataTest {
 		// NOTE: assembling the results into Author and Book lists so that they could be
 		//       inspected for correct content - well-formed objects with correct content
 		else {			
-			for (int stat : playerStatsList) {
+			for (Stat stat : playerStatsList) {
 				System.out.println(stat);
 			}			
 		}
@@ -778,28 +735,6 @@ public class InitialDataTest {
 		else {			
 			for (Item item : itemList) {
 				System.out.println(item);
-			}			
-		}
-	}
-	
-	@Test
-	public void testFindPlayerStatIdsByPlayerId() {
-		System.out.println("\n*** Testing findPlayerStatIdsByPlayerId***");
-		
-		int playerID = 1;
-
-		List<Integer> playerStatsList = db.findPlayerStatIdsByPlayerId(playerID);
-		
-		// NOTE: this is a simple test to check if no results were found in the DB
-		if (playerStatsList.isEmpty()) {
-			System.out.println("Player ID: <" + playerID + "> does not exist");
-			fail("Player ID does not exist <" + playerID + "> returned from DB");
-		}
-		// NOTE: assembling the results into Author and Book lists so that they could be
-		//       inspected for correct content - well-formed objects with correct content
-		else {			
-			for (int stat : playerStatsList) {
-				System.out.println(stat);
 			}			
 		}
 	}

@@ -18,31 +18,31 @@ public interface IDatabase {
 	// Find Queries
 	//
 	
-	public User findUserByUsernameAndPassword(String username, String password);
-	public List<Game> findGamesByUserID(int userID);
+	public User findUserByUsernameAndPassword(String username, String password); 
+	public List<Game> findGamesByUserID(int userID); 
 	public Game findGameByGameID(int gameId);
-	public Map findMapByMapID(int mapId);
-	public Location findLocationByLocationID(int locationId);
+	public Map findMapByMapID(int mapId); 
+	public Location findLocationByLocationID(int locationId); 
 	public List<Integer> findNPCIdsByLocationID(int locationID);
 	public NPC findNPCByNPCId(int NPCId);
 	public HashMap<String, Stat> findNPCStatsByNPCID(int npcID);
-	public Speech findSpeechBySpeechId(int speechId);
+	public Speech findSpeechBySpeechId(int speechId); 
 	public ArrayList<String> findSpeechOptionsBySpeechId(int speechId);
 	public ArrayList<String> findSpeechResponsesBySpeechId(int speechId);
-	public List<Integer> findNPCsIdByCombatID(int combatID);
-	public Loot findLootByLocationID(int locationID);
+	public List<Integer> findNPCsIdByCombatID(int combatID); 
+	public Loot findLootByLocationID(int locationID); 
 	public Loot findLootByLootID(int lootID);
 	public Item findItemByItemID(int itemId);
-	public ArrayList<Integer> findCombatIdsByLocationID(int locationId);
+	public ArrayList<Integer> findCombatIdsByLocationID(int locationId); 
 	public Combat findCombatsByCombatID(int combatId);
-	public List<Integer> findPuzzleIdsByLocationID(int locationId);
-	public Puzzle findPuzzleByPuzzleId(int puzzle_id);
-	public WinCondition findWinConditionByWinConditionId(int winCondition_id);
+	public List<Integer> findPuzzleIdsByLocationID(int locationId); 
+	public Puzzle findPuzzleByPuzzleId(int puzzle_id); 
+	public WinCondition findWinConditionByWinConditionId(int winCondition_id); 
 	public Player findPlayerByPlayerId(int playerId, Collection<Location> locations);
-	public HashMap<String, Stat> findPlayerStatsByPlayerID(int playerID);
+	public HashMap<String, Stat> findPlayerStatsByPlayerID(int playerID); 
 	//public Stat findPlayerStatByStatId(int statId);
-	public List<Integer> findPlayerInventoryIdsByPlayerId(int playerID);
-	public ArrayList<String> findGameLogByGameLogId(int gameLogId);
+	public List<Integer> findPlayerInventoryIdsByPlayerId(int playerID); 
+	public ArrayList<String> findGameLogByGameLogId(int gameLogId); 
 	
 
 	//
