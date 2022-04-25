@@ -106,35 +106,33 @@ public class TitlePageServlet extends HttpServlet {
 				String loginError = "Please specify a username and password."; 
 				session.setAttribute("loginErr", loginError);
 			} else {
+				// Check that the username and password matches a username and password
+				// within the database. 
+				User loginUser = dbc.login(username, password); 
 				
-			}
-			
-			// Check that the username and password matches a username and password
-			// within the database. 
-			User loginUser = dbc.login(username, password); 
-			
-			// Check if username exists. 
-			if(loginUser != null) {			
-				// Query returned a User. 
-				
-				System.out.println("	User " + username + " has logged in."); 
-				
-				user = loginUser; 
-				
-				// Need to fetch the user's gameList from the database
-				List<Game> games = dbc.loadGamesInfo(user.getId()); 
-				ArrayList<Game> gameList = new ArrayList<Game>(); 
-				gameList.addAll(games); 
-				user.setGameList(gameList);
-								
-				// User is now logged in, store user data into session. 
-				session.setAttribute("user", user);
-				session.setAttribute("loggedIn", true); 
+				// Check if username exists. 
+				if(loginUser != null) {			
+					// Query returned a User. 
+					
+					System.out.println("	User " + username + " has logged in."); 
+					
+					user = loginUser; 
+					
+					// Need to fetch the user's gameList from the database
+					List<Game> games = dbc.loadGamesInfo(user.getId()); 
+					ArrayList<Game> gameList = new ArrayList<Game>(); 
+					gameList.addAll(games); 
+					user.setGameList(gameList);
+									
+					// User is now logged in, store user data into session. 
+					session.setAttribute("user", user);
+					session.setAttribute("loggedIn", true); 
 
-			} else {
-				// The Query returned null. Supply error message. 
-				String loginError = "Username or password does not exist."; 
-				session.setAttribute("loginErr", loginError);
+				} else {
+					// The Query returned null. Supply error message. 
+					String loginError = "Username or password does not exist."; 
+					session.setAttribute("loginErr", loginError);
+				}
 			}
 			
 		} else if (req.getParameter("createAccount") != null) {
@@ -195,7 +193,7 @@ public class TitlePageServlet extends HttpServlet {
 			
 			ArrayList<Game> gameList = user.getGameList(); 
 			
-			if(gameList == null) {
+			if(gameList == null || gameList.isEmpty()) {
 				gameList = new ArrayList<Game>();
 				gameList.add(newGame); 
 			} else {
@@ -232,6 +230,7 @@ public class TitlePageServlet extends HttpServlet {
 				Game selected = dbc.loadGame(g.getId()); 
 				
 				user.setCurrentGame(selected);
+				session.setAttribute("user", user);
 				session.setAttribute("playGameClicked", false);
 			}
 		}
