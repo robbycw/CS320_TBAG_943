@@ -20,6 +20,9 @@
 
 	<body>
 
+		<embed src = "../gameTheme.mp3" autostart>
+		</embed>
+		
 		<!-- Page Header: Has log-out button, display on all pages when logged in. -->
 		<c:if test= "${user.created}">
 			
