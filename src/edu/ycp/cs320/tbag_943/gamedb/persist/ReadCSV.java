@@ -28,6 +28,8 @@ public class ReadCSV implements Closeable {
 		if (line == null) {
 			return null;
 		}
+		
+		System.out.println("ReadCSV Line before substring: " + line); 
 		// Remove the encoded characters at the beginning of the string if present: 
 		if(line.substring(0, 3).equals("﻿")) {
 			line = line.substring(3); 

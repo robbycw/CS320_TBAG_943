@@ -57,7 +57,7 @@ public class InitialData {
 
 				userToGameList.add(userToGame);
 			}
-			System.out.println("userList loaded from CSV file");
+			System.out.println("userToGameList loaded from CSV file");
 			return userToGameList;
 		} finally {
 			readUserToGame.close();
@@ -87,7 +87,7 @@ public class InitialData {
 				game.setDifficulty(Integer.parseInt(i.next()));
 				game.setInCombat(Boolean.parseBoolean(i.next()));
 				game.setPlayerTurnTaken(Boolean.parseBoolean(i.next()));
-				game.setPlayerCreated(Boolean.parseBoolean(i.next()));
+				game.setPlayerNotCreated(Boolean.parseBoolean(i.next()));
 				
 				// Create a timer based on timeRemaining and timerRate
 				int timeRemaining = Integer.parseInt(i.next()); 
@@ -326,13 +326,12 @@ public class InitialData {
 				// Iterates over tuple.
 				Iterator<String> i = tuple.iterator();
 				
-				int map_id = Integer.parseInt(i.next());
-				Map map; 
+				int map_id = Integer.parseInt(i.next()); 
 				
 				// See if the map_id is already contained in the List of Maps
 				if(mapList.containsKey(map_id)) {
 					// map_id already exists, get this map and add additional data. 
-					map = mapList.get(map_id); 
+					Map map = mapList.get(map_id); 
 					
 					// Fetch Connections and Locations HashMaps from Map
 					HashMap<String, Location> locationsMap = map.getLocations(); 
@@ -350,12 +349,17 @@ public class InitialData {
 					
 					// Need to get location names for each connection
 					// OR set connection to -1 if no connection in direction.
-					for(int j = 0; j < 4; j++) {
+					for(int j = 0; j < 5; j++) {
+						
 						int conId = Integer.parseInt(i.next()) - 1; 
+						
+						System.out.println("ConID: " + conId);
+						
 						if(conId == -2) {
 							con.add("-1"); 
 						} else {
 							Location c = locations.get(conId);
+							System.out.println("Con Name: " + c.getName());
 							con.add(c.getName().toLowerCase()); 
 						}
 					}
@@ -365,9 +369,12 @@ public class InitialData {
 					map.setLocations(locationsMap);
 					map.setConnections(connectionsMap);
 					
+					// Put the map into the list. 
+					mapList.put(map_id, map);
+					
 				} else {
 					// Map doesn't exist in list yet, make a new map. 
-					map = new Map(); 
+					Map map = new Map(); 
 					map.setId(map_id);
 					
 					// Initialize Connections and Locations HashMaps for Map
@@ -384,20 +391,28 @@ public class InitialData {
 					ArrayList<String> con = new ArrayList<String>(); 
 					
 					// Need to get location names for each connection
-					for(int j = 0; j < 4; j++) {
-						Location c = locations.get(Integer.parseInt(i.next()) - 1);
-						con.add(c.getName().toLowerCase()); 
+					for(int j = 0; j < 5; j++) {
+						int conId = Integer.parseInt(i.next()) - 1;
+						System.out.println("ConID: " + conId);
+						 					
+						if(conId == -2) {
+							con.add("-1"); 
+						} else {
+							Location c = locations.get(conId);
+							System.out.println("Con Name: " + c.getName());
+							con.add(c.getName().toLowerCase()); 
+						}
 					}
 					connectionsMap.put(loc.getName().toLowerCase(), con); 
 					
 					// Put locationsMap and connectionsMap back in map
 					map.setLocations(locationsMap);
 					map.setConnections(connectionsMap);
+					
+					// Put the map into the list. 
+					mapList.put(map_id, map);
 				}
-				
-				
-				// Put the map into the list. 
-				mapList.put(map_id, map); 
+			
 			}
 			System.out.println("mapList loaded from CSV file");
 			
@@ -406,6 +421,7 @@ public class InitialData {
 			for(int j = 1; j <= mapList.keySet().size(); j++) {
 				maps.add(mapList.get(j));
 			}
+			
 			
 			return maps;
 		} finally {
@@ -755,7 +771,7 @@ public class InitialData {
 	public static List<Speech> getSpeech(HashMap<Integer, ArrayList<String>> speechOptions, 
 			HashMap<Integer, ArrayList<String>> speechResponses) throws IOException {
 		List<Speech> speechList = new ArrayList<Speech>(); 
-		ReadCSV readSpeech = new ReadCSV("Speech.csv"); 
+		ReadCSV readSpeech = new ReadCSV("speech.csv"); 
 		
 		try {
 			while (true) {
@@ -778,7 +794,6 @@ public class InitialData {
 				speech.setPersOp(i.next());
 				speech.setPersRes(i.next());
 				speech.setPersResFail(i.next());
-				speech.setPrompt(i.next());
 			
 
 				// Add Speech to List
@@ -828,7 +843,7 @@ public class InitialData {
 				
 			}
 			
-			System.out.println("gameLogList loaded from CSV file");
+			System.out.println("speechOptionsList loaded from CSV file");
 			return speechOptionsList;
 		
 		} finally {
@@ -873,7 +888,7 @@ public class InitialData {
 				
 			}
 			
-			System.out.println("gameLogList loaded from CSV file");
+			System.out.println("speechResponsesList loaded from CSV file");
 			return speechResponsesList;
 		
 		} finally {

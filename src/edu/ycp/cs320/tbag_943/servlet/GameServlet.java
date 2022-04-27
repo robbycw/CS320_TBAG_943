@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import edu.ycp.cs320.tbag_943.classes.*;
+import edu.ycp.cs320.tbag_943.controller.DBController;
 import edu.ycp.cs320.tbag_943.controller.GameController;
 
 public class GameServlet extends HttpServlet {
@@ -35,13 +36,18 @@ public class GameServlet extends HttpServlet {
 			// need to make a new session. 
 			session = req.getSession(); 
 			// will also need to make a Game object for this new session! 
-			// Game created in static method below. 
-			Game game = GameServlet.gameMaker();  
+			// Game was loaded from DB and is assigned to User. 
+			
+			// User is logged in and has selected a game. 
+			
+			User user = (User) session.getAttribute("user"); 
+			
+			DBController dbc = new DBController(); 
+			Game game = user.getCurrentGame(); 
 
 			
 			// Game data will be stored in the session, allowing data to be exchanged back and
 			// forth in Servlet and JSP.
-			game.setPlayerCreated(true);
 			session.setAttribute("model", game);
 			
 			// Make the map attributes. 
@@ -70,6 +76,9 @@ public class GameServlet extends HttpServlet {
 		// Get the User class from the session. 
 		User user = (User) session.getAttribute("user");
 		
+		// Initialize the database controller. 
+		DBController dbc = new DBController(); 
+		
 		if(req.getParameter("characterSubmit") != null) {
 			Game model = (Game) session.getAttribute("model"); 
 			
@@ -94,34 +103,37 @@ public class GameServlet extends HttpServlet {
 			System.out.println("character created");
 			
 			
-				Player player = new Player(playerName, model.getPlayer().getLocation(), (10 + vitalityStat), 10, strengthStat, speedStat);
-				model.setPlayer(player);
-				
-				session.setAttribute("health", player.getStats().get("health").getRank());
-				session.setAttribute("armor", player.getStats().get("armor").getRank());
-				
-				model.setPlayerCreated(false);
-				session.setAttribute("model", model);
+			Player player = new Player(playerName, model.getPlayer().getLocation(), (10 + vitalityStat), 10, strengthStat, speedStat);
 			
 			
-				Item strtWeapon = new Item(startingWeapon, 5);
-				strtWeapon.isWeapon(true);
-				player.getInventory().put(startingWeapon, strtWeapon);
-				player.setWeapon(startingWeapon);
-				
-				Item strtApparel = new Item(startingApparel);
-				strtApparel.isArmor(true);
-				strtApparel.setArmor(6);
-				player.getInventory().put(startingApparel, strtApparel);
-				player.setArmor(startingApparel);
-				
-				Item strtTool = new Item(startingTool);
-				strtTool.isTool(true);
-				player.getInventory().put(startingTool, strtTool);
-				
-				Item strtMisc = new Item(startingMisc, 10);
-				strtMisc.isConsumable(true);
-				player.getInventory().put(startingMisc, strtMisc);
+			session.setAttribute("health", player.getStats().get("health").getRank());
+			session.setAttribute("armor", player.getStats().get("armor").getRank());
+			
+			model.setPlayerNotCreated(false);
+		
+		
+			Item strtWeapon = new Item(startingWeapon, 5);
+			strtWeapon.isWeapon(true);
+			player.getInventory().put(startingWeapon, strtWeapon);
+			player.setWeapon(startingWeapon);
+			
+			Item strtApparel = new Item(startingApparel);
+			strtApparel.isArmor(true);
+			strtApparel.setArmor(6);
+			player.getInventory().put(startingApparel, strtApparel);
+			player.setArmor(startingApparel);
+			
+			Item strtTool = new Item(startingTool);
+			strtTool.isTool(true);
+			player.getInventory().put(startingTool, strtTool);
+			
+			Item strtMisc = new Item(startingMisc, 10);
+			strtMisc.isConsumable(true);
+			player.getInventory().put(startingMisc, strtMisc);
+			
+			model.setPlayer(player);
+			session.setAttribute("model", model);
+			dbc.saveGame(model, player.getLocation());
 		}
 		
 		if(req.getParameter("title") != null) {
@@ -164,6 +176,11 @@ public class GameServlet extends HttpServlet {
 			String in = req.getParameter("user"); 
 			Game model = (Game) session.getAttribute("model"); 
 			GameController controller = new GameController(model); 
+			
+			Location previous = model.getPlayer().getLocation(); 
+			
+			int log_id = model.getId(); 
+			int log_size = model.getOutputLog().size(); 
 			
 			// Get current time after post, then set the time of the Timer. 
 			String time = req.getParameter("t"); 
@@ -228,7 +245,11 @@ public class GameServlet extends HttpServlet {
 							controller.persuade(input[1]);
 							break;
 						case "collect":
-							controller.collect(input[1]);
+							int result = controller.collect(input[1]);
+							if(result != -1) {
+								// Insert Item into Inventory. 
+								dbc.addItemToPlayerInventory(model.getPlayer().getId(), result);
+							}
 							break; 
 						case "look":
 							controller.look();
@@ -277,6 +298,15 @@ public class GameServlet extends HttpServlet {
 			
 			// Update Map
 			GameServlet.mapMaker(session, model);
+			
+			// Add output to DB.
+			ArrayList<String> log = model.getOutputLog(); 
+			for(int i = log_size; i < model.getOutputLog().size(); i++) {
+				dbc.addOutputToLog(log.get(i), log_id, i);
+			}
+			
+			// Update Game on DB. 
+			dbc.saveGame(model, previous);
 			
 			// Put the updated model back in the HttpSession.
 			session.setAttribute("model", model);

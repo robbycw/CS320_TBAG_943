@@ -87,7 +87,7 @@ public class Game {
 	public void setInCombat(boolean inCombat) {
 		this.inCombat = inCombat;
 	}
-	public void setPlayerCreated(boolean created) {
+	public void setPlayerNotCreated(boolean created) {
 		this.playerNotCreated = created;
 	}
 

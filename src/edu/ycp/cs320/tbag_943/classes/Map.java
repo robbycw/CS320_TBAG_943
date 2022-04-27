@@ -16,8 +16,9 @@ public class Map {
 	// Default Constructor
 	public Map() {
 		 this.icon = null; 
-		 this.locations = null; 
-		 this.connections = null; 
+		 this.locations = new HashMap<String, Location>(); 
+		 this.connections = new HashMap<String, ArrayList<String>>(); 
+		 this.id = 0; 
 	}
 
 	// Constructor - takes values for locations and connections
