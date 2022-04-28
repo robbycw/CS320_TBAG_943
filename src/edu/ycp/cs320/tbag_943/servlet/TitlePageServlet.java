@@ -189,6 +189,7 @@ public class TitlePageServlet extends HttpServlet {
 		} else if (req.getParameter("newGame") != null) {
 			// User selected New Game: 
 			Game newGame = dbc.newGame(user.getId()); 
+			newGame.setPlayerNotCreated(true);
 			user.setCurrentGame(newGame);
 			
 			ArrayList<Game> gameList = user.getGameList(); 
@@ -201,6 +202,7 @@ public class TitlePageServlet extends HttpServlet {
 			}
 			user.setGameList(gameList);
 			session.setAttribute("user", user);
+			session.setAttribute("model", newGame);
 			session.setAttribute("playGameClicked", false);
 			
 		} else if (req.getParameter("logOut") != null) {
@@ -231,6 +233,7 @@ public class TitlePageServlet extends HttpServlet {
 				
 				user.setCurrentGame(selected);
 				session.setAttribute("user", user);
+				session.setAttribute("model", selected);
 				session.setAttribute("playGameClicked", false);
 			}
 		}

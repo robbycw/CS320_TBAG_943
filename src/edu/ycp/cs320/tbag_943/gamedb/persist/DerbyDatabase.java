@@ -173,6 +173,8 @@ public class DerbyDatabase implements IDatabase {
 						Timer timer = new Timer(); 
 						timer.setTime(resultSet1.getInt(6));
 						timer.setTimerRate(resultSet1.getInt(7));
+						
+						game.setTimer(timer);
 
 						
 						// Get the IDs for the log, player, map, and combat. 
@@ -2589,7 +2591,37 @@ public class DerbyDatabase implements IDatabase {
 		
 		// Update the Player's current Location.
 		updateLocationByLocationId(game.getPlayer().getLocation()); 
-		return true; 
+		
+		// Update the Game's timer and booleans  
+		return executeTransaction(new Transaction<Boolean>() {
+			@Override
+			public Boolean execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"update Game " +
+							"  set timeRemaining = ?, timerRate = ?, playerTurnTaken = ?, playerNotCreated = ?, inCombat = ?" +
+							"  where game_id = ?"
+					);
+					
+					stmt1.setInt(1, game.getTimer().getTime());
+					stmt1.setInt(2, game.getTimer().getTimerRate());
+					stmt1.setString(3, Boolean.toString(game.isPlayerTurnTaken()));
+					stmt1.setString(4, Boolean.toString(game.getPlayerNotCreated()));
+					stmt1.setString(5, Boolean.toString(game.isInCombat()));
+					stmt1.setInt(6, game.getId());
+					
+					stmt1.executeUpdate();
+					
+					System.out.println("Game #" + game.getId() + " updated");					
+					
+					return true;
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+        });
 	}
 
 	public Boolean updatePlayerByPlayerId(Player player) {

@@ -80,7 +80,12 @@ public class GameServlet extends HttpServlet {
 		DBController dbc = new DBController(); 
 		
 		if(req.getParameter("characterSubmit") != null) {
+			
+			System.out.println("GameServlet: Character Creation");
 			Game model = (Game) session.getAttribute("model"); 
+			
+			// Get the currently created player so that its objects have the correct IDs
+			Player player = model.getPlayer(); 
 			
 			String playerName =req.getParameter("playerName");
 			String startingWeapon = req.getParameter("weapons");
@@ -103,7 +108,14 @@ public class GameServlet extends HttpServlet {
 			System.out.println("character created");
 			
 			
-			Player player = new Player(playerName, model.getPlayer().getLocation(), (10 + vitalityStat), 10, strengthStat, speedStat);
+			// Set player name and stats. 
+			player.setName(playerName);
+			player.getStats().get("strength").setRank(strengthStat);
+			player.getStats().get("speed").setRank(speedStat);
+			player.getStats().get("health").setRank(vitalityStat + 10);
+			player.getStats().get("charisma").setRank(charismaStat);
+			
+			//TODO - work on starter items + adding those to the player's inventory after chosen! 
 			
 			
 			session.setAttribute("health", player.getStats().get("health").getRank());
@@ -130,6 +142,9 @@ public class GameServlet extends HttpServlet {
 			Item strtMisc = new Item(startingMisc, 10);
 			strtMisc.isConsumable(true);
 			player.getInventory().put(startingMisc, strtMisc);
+			
+			// Match Player to Model's ID. 
+			//player.setId(model.getId());
 			
 			model.setPlayer(player);
 			session.setAttribute("model", model);
