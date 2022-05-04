@@ -355,6 +355,8 @@ public class DerbyDatabase implements IDatabase {
 						location.setHidden(Boolean.parseBoolean(resultSet.getString(4)));
 						location.setBlocked(Boolean.parseBoolean(resultSet.getString(5)));
 						
+						System.out.println("Location ID: " + location.getId()); 
+						
 						// Set Loot
 						Loot loot = findLootByLootID(resultSet.getInt(6));
 						location.setTreasure(loot);
@@ -368,6 +370,7 @@ public class DerbyDatabase implements IDatabase {
 						ArrayList<NPC> npcs = new ArrayList<NPC>();
 						for(Integer i : npcIds) {
 							NPC n = findNPCByNPCId(i);
+							System.out.println("NPC ID: " + n.getId() + " with name: " + n.getName());
 							npcs.add(n);
 						}
 						location.setNPCs(npcs);
@@ -376,15 +379,21 @@ public class DerbyDatabase implements IDatabase {
 						List<Integer> combatIds = findCombatIdsByLocationID(location.getId());
 						ArrayList<Combat> combats = new ArrayList<Combat>();
 						for(Integer i : combatIds) {
+							System.out.println("Combat ID: " + i); 
 							Combat c = findCombatsByCombatID(i);
 							
 							// Fetch NPCs
 							HashMap<String, NPC> cnpcs = new HashMap<String, NPC>(); 
 							List<Integer> combatNPCIds = findNPCsIdByCombatID(i); 
 							for(Integer cn : combatNPCIds) {
+								System.out.println("Combat needs NPC ID: " + cn); 
 								for(NPC n : npcs) {
+									System.out.println("NPC ID: " + n.getId());
 									if(n.getId() == cn) {
+										System.out.println("NPC ID: " + n.getId() + " found. Adding to HashMap.");
 										cnpcs.put(n.getName().toLowerCase(), n);
+									} else {
+										System.out.println("NPC ID: " + n.getId() + " not found.");
 									}
 								}
 							}
@@ -444,7 +453,6 @@ public class DerbyDatabase implements IDatabase {
 						
 						// creating list and NPC object to set the ID and store the ID
 						ArrayList<Integer> NPCsIds = new ArrayList<Integer>();
-						NPC npc = new NPC();
 						
 						resultSet1 = stmt1.executeQuery();
 							
@@ -452,9 +460,7 @@ public class DerbyDatabase implements IDatabase {
 						//to the array list
 						while(resultSet1.next()) {
 							found = true;
-								
-							npc.setId(resultSet1.getInt(1));
-							NPCsIds.add(npc.getId());
+							NPCsIds.add(resultSet1.getInt(1));
 						}
 							
 						if(!found) {

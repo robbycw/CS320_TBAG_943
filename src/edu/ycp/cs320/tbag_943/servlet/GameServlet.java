@@ -123,7 +123,7 @@ public class GameServlet extends HttpServlet {
 			
 			model.setPlayerNotCreated(false);
 		
-		
+			// TODO: Ensure Starter Items are properly equip! 
 			Item strtWeapon = new Item(startingWeapon, 5);
 			strtWeapon.isWeapon(true);
 			player.getInventory().put(startingWeapon, strtWeapon);
@@ -332,6 +332,8 @@ public class GameServlet extends HttpServlet {
 	}
 	
 	// A static function that can set the attributes for the map. 
+	// TODO: Fix bug where northeast/west southeast/west rooms don't appear since only north/south 
+	// 		 connections are checked.
 	public static void mapMaker(HttpSession session, Game game) {
 		// We will also set attributes for the Map colors and names of rooms. 
 		Location current = game.getPlayer().getLocation(); 
