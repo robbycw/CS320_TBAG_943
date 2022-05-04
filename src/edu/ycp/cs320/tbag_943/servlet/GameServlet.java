@@ -117,7 +117,7 @@ public class GameServlet extends HttpServlet {
 			
 			//TODO - work on starter items + adding those to the player's inventory after chosen! 
 			
-			
+			session.setAttribute("xp", player.getXp());
 			session.setAttribute("health", player.getStats().get("health").getRank());
 			session.setAttribute("armor", player.getStats().get("armor").getRank());
 			
@@ -268,6 +268,8 @@ public class GameServlet extends HttpServlet {
 							break; 
 						case "look":
 							controller.look();
+							controller.giveXp();
+							error = "how did you get that?";
 							break;
 						case "inventory":
 						case "items":
@@ -294,6 +296,10 @@ public class GameServlet extends HttpServlet {
 								controller.puzzle();
 								break;
 							}
+					  case "xp":
+						  controller.giveXp();
+						  error = "how did you get that?";
+						  break;
 						default: 
 							model.addOutput("Unknown command.");
 					}

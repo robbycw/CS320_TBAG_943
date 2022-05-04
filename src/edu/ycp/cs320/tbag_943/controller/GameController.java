@@ -38,6 +38,14 @@ public class GameController {
 
 	// Methods
 	
+	public void giveXp() {
+		Player player = model.getPlayer();
+		player.setXp(20);
+		String s = player.getXp() + " xp"; 
+		model.addOutput(s);
+		
+	}
+	
 	public void move(String direction) {
 		Map map = model.getMap(); 
 		Player player = model.getPlayer(); 
