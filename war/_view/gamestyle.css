@@ -4,7 +4,86 @@ html, body {
 	margin: 0px; 
 	height: 100%;
 }
-#overlay{
+#overlayLevelUp{
+	position: fixed; /* Sit on top of the page content */
+  	display: none; /* Hidden by default */
+  	width: 32.25%; /* Full width (cover the whole page) */
+  	height: 75%; /* Full height (cover the whole page) */
+  	top: 10%;
+  	left: 33.75%;
+  	background-color: white; /* Black background with opacity */
+	z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+  	cursor: pointer; /* Add a pointer on hover */
+}
+#levelUpTitle{
+	font-size: 50px;
+	float: left;
+	color: blue;
+	margin-left: 32%;
+}
+#levelUpSkillPoints{
+	font-size: 40px;
+	color: blue;
+	text-align:center;
+}
+#levelUpSkillPointsText{
+	color: blue;
+	font-size: 20px;
+	text-align:center;
+	float:left;
+}
+#levelUpTextTable{
+	margin-top:4%;
+	margin-left:37%;
+	float:left;
+}
+#levelUpTable{
+	margin-top:20%;
+	margin-left:-68%;
+	float:left;
+	color: blue;
+	font-size: 40px;
+	border-spacing: 20px;
+	text-align:right;
+}
+#levelUpTableTextBox{
+	margin-top:19%;
+	margin-left:-33%;
+	float: left;
+	font-size: 40px;
+	border-spacing: 20px;
+	width: 5px;
+}
+#levelUpResultText{
+	margin-top:0%;
+	margin-left:45%;
+	float: left;
+	font-size:40px;
+	width: 5px;
+	border-spacing: 20px;
+	color: blue;
+	text-align:right;
+}
+#levelUpResultNumbers{
+	margin-top:;
+	margin-left:-6%;
+	float: left;
+	font-size:40px;
+	border-spacing: 20px;
+	color: blue;
+
+}
+#levelDone{
+	margin-top:-7%;
+	margin-left:89.5%;
+	float: left;
+}
+#levelUpError{
+	margin-top:107%;
+	margin-left:70%;
+	color: red;
+}
+#overlayCharacterCreation{
 	position: fixed; /* Sit on top of the page content */
   	display: block; /* Hidden by default */
   	width: 65%; /* Full width (cover the whole page) */
@@ -17,6 +96,7 @@ html, body {
 	z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
   	cursor: pointer; /* Add a pointer on hover */
 }
+
 #header{ /* Sit on top of the page content */
   	display: flex; 
   	width: 100%; 
@@ -193,35 +273,54 @@ h1{
 	text-align:middle;
 }
 #statsNames{
-	margin-top: 10px;
+	margin-top: 0px;
 	width: 100%;
 	height: 15%;
 	background: black;
 	font-size: 20px;
-	text-align: right;
+	text-align: left;
+}
+#stats{
+margin-top:10%;
 }
 #statNameBox{
-	width:22%;
+	width:22%
 	height:84%;
-	background:black;
+	margin-top:-20%;
+	background:red;
 }
 #statsBox{
-	background: black;
+	background: red;
 	width: 50px;
 	height: 160px;
-	margin-left: 90px;
-	margin-top:-186px;
+	margin-left: 0px;
+	margin-top:-20%;
 	float: left;
 	
 }
-#healthBox{
+#statusBox{
 	background:black;
-	width: 80px;
-	height: 30px;
-	margin-left: 145px;
-	margin-top:-40px;
+	margin-right: 50%;
+	margin-top: 0%;
+}
+#xpBar{
+	margin-bottom:1%;
+	margin-left:90%;
 	float: left;
 }
+#barBack{
+	background-color:grey;
+	width:20px;
+	height:160px;
+}
+#barFiller{
+	margin-left:25%;
+	margin-top:0%;
+	background-color:blue;
+	width:10px;
+	height:50%;
+}
+
 #playerHealth{
 	background:black;
 	width: 25px;
@@ -232,12 +331,10 @@ h1{
 }
 #playerNameBox{
 	background:black;
-	width: 250px;
-	height: 30px;
-	margin-left: 130px;
-	margin-top:-220px;
+	margin-left: 30%;
+	margin-top:-43%;
 	text-align: center;
-	float:left;
+	
 }
 #armorBox{
 	background:black;

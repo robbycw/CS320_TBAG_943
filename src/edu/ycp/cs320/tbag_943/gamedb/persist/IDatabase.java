@@ -43,7 +43,6 @@ public interface IDatabase {
 	//public Stat findPlayerStatByStatId(int statId);
 	public List<Integer> findPlayerInventoryIdsByPlayerId(int playerID); 
 	public ArrayList<String> findGameLogByGameLogId(int gameLogId); 
-	
 
 	//
 	// Insert Queries

@@ -44,6 +44,7 @@
 			</div>
 		</c:if>
 	
+		
 		<%-- Based this script off of a tutorial from W3Schools. Link: https://www.w3schools.com/howto/howto_js_countdown.asp --%>
 		<script> 
 		// This script is for the game's countdown timer. 
@@ -70,7 +71,7 @@
 		</script>
 
 		<c:if test= "${model.playerNotCreated}">
-			<div id="overlay">
+			<div id="overlayCharacterCreation">
 				
 				<div id="charCreationTxt">
 					<p>Name:</p>
@@ -177,7 +178,6 @@
 					<div id= "CharacterCreationError">
 						<p class="output" id="chrError"></p>
 					</div>
-					<div id= "submitButton">
 						<button type="button" id="chrDone" value="Done" onclick="off()" name= "characterSubmit">Done</button>
 						
 					</div>
@@ -187,6 +187,89 @@
 			</div >
 		</c:if>
 		
+		<div id="overlayLevelUp">
+			<h id="levelUpTitle">Level Up!</h>
+			<table id="levelUpTextTable">
+				<tr>
+			    	<td id="levelUpSkillPoints"><p class="output" id="levelUpSkillPoints"></p></td>
+			  	</tr>
+			  	<tr>
+			    	<td id="levelUpSkillPointsText">Points Available</td>
+			  	</tr>
+			</table>
+			
+			<table id= "levelUpTable">
+				<tr>
+					<td text-align: "right">Strength:</td>
+				</tr>
+				<tr>
+					<td text-align: "right">Speed:</td>
+					
+				</tr>
+				<tr>
+					<td text-align: "right">Vitality:</td>
+				</tr>
+				<tr>
+					<td text-align: "right">Charisma:</td>
+				</tr>
+			</table>
+			
+			<table id="levelUpTableTextBox">
+				<tr>
+					<td text-align: "center"><input type="text" maxlength="2" name="newStrengStat" value= "0" id="newStrengthStat" style="width:30px;"></td>
+				</tr>
+				
+				<tr>
+					<td><input type="text" maxlength="2" name="strengtat" value= "0" id="newSpeedStat" style="width:30px;"></td>
+				</tr>
+				
+				<tr>
+					<td><input type="text" maxlength="2" name="strengtat" value= "0" id="newVitalityStat" style="width:30px;"></td>
+				</tr>
+				
+				<tr>
+					<td><input type="text" maxlength="2" name="strengtat" value= "0" id="newCharismaStat" style="width:30px;"></td>
+				</tr>
+			</table>
+			
+			<table id="levelUpResultText">
+				<tr>
+					<td>Strength:</td>
+				</tr>
+				
+				<tr>
+					<td>Speed:</td>
+				</tr>
+				
+				<tr>
+					<td>Vitality:</td>
+				</tr>
+				
+				<tr>
+					<td>Charisma:</td>
+				</tr>
+			</table>
+			
+			<table id="levelUpResultNumbers">
+				<tr>
+					<td class="output" id="updatedStrengthStat"></td>
+				</tr>
+				
+				<tr>
+					<td class="output" id="updatedSpeedStat"></td>
+				</tr>
+				
+				<tr>
+					<td class="output" id="updatedVitalityStat"></td>
+				</tr>
+				
+				<tr>
+					<td class="output" id="updatedCharismaStat"></td>
+				</tr>
+			</table>
+			<p type="output" id="levelUpError"></p>
+			<button type="button" id="levelDone" value="Done" onclick="levelUpClose()">Done</button>
+		</div>
 		
 		<div id="entire"><div id="row">
 		
@@ -288,52 +371,65 @@
 				<div class="subsection">Inventory/Utility
 				</div>
 				
-				<div class="subsection"> <br>
-					<div id="statNameBox">
+				<div class="subsection"> 
+					<div id="stats">
+					<table style="text-align: right;">
 						<div id="statsNames">
-						<td>Strength:</td>
+							<tr>
+							<td text-align: "right">Strength:</td>
+							<td>${strengthStat}</td>
+							</tr>
+							
+						</div>
+						<div id="statsNames">
+							
+							<tr>
+							<td text-align: "right">Speed:</td>
+							<td>${speedStat}</td>
+							</tr>
+						</div>
+							
+						<div id="statsNames">
+							<tr>
+							<td>Vitality:</td>
+							<td>${vitalityStat}</td>
+							</tr>
+						</div>
+							
+						<div id="statsNames">
+							<tr>
+							<td>Charisma:</td>
+							<td>${charismaStat}</td>
+							</tr>
+						</div>
+					</table>
+					</div>
+					<table align="center">
+						<div id="statusBox">
+							<tr>
+							<td align="right">health:</td>
+							<td width="30%" align="left">${health}</td>
+							<td align="right">Armor:</td>
+							<td>${armor}<td>
+							</tr>
+						</div>
+					</table>
+					<table align="center">
+						<div id="playerNameBox">
+							<tr>
+							<td>${playerName}</td>
+							</tr>
 						</div>
 						
-						<div id="statsNames">
-						<td>Speed:</td>
-						</div>
-						
-						<div id="statsNames">
-						<td>Vitality:</td>
-						</div>
-						
-						<div id="statsNames">
-						<td>Charisma:</td>
-						</div>
-						
-					</div>
-					<div id="statsBox">
-						<h1>${strengthStat}</h1>	
-						<h1>${speedStat}</h1>	
-						<h1 style="margin-top: -1px">${vitalityStat}</h1>
-						<h1 style="margin-top: -1px">${charismaStat}</h1>
-					</div>
-					
-					<div id="healthBox">
-						<h1>health:</h1>
-					</div>
-					
-					<div id= "playerHealth">
-						<h1>${health}</h>
-					</div>
-					
-					<div id="playerNameBox">
-					<h1 >${playerName}</h1>
-					</div>
-					
-					<div id="armorBox">
-						<h1>Armor:</h1>
-					</div>
-					
-					<div id="armorStat">
-						<h1>${armor}</h1>
-					</div>
-					
+					</table>
+					<table id="xpBar">
+						<tr>
+							<td><div id="barBack"><div id="barFiller"></div></div></td>
+						</tr>
+						<tr>
+							<td>${xp}</td>
+						</tr>
+					</table>
 				</div>
 				
 				<div class="subsection">Timer<br>
@@ -351,11 +447,24 @@
 			const vitalityPoints = document.getElementById('vitalityStatBox');
 			const charismaPoints = document.getElementById('charismaStatBox');
 			
+			const strengthLevelUp = document.getElementById('newStrengthStat')
+			const speedLevelUp = document.getElementById('newSpeedStat')
+			const vitailityLevelUp = document.getElementById('newVitalityStat')
+			const charismaLevelUp = document.getElementById('newCharismaStat')
+			
 			const pointLeft = document.getElementById('availStats');
+			const levelUpPointsLeft = document.getElementById('levelUpSkillPoints');
+			
+			const updatedSTR = document.getElementById('updatedStrengthStat');
+			const updatedSP = document.getElementById('updatedSpeedStat');
+			const updatedVIT = document.getElementById('updatedVitalityStat');
+			const updatedCHR = document.getElementById('updatedCharismaStat');
 			
 			const submitButton = document.getElementById('chrDone');
+			const levelSubmitButton = document.getElementById('levelDone');
 			
 			const error = document.getElementById('chrError');
+			const levelUpError = document.getElementById('levelUpError');
 			
 			const apparelItem = document.getElementById('apparel');
 			const weaponItem = document.getElementById('weapon');
@@ -364,8 +473,28 @@
 			
 			const itemNum = 0;
 		
+			levelUpError.innerHTML = "ee";
+		
+			levelUpPointsLeft.innerHTML = 12;
+			updatedSTR.innerHTML = 5;
+			updatedSP.innerHTML = 3;
+			updatedVIT.innerHTML = 2;
+			updatedCHR.innerHTML = 7;
+			
+			newStrengthStat.addEventListener('input', calculateLevelUp);
+			newSpeedStat.addEventListener('input', calculateLevelUp);
+			newVitalityStat.addEventListener('input', calculateLevelUp);
+			newCharismaStat.addEventListener('input', calculateLevelUp);
+			
 			error.innerHTML = "";
+			
+			
 			pointLeft.innerHTML = 21;
+			
+			strengthStatBox.addEventListener('input', calculatePoints);
+			speedStatBox.addEventListener('input', calculatePoints);
+			vitalityStatBox.addEventListener('input', calculatePoints);
+			charismaStatBox.addEventListener('input', calculatePoints);
 			
 			function calculatePoints(){
 				pointLeft.innerHTML = 21;
@@ -380,12 +509,41 @@
 					document.getElementById("SkillPoints").style.color = "blue";
 				}
 			}
-		
-			strengthStatBox.addEventListener('input', calculatePoints);
-			speedStatBox.addEventListener('input', calculatePoints);
-			vitalityStatBox.addEventListener('input', calculatePoints);
-			charismaStatBox.addEventListener('input', calculatePoints);
 			
+			
+			
+			function calculateLevelUp(){
+				updatedSTR.innerHTML = 5;
+				updatedSP.innerHTML = 3;
+				updatedVIT.innerHTML = 2;
+				updatedCHR.innerHTML = 7;
+				levelUpPointsLeft.innerHTML = 12;
+				updatedSTR.innerHTML = updatedSTR.innerHTML - -(strengthLevelUp.value);
+				updatedSP.innerHTML = updatedSP.innerHTML - -(speedLevelUp.value);
+				updatedVIT.innerHTML = updatedVIT.innerHTML - -(vitailityLevelUp.value);
+				updatedCHR.innerHTML = updatedCHR.innerHTML - -(charismaLevelUp.value);
+				
+				levelUpPointsLeft.innerHTML = levelUpPointsLeft.innerHTML - (strengthLevelUp.value);
+				levelUpPointsLeft.innerHTML = levelUpPointsLeft.innerHTML - (speedLevelUp.value);
+				levelUpPointsLeft.innerHTML = levelUpPointsLeft.innerHTML - (vitailityLevelUp.value);
+				levelUpPointsLeft.innerHTML = levelUpPointsLeft.innerHTML - (charismaLevelUp.value);
+				
+				if(levelUpPointsLeft.innerHTML < 0){
+					document.getElementById("levelUpSkillPoints").style.color = "red";
+				}else{
+					document.getElementById("levelUpSkillPoints").style.color = "blue";
+				}
+			}
+	
+			function levelUpClose(){
+				if(pointLeft.innerHTML < 0 || pointLeft.innerHTML > 0){
+					levelUpError.innerHTML = "Error, points are allocated improperly";
+				}else{
+					levelUpError.innerHTML = "done";
+					levelSubmitButton.type = "submit";
+					document.getElementById("overlayLevelUp").style.display = "none";
+				}
+			}
 	
 			function off() {
 				if(pointLeft.innerHTML == 21){
@@ -399,9 +557,17 @@
 				}else{
 					error.innerHTML = "done";
 					submitButton.type = "submit";
-					document.getElementById("overlay").style.display = "none";
+					document.getElementById("overlayCharacterCreation").style.display = "none";
 				}
 			}
+			
+			
+			document.addEventListener('keydown', function (event) {
+  				if (event.key == 'd') {
+   					 document.getElementById("overlayLevelUp").style.display = "none";
+  				}
+			});
+			
 		</script>
 		
 	</body>

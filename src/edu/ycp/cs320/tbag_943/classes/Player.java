@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 public class Player {
 	private String name; 
-	private int id; 
+	private int id, xp; 
 	private String icon; 
 	private HashMap<String, Item> inventory; 
 	private Location location; 
@@ -118,6 +118,14 @@ public class Player {
 
 	public String getIcon() {
 		return icon;
+	}
+	
+	public Integer getXp() {
+		return xp;
+	}
+	
+	public void setXp(Integer xp){
+		this.xp += xp;
 	}
 	
 	public void setIcon(String icon) {
