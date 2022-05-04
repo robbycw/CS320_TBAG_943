@@ -43,7 +43,6 @@ public interface IDatabase {
 	//public Stat findPlayerStatByStatId(int statId);
 	public List<Integer> findPlayerInventoryIdsByPlayerId(int playerID); 
 	public ArrayList<String> findGameLogByGameLogId(int gameLogId); 
-	
 
 	//
 	// Insert Queries
@@ -120,6 +119,7 @@ public interface IDatabase {
 	/*
 	
 	// Finds
+
 	public User findUserByUsernameAndPassword(String username, String password); 
 	public List<Game> findGamesByUserID(int userID);
 	public List<NPC> findNPCsIdsByLocationID(int locationID); 
@@ -264,3 +264,4 @@ public interface IDatabase {
 	*/ 	
 	
 }
+
