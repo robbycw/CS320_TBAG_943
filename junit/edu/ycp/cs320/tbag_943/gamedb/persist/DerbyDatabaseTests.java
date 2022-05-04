@@ -37,10 +37,24 @@ public class DerbyDatabaseTests {
 			System.out.println("Location #" + l.getId() + " has name: " + l.getName()); 
 			for(NPC n : l.getNPCs().values()) {
 				System.out.println("	NPC " + n.getName() + " is here.");
+				System.out.println("	NPC ID: " + n.getId());
+			}
+			
+			for(Combat c : l.getCombats()) {
+				System.out.println("	Combat #" + c.getId() + " has NPCs:");
+				for(NPC n : c.getNpcs().values()) {
+					System.out.println("		NPC " + n.getName() + " is here.");
+					System.out.println("		NPC ID: " + n.getId());
+				}
 			}
 		}
 		
 	}
 
-
+	@Test
+	public void testFindLocationByLocationId() {
+		// Ensure Combats are properly loaded by checking NPCs in combat. 
+		Location l = db.findLocationByLocationID(3);
+	}
+	
 }

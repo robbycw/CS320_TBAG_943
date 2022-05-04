@@ -128,7 +128,7 @@ public class Map {
 			if(room.isHidden()) {
 				return ""; 
 			} else {
-				return roomName; 
+				return room.getName(); 
 			}
 		}
 	}
