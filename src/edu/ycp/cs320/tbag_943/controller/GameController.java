@@ -503,6 +503,13 @@ public class GameController {
 			}
 	}
 	
+	public void use(String item) {
+		// Check if Item is in inventory
+		// Check item type
+		// Consumable: use and discard
+		// Tool: check if this solves a puzzle
+	}
+	
 	// Certain commands cannot be taken while in combat. This method is called in such a case
 	// when the player attempts certain actions while in combat to inform them that they cannot.
 	public static String inCombatMessage(String command) {

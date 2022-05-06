@@ -2583,6 +2583,56 @@ public class DerbyDatabase implements IDatabase {
 			}
 		});
 	}
+	
+	public Integer insertStartingItemIntoItem(Item item) {
+		
+		// Find ID for this item. 
+		int item_id = getLargestIdInTable("Item", "item_id") + 1; 
+		
+		// Insert this Item into the Item Table
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					stmt1 = conn.prepareStatement(
+							"insert into Item (item_id, name, description, isConsumable, " +
+							"isWeapon, isArmor, isTool, damage, healthGain, value, amount, armor, accuracy) " +
+							"  values(?,?,?, ?,?,?,?,?, ?,?,?,?,?) "
+					);
+					
+					
+					// Use ItemID based on current number of rows. 
+					stmt1.setInt(1, item_id);
+					stmt1.setString(2, item.getName());
+					stmt1.setString(3, item.getDes());
+					stmt1.setString(4, Boolean.toString(item.isConsumable()));
+					stmt1.setString(5, Boolean.toString(item.getIsWeapon()));
+					stmt1.setString(6, Boolean.toString(item.getIsArmor()));
+					stmt1.setString(7, Boolean.toString(item.getIsTool()));
+					stmt1.setInt(8, item.getDamage());
+					stmt1.setInt(9, item.getHealthGain());
+					stmt1.setInt(10, item.getValue());
+					stmt1.setInt(11, item.getAmount());
+					stmt1.setInt(12, item.getArmor());
+					stmt1.setDouble(13, item.getAccuracy());
+						
+					stmt1.executeUpdate();
+					
+					System.out.println("Item #" + item_id + " inserted into Item table");
+									
+					// Return the item's ID. 
+					return item_id;
+					
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
 
 	//
 	// Update Queries

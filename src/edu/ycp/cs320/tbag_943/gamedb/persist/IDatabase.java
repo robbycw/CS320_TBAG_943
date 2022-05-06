@@ -84,6 +84,7 @@ public interface IDatabase {
 	public Integer insertNewUserToGame(List<Pair<Integer, Integer>> utgPairs);
 	public Integer insertOutputIntoGameLogByLogId(String output, int log_id, int log_size);
 	public Integer insertItemIntoPlayerInventoryByPlayerIdAndItemId(int player_id, int item_id);
+	public Integer insertStartingItemIntoItem(Item item); 
 	
 	
 	//

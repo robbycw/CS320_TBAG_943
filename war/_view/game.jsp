@@ -135,10 +135,10 @@
 							 <label for="weapons">Weapon:</label>
 							 <select name="weapons" id="weapon" >
 							 	<option value="--">--</option>
-							    <option value="revolver">Revolver</option>
-							    <option value="baton">Baton</option>
-							    <option value="brass knuckles">Brass Knuckles</option>
-							    <option value="hard salami">Hard Salami</option>
+							    <option value="Revolver">Revolver</option>
+							    <option value="Baton">Baton</option>
+							    <option value="Brass Knuckles">Brass Knuckles</option>
+							    <option value="Hard Salami">Hard Salami</option>
 							 </select>
 						 </div>
 						 
@@ -146,10 +146,10 @@
 							 <label for="apparel">Apparel:</label>
 							 <select name="apparel" id="apparel">
 							 	<option value="--">--</option>
-							    <option value="Sunday suit">Sunday Suit</option>
-							    <option value="old police uniform">Old Police Uniform</option>
-							    <option value="dectective's duster">Detective's Duster</option>
-							    <option value="birthday suit">Birthday Suit</option>
+							    <option value="Sunday Suit">Sunday Suit</option>
+							    <option value="Old Police Uniform">Old Police Uniform</option>
+							    <option value="Dectective's Duster">Detective's Duster</option>
+							    <option value="Birthday Suit">Birthday Suit</option>
 							 </select>
 						 </div>
 						  
@@ -157,10 +157,10 @@
 							  <label for="tool">Tool:</label>
 							  <select name="tool" id="tool">
 								   <option value="--">--</option>
-								   <option value="wire cutters">Wire Cutters</option>
-								   <option value="axe">Rusty Axe</option>
-								   <option value="crowbar">Crowbar</option>
-								   <option value="case file">Case File</option>
+								   <option value="Wire Cutters">Wire Cutters</option>
+								   <option value="Axe">Rusty Axe</option>
+								   <option value="Crowbar">Crowbar</option>
+								   <option value="Case File">Case File</option>
 							  </select>
 						  </div>
 						  
@@ -168,10 +168,10 @@
 							 <label for="misc">Misc:</label>
 							 <select name="misc" id="misc" onclick="itemSelected()">
 							 	<option value="--">--</option>
-							    <option value="box of cigars">Box of Cigars</option>
-							    <option value="flask of whiskey">Flask of Whiskey</option>
-							    <option value="pill bottle">Pill Bottle</option>
-							    <option value="teddy bear">Teddy Bear</option>
+							    <option value="Box of Cigars">Box of Cigars</option>
+							    <option value="Flask of Whiskey">Flask of Whiskey</option>
+							    <option value="Pill Bottle">Pill Bottle</option>
+							    <option value="Teddy Bear">Teddy Bear</option>
 							 </select>
 						 </div>
 					</div>
@@ -274,8 +274,7 @@
 		<div id="entire"><div id="row">
 		
 		
-			<div class="column">
-				Map goes here. 
+			<div class="column"> <!-- Map --> 
 
 				<%-- These divs below print out the map, namely the rooms connected to .--%> 
 					
@@ -304,9 +303,9 @@
 			</div>
 		
 		
-			<div class="column"> Console
+			<div class="column"> <!-- Console -->
 				
-				<div id="output" style="height: 200px; overflow: auto">
+				<div id="output" style="height: 80%; overflow: auto">
 			
 					<table align=center>
 						<center>
@@ -368,7 +367,19 @@
 			
 			<div class="column">
 				
-				<div class="subsection">Inventory/Utility
+				<div class="subsection" style="overflow: auto">Inventory/Utility
+
+					<table align=center>
+						
+						<c:forEach items="${model.player.inventoryNames}" var="str" >
+						<tr>
+							<td>${str}</td>
+						</tr>
+
+						</c:forEach>
+
+					</table>
+
 				</div>
 				
 				<div class="subsection"> 

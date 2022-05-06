@@ -16,12 +16,33 @@ public class Item {
 	public Item(String name) {
 		this.name = name; 
 		this.description = "";
+		this.isConsumable = false; 
+		this.isWeapon = false; 
+		this.isArmor = false; 
+		this.isTool = false; 
+		this.damage = 0; 
+		this.healthGain = 0; 
+		this.value = 0; 
+		this.amount = 1; 
+		this.id = -1; 
+		this.armor = 0; 
+		this.accuracy = 0.0; 
 	}
 	
 	public Item(String name, int damage) {
 		this.name = name;
 		this.damage = damage; 
 		this.description = "";
+		this.isConsumable = false; 
+		this.isWeapon = false; 
+		this.isArmor = false; 
+		this.isTool = false; 
+		this.healthGain = 0; 
+		this.value = 0; 
+		this.amount = 1; 
+		this.id = -1; 
+		this.armor = 0; 
+		this.accuracy = 1.0;
 	}
 	
 	public Item(String name, int damage, int amount) {

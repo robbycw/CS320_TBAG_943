@@ -58,7 +58,38 @@ public class GameServlet extends HttpServlet {
 			String desc = loc.getDescription();
 			req.setAttribute("description", desc);
 
-		} 
+		} else {
+			// Session and model attribute exist. 
+			// User is logged in and has selected a game. 
+			
+			User user = (User) session.getAttribute("user"); 
+			
+			DBController dbc = new DBController(); 
+			Game game = user.getCurrentGame(); 
+			
+			// Set Player attributes if they are created. 
+			if(!game.getPlayerNotCreated()) {
+				Player p = game.getPlayer(); 
+				session.setAttribute("playerName", p.getName());
+				session.setAttribute("strengthStat", p.getStats().get("strength").getRank());
+				session.setAttribute("speedStat", p.getStats().get("speed").getRank());
+				session.setAttribute("vitalityStat", p.getStats().get("vitality").getRank());
+				session.setAttribute("charismaStat", p.getStats().get("charisma").getRank());
+				
+				session.setAttribute("xp", p.getXp());
+				session.setAttribute("health", p.getStats().get("health").getRank());
+				session.setAttribute("armor", p.getStats().get("armor").getRank());
+			}
+			
+			// Make the map attributes. 
+			GameServlet.mapMaker(session, game);
+			
+			// Location Description
+			Location loc = new Location();
+			String desc = loc.getDescription();
+			req.setAttribute("description", desc);
+			
+		}
 		
 		
 		System.out.println("GameServlet: doGet");
@@ -112,7 +143,8 @@ public class GameServlet extends HttpServlet {
 			player.setName(playerName);
 			player.getStats().get("strength").setRank(strengthStat);
 			player.getStats().get("speed").setRank(speedStat);
-			player.getStats().get("health").setRank(vitalityStat + 10);
+			player.getStats().get("vitality").setRank(vitalityStat);
+			player.getStats().get("health").setRank(vitalityStat + 100);
 			player.getStats().get("charisma").setRank(charismaStat);
 			
 			//TODO - work on starter items + adding those to the player's inventory after chosen! 
@@ -124,27 +156,40 @@ public class GameServlet extends HttpServlet {
 			model.setPlayerNotCreated(false);
 		
 			// TODO: Ensure Starter Items are properly equip! 
+			
+			// Starting weapon
 			Item strtWeapon = new Item(startingWeapon, 5);
 			strtWeapon.isWeapon(true);
-			player.getInventory().put(startingWeapon, strtWeapon);
-			player.setWeapon(startingWeapon);
+			player.getInventory().put(startingWeapon.toLowerCase(), strtWeapon);
+			player.setWeapon(startingWeapon.toLowerCase());
 			
+			// Starting armor
 			Item strtApparel = new Item(startingApparel);
 			strtApparel.isArmor(true);
 			strtApparel.setArmor(6);
-			player.getInventory().put(startingApparel, strtApparel);
-			player.setArmor(startingApparel);
+			player.getInventory().put(startingApparel.toLowerCase(), strtApparel);
+			player.setArmor(startingApparel.toLowerCase());
 			
+			// Starting tool 
 			Item strtTool = new Item(startingTool);
 			strtTool.isTool(true);
-			player.getInventory().put(startingTool, strtTool);
+			player.getInventory().put(startingTool.toLowerCase(), strtTool);
 			
-			Item strtMisc = new Item(startingMisc, 10);
+			// Starting consumable
+			Item strtMisc = new Item(startingMisc);
 			strtMisc.isConsumable(true);
-			player.getInventory().put(startingMisc, strtMisc);
+			player.getInventory().put(startingMisc.toLowerCase(), strtMisc);
 			
-			// Match Player to Model's ID. 
-			//player.setId(model.getId());
+			// Add each item to the Item table and assign its ID
+			for(Item i : player.getInventory().values()) {
+				i.setId(dbc.addStartingItem(i));
+				System.out.println(i.getName() + " now has ID: " + i.getId());
+			}
+			
+			// Add each item to the PlayerInventory table
+			for(Item i : player.getInventory().values()) {
+				dbc.addItemToPlayerInventory(player.getId(), i.getId());
+			}
 			
 			model.setPlayer(player);
 			session.setAttribute("model", model);
@@ -171,13 +216,15 @@ public class GameServlet extends HttpServlet {
 			
 		} else if (req.getParameter("logOut") != null) {
 			// User wants to log out. 
-			User u = new User(); 
-			String loginError = ""; 
+			//User u = new User(); 
+			//String loginError = ""; 
 			
-			session.setAttribute("user", u);
-			session.setAttribute("loginErr", loginError);
-			session.setAttribute("makeNewAccount", false);
-			session.setAttribute("playGameClicked", false);
+			session.invalidate();
+			
+			//session.setAttribute("user", u);
+			//session.setAttribute("loginErr", loginError);
+			//session.setAttribute("makeNewAccount", false);
+			//session.setAttribute("playGameClicked", false);
 			
 		} else if (req.getParameter("titlePage") != null) {
 			System.out.println("TitlePage Servlet: TitlePage");
@@ -285,7 +332,7 @@ public class GameServlet extends HttpServlet {
 							controller.solve(input[1],response);
 							break;
 					
-					  case "puzzle":
+						case "puzzle":
 							if(input.length>1)
 							{
 								controller.puzzle(input[1]);
@@ -296,10 +343,17 @@ public class GameServlet extends HttpServlet {
 								controller.puzzle();
 								break;
 							}
-					  case "xp":
-						  controller.giveXp();
-						  error = "how did you get that?";
-						  break;
+						case "xp":
+							controller.giveXp();
+							error = "how did you get that?";
+							break;
+						case "use": 
+							// Concatenate multiple word entries. 
+							String itemIn = input[2];
+							for(int i = 3; i < input.length; i++) {
+								itemIn = itemIn + " " + input[i];
+							}
+							
 						default: 
 							model.addOutput("Unknown command.");
 					}
