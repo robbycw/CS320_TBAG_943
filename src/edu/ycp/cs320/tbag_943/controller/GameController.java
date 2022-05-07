@@ -358,15 +358,16 @@ public class GameController {
 		model.addOutput("Description:");
 		model.addOutput(model.getPlayer().getLocation().getLongDescription());
 		
-		try
+		Set<String> itemNames = model.getPlayer().getLocation().getTreasure().getItems().keySet();
+		if(!itemNames.isEmpty())
 		{
-			String itemName = model.getPlayer().getLocation().getTreasure().getItem().getName();
-			if(!itemName.equals(""))
+			model.addOutput("Item:");
+			for(String name : itemNames)
 			{
-				model.addOutput("Item: " + model.getPlayer().getLocation().getTreasure().getItem().getDes());
+				model.addOutput("\n" + name);
 			}
 		}
-		catch(Exception ie){
+		else{
 			model.addOutput("There are no items here.");
 		}
 		
@@ -444,15 +445,23 @@ public class GameController {
 		Location loc = model.getPlayer().getLocation();
 			if(loc.getPuzzles().size() != 0)
 			{
-					Puzzle puz = loc.getPuzzle(choice);
-					String s = "Uninit";
-					if(!puz.isSolved() 
-							&& !puz.getBreakable()) 
+				Puzzle puz = loc.getPuzzle(choice);
+				String s = "Uninit";
+				if(!puz.isSolved() 
+						&& !puz.getBreakable()) 
+				{
+					if(puz.solve(response))
 					{
-						if(puz.solve(response))
-						{
-						s = "Correct! You now have a " + puz.getReward().getName();
-						puz.getLoot().giveItems(model.getPlayer());
+						s = "Correct!";
+						
+						Set<String> itemNames = puz.getLoot().getItems().keySet();
+						if(!itemNames.isEmpty()) {
+							s = s + " You have the following new items: ";
+							for(String name : itemNames) {
+								s = s + "\n" + name;
+							}
+							puz.getLoot().giveItems(model.getPlayer());
+						}
 						}
 						else
 						{

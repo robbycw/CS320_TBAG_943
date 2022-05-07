@@ -20,7 +20,7 @@
 
 	<body>
 
-		<embed src = "../gameTheme.mp3" autostart>
+		<embed src="GameThemeMusic.mp3" type="audio/mpeg" autoplay="true" loop="true" hidden="true">
 		</embed>
 		
 		<!-- Page Header: Has log-out button, display on all pages when logged in. -->

@@ -135,6 +135,10 @@ public class Player {
 	public HashMap<String, Item> getInventory() {
 		return inventory;
 	}
+	
+	public void giveXp(int xp) {
+		stats.get("xp").addToRank(xp);
+	}
 
 	public void setInventory(HashMap<String, Item> inventory) {
 		this.inventory = inventory;
