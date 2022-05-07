@@ -178,6 +178,7 @@ public class GameServlet extends HttpServlet {
 			// Starting consumable
 			Item strtMisc = new Item(startingMisc);
 			strtMisc.isConsumable(true);
+			strtMisc.setHealthGain(5);
 			player.getInventory().put(startingMisc.toLowerCase(), strtMisc);
 			
 			// Add each item to the Item table and assign its ID
@@ -349,11 +350,25 @@ public class GameServlet extends HttpServlet {
 							break;
 						case "use": 
 							// Concatenate multiple word entries. 
-							String itemIn = input[2];
-							for(int i = 3; i < input.length; i++) {
+							String itemIn = input[1];
+							for(int i = 2; i < input.length; i++) {
 								itemIn = itemIn + " " + input[i];
 							}
 							
+							// Try to use the item. 
+							controller.use(itemIn);
+							
+							// Check if the Item was consumed. If so, remove it from the Player's Inventory.
+							if(model.getPlayer().getInventory().containsKey(itemIn) && 
+									model.getPlayer().getInventory().get(itemIn).getAmount() == 0) {
+								// Removes Item To Player mapping from PlayerInventory Table. 
+								dbc.removeItemFromPlayerInventory(model.getPlayer().getId(),
+										model.getPlayer().getInventory().get(itemIn).getId());
+								
+								// Removes Item from current inventory. 
+								model.getPlayer().getInventory().remove(itemIn); 
+							}
+							break; 
 						default: 
 							model.addOutput("Unknown command.");
 					}
@@ -468,6 +483,44 @@ public class GameServlet extends HttpServlet {
 				Location n = game.getMap().getLocations().get(south);
 				session.setAttribute("swc", game.getMap().getDirectionColor(n, 3));
 				session.setAttribute("swr", game.getMap().getDirectionName(n, 3));
+			}
+		}
+		
+		// If Room to the East exists...
+		if(!game.getMap().getConnections().get(currentLC).get(1).equals("-1")) {
+			
+			// Try to color and name rooms to the east and west of the Southern room, if connected.
+			String east = game.getMap().getConnections().get(currentLC).get(1).toLowerCase();
+			// Northeast
+			if(!game.getMap().getConnections().get(east).get(0).equals("-1")) {
+				Location n = game.getMap().getLocations().get(east);
+				session.setAttribute("nec", game.getMap().getDirectionColor(n, 0));
+				session.setAttribute("ner", game.getMap().getDirectionName(n, 0));
+			}
+			// Southeast
+			if(!game.getMap().getConnections().get(east).get(2).equals("-1")) {
+				Location n = game.getMap().getLocations().get(east);
+				session.setAttribute("sec", game.getMap().getDirectionColor(n, 2));
+				session.setAttribute("ser", game.getMap().getDirectionName(n, 2));
+			}
+		}
+		
+		// If Room to the West exists...
+		if(!game.getMap().getConnections().get(currentLC).get(3).equals("-1")) {
+			
+			// Try to color and name rooms to the east and west of the Southern room, if connected.
+			String west = game.getMap().getConnections().get(currentLC).get(3).toLowerCase();
+			// Northwest
+			if(!game.getMap().getConnections().get(west).get(0).equals("-1")) {
+				Location n = game.getMap().getLocations().get(west);
+				session.setAttribute("nwc", game.getMap().getDirectionColor(n, 0));
+				session.setAttribute("nwr", game.getMap().getDirectionName(n, 0));
+			}
+			// Southwest
+			if(!game.getMap().getConnections().get(west).get(2).equals("-1")) {
+				Location n = game.getMap().getLocations().get(west);
+				session.setAttribute("swc", game.getMap().getDirectionColor(n, 2));
+				session.setAttribute("swr", game.getMap().getDirectionName(n, 2));
 			}
 		}
 		

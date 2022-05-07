@@ -277,29 +277,29 @@
 			<div class="column"> <!-- Map --> 
 
 				<%-- These divs below print out the map, namely the rooms connected to .--%> 
-					
-				 
-				<div style="background-color:gray; width: 95%; height: 25%;"> <%-- Row 1--%>
 				
-					<div style="background-color:${nwc}; width: 33.3%; height: 100%; float: left;">${nwr}</div><%-- Northwest --%>
-					<div style="background-color:${northc}; width: 33.3%; height: 100%; float: left;">${northr}</div><%-- North --%>
-					<div style="background-color:${nec}; width: 33.3%; height: 100%; float: left;">${ner}</div><%-- Northeast --%>
+				<div style="background-color:gray; width: 95%; height: 33%; margin: auto"> <%-- Row 1--%>
 				
-				</div>
-				<div style="background-color:gray; width: 95%; height: 25%;"> <%-- Row 2--%>
-				
-					<div style="background-color:${westc}; width: 33.3%; height: 100%; float: left;">${westr}</div><%-- West --%>
-					<div style="background-color:blue; width: 33.3%; height: 100%; float: left;">${currentr}</div><%-- Current --%>
-					<div style="background-color:${eastc}; width: 33.3%; height: 100%; float: left;">${eastr}</div><%-- East --%>
+					<div style="background-color:${nwc}; width: 33.3%; height: 100%; float: left; display: flex; align-items:center; justify-content: center;">${nwr}</div><%-- Northwest --%>
+					<div style="background-color:${northc}; width: 33.3%; height: 100%; float: left; display: flex; align-items:center; justify-content: center;">${northr}</div><%-- North --%>
+					<div style="background-color:${nec}; width: 33.3%; height: 100%; float: left; display: flex; align-items:center; justify-content: center;">${ner}</div><%-- Northeast --%>
 				
 				</div>
-				<div style="background-color:gray; width: 95%; height: 25%;"> <%-- Row 3--%>
+				<div style="background-color:gray; width: 95%; height: 33%; margin: auto"> <%-- Row 2--%>
 				
-					<div style="background-color:${swc}; width: 33.3%; height: 100%; float: left;">${swr}</div><%-- Southwest --%>
-					<div style="background-color:${southc}; width: 33.3%; height: 100%; float: left;">${southr}</div><%-- South --%>
-					<div style="background-color:${sec}; width: 33.3%; height: 100%; float: left;">${ser}</div><%-- Southeast --%>
+					<div style="background-color:${westc}; width: 33.3%; height: 100%; float: left; display: flex; align-items:center; justify-content: center;">${westr}</div><%-- West --%>
+					<div style="background-color:blue; width: 33.3%; height: 100%; float: left; display: flex; align-items:center; justify-content: center;">${currentr}</div><%-- Current --%>
+					<div style="background-color:${eastc}; width: 33.3%; height: 100%; float: left; display: flex; align-items:center; justify-content: center;">${eastr}</div><%-- East --%>
 				
 				</div>
+				<div style="background-color:gray; width: 95%; height: 33%; margin: auto"> <%-- Row 3--%>
+				
+					<div style="background-color:${swc}; width: 33.3%; height: 100%; float: left; display: flex; align-items:center; justify-content: center;">${swr}</div><%-- Southwest --%>
+					<div style="background-color:${southc}; width: 33.3%; height: 100%; float: left; display: flex; align-items:center; justify-content: center;">${southr}</div><%-- South --%>
+					<div style="background-color:${sec}; width: 33.3%; height: 100%; float: left; display: flex; align-items:center; justify-content: center;">${ser}</div><%-- Southeast --%>
+				
+				</div>
+				
 			</div>
 		
 		
@@ -367,8 +367,8 @@
 			
 			<div class="column">
 				
-				<div class="subsection" style="overflow: auto">Inventory/Utility
-
+				<div class="subsection">Inventory/Utility
+					<div style="overflow: auto">
 					<table align=center>
 						
 						<c:forEach items="${model.player.inventoryNames}" var="str" >
@@ -379,7 +379,7 @@
 						</c:forEach>
 
 					</table>
-
+					</div>
 				</div>
 				
 				<div class="subsection"> 

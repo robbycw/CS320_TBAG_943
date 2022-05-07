@@ -462,20 +462,20 @@ public class GameController {
 					{
 						if(puz.solve(response))
 						{
-						s = "Correct! You now have a " + puz.getReward().getName();
-						puz.getLoot().giveItems(model.getPlayer());
+							s = "Correct! You now have a " + puz.getReward().getName();
+							puz.getLoot().giveItems(model.getPlayer());
 						}
 						else
 						{
 							s = "your answer of: '" + response + "' is incorrect";
 						}
 					}
-					else if(!puz.isSolved() 
-							&& puz.getBreakable()) 
+					else if(!puz.isSolved() && puz.getBreakable()) 
 					{
-						if(puz.solve(response) && puz.checkRequiredSkill(model.getPlayer().getStats().get(puz.getRequiredSkill().getName())))
+						if(puz.solve(response) && puz.checkRequiredSkill(model.getPlayer().getStats().get(
+								puz.getRequiredSkill().getName())))
 						{
-						s = "You demonstrated your skills and got past the obstacle!";
+							s = "You demonstrated your skills and got past the obstacle!";
 							if(!puz.getRoomCon().equals(""))
 							{
 								model.getMap().getLocations().get(puz.getRoomCon()).setBlocked(false);
@@ -485,13 +485,13 @@ public class GameController {
 						}
 						else if(puz.solve(response) && !puz.checkRequiredSkill(model.getPlayer().getStats().get("strength")))
 						{
-						s = "You are far too unskilled for this task. Your " + puz.getRequiredSkill().getName() + " is "
+							s = "You are far too unskilled for this task. Your " + puz.getRequiredSkill().getName() + " is "
 								+ model.getPlayer().getStats().get("speed").getRank() 
 								+ " and must be " + puz.getRequiredSkill().getRank();
 						}
 						else
 						{
-							s = "your answer of: '" + response + "' is not what you do here.";
+							s = "Your answer of: '" + response + "' is not what you do here.";
 						}
 					}
 					else if(puz.isSolved())
@@ -505,6 +505,73 @@ public class GameController {
 	
 	public void use(String item) {
 		// Check if Item is in inventory
+		if(model.getPlayer().getInventory().containsKey(item)) {
+			// Item is in inventory. 
+			
+			// Check the Item's type. Use only works if the item type is Consumable or Tool.
+			Item i = model.getPlayer().getInventory().get(item); 
+			if(i.isConsumable()) {
+				
+				// Apply the item's effect: Only healing/damage currently.
+				// Consumables only apply to the player currently. 
+				
+				// Check if damage or healing. 
+				if(i.getHealthGain() > 0) {
+					// Item heals the player. 
+					// Increase the player's health by this amount. 
+					int health = model.getPlayer().getStats().get("health").getRank(); 
+					model.getPlayer().getStats().get("health").setRank(health + i.getHealthGain());
+					model.addOutput(model.getPlayer().getName() + " used " + i.getName() + " and healed for " + i.getHealthGain() + " hitpoints.");
+				} else {
+					// Item deals damage to the Player. 
+					// Add the damage to the Player's health. 
+					int health = model.getPlayer().getStats().get("health").getRank(); 
+					model.getPlayer().getStats().get("health").setRank(health + i.getHealthGain());
+					int damage = i.getHealthGain() - (2 * i.getHealthGain()); 
+					model.addOutput(model.getPlayer().getName() + " used " + i.getName() + " and took " + damage + " damage!");
+					
+					// If health reduces to 0, set Player as dead and end game. 
+					if(model.getPlayer().getStats().get("health").getRank() < 1) {
+						model.addOutput(model.getPlayer().getName() + " died due to consuming " + i.getName() + "!");
+					}
+				}
+				
+				// Reduce amount of item by 1.
+				i.setAmount(i.getAmount() - 1);
+				model.addOutput(model.getPlayer().getName() + " has " + i.getAmount() + " " + i.getName() + "s remaining.");
+				
+			} else if (i.getIsTool()) {
+				// Check if the tool is used in the Location's Puzzles. 
+				// If so, solve the puzzle. 
+				// If not, return an error. 
+				
+				for(Puzzle p : model.getPlayer().getLocation().getPuzzles()) {
+					if(p.getRequiredItem().getName().equals(i.getName())) {
+						model.addOutput(model.getPlayer().getName() + " used their " + i.getName() + 
+								" to complete Puzzle #" + p.getId());
+						p.setSolved(true);
+						// TODO: Reward the Player's Loot (if applicable) - Needs Conrad's Update.
+						
+						// Add the connection (if applicable) to the current location. 
+						model.getMap().getConnections().get(
+								model.getPlayer().getLocation().getName()).set(4, p.getRoomCon()); 
+					}
+				}
+				
+			} else {
+				// Item is a weapon or armor. 
+				String s = "Error: Use command only works on items that are tools or consumables."; 
+				model.addOutput(s);
+				return; 
+			}
+			
+		} else {
+			
+			// Item is not in inventory. 
+			String s = model.getPlayer().getName() + " does not have " + item + "."; 
+			model.addOutput(s);
+			return; 
+		}
 		// Check item type
 		// Consumable: use and discard
 		// Tool: check if this solves a puzzle
