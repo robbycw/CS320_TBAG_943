@@ -1,24 +1,23 @@
 package edu.ycp.cs320.tbag_943.classes;
 
 import java.util.HashMap;
+import java.util.Set;
 
 public class Loot {
 	private int xp, id;
 	//private enum loot[];
-	private Item item; 
-	private boolean collected;
+	private HashMap<String, Item> items; 
 
 	// Constructors 
 	
 	public Loot()
 	{
-		this.item = new Item();
-		collected = false;
+		this.items = new HashMap<String, Item>();
 	}
 	
 	public Loot(Item item) {
-		this.item = item; 
-		collected = false;
+		this.items = new HashMap<String, Item>(); 
+		items.put(item.getName(), item);
 	}
 	
 	// Methods
@@ -27,22 +26,23 @@ public class Loot {
 		
 	}
 	
+
 	public int calculateXP() {
 		return this.xp = 20;
 	}
 	
 	public void giveItems(Player player) {
-		if(!collected)
-		{
-			player.getInventory().put(item.getName(), item); 
-			collected = true;
+		Set<String> keys = items.keySet();
+		for(String item : keys) {
+			player.getInventory().put(item, items.get(item)); 
+			items.remove(item);
 		}
 	}
 	
 	public boolean pickUpItem(Player player, String itemName) {
-		if(item.getName().equalsIgnoreCase(itemName) && !collected) {
-			player.collect(item);
-			collected = true;
+		if(items.containsKey(itemName)) {
+			player.collect(items.get(itemName));
+			items.remove(itemName);
 			return true; 
 		} else {
 			return false;
@@ -55,12 +55,8 @@ public class Loot {
 	
 	// Getters
 	
-	public Item getItem() {
-		return item;
-	}
-
-	public boolean isCollected() {
-		return collected;
+	public HashMap<String,Item> getItems() {
+		return items;
 	}
 	
 	public int getId() {
@@ -71,18 +67,17 @@ public class Loot {
 		return xp;
 	}
 	
-	// Setters 
-	
-	public void setCollected(boolean collected) {
-		this.collected = collected; 
+	public void addItem(Item item) {
+		items.put(item.getName(), item);
 	}
+	// Setters 
 	
 	public void setXP(int xp) {
 		this.xp = xp; 
 	}
 	
-	public void setItems(Item item) {
-		this.item = item;
+	public void setItems(HashMap<String,Item> itemsIn) {
+		this.items = itemsIn;
 	}
 
 	public void setId(int id) {

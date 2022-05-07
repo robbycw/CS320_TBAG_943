@@ -556,9 +556,8 @@ public class InitialData {
 				// Add fields to Loot
 				loot.setId(Integer.parseInt(i.next()));
 				loot.setXP(Integer.parseInt(i.next()));
-				loot.setCollected(Boolean.parseBoolean(i.next()));
 				// An Item with ID = X will be stored in index X-1 in the list of items. 
-				loot.setItems(items.get(Integer.parseInt(i.next()) - 1));
+				loot.addItem(items.get(Integer.parseInt(i.next()) - 1));
 
 				// Add location to List. 
 				lootList.add(loot); 

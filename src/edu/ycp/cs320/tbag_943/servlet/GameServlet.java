@@ -224,11 +224,29 @@ public class GameServlet extends HttpServlet {
 						case "move":
 							System.out.println(input[1]); 
 							controller.move(input[1]);
-							break; 
+							break;
+						case "east":
+						case "e":
+							controller.move("east");
+							break;
+						case "north":
+						case "n":
+							controller.move("north");
+							break;
+						case "west":
+						case "w":
+							controller.move("west");
+							break;
+						case "south":
+						case "s":
+							controller.move("south");
+							break;
 						case "help":
+						case "commands":
 							controller.help(); 
 							break; 
 						case "attack":
+						case "fight":	
 							controller.attack(input[1]);
 							break; 
 						case "win":
@@ -259,6 +277,7 @@ public class GameServlet extends HttpServlet {
 						case "persuade":
 							controller.persuade(input[1]);
 							break;
+						case "pickup":
 						case "collect":
 							int result = controller.collect(input[1]);
 							if(result != -1) {
