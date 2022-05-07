@@ -7,6 +7,9 @@
 
 
   <!-- Servlets -->
+  <music>
+  	<music-name>GameMusicTheme</music-name><url-pattern>edu.ycp.cs320.tbag_943.war.GameMusicTheme</url-pattern>
+  	</music>
   <servlet>
 	<servlet-name>CombatServlet</servlet-name>
 	<servlet-class>edu.ycp.cs320.tbag_943.servlet.CombatServlet</servlet-class></servlet>
