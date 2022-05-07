@@ -102,7 +102,7 @@ public class Combat {
 		if(!tar.isAlive()) {
 			
 			// Will need to remove target from combat upon death and inform Player
-			String x = tar.getName() + " has been slain!"; 
+			String x = tar.getName() + " has been slain! Good Job!... Murderer"; 
 			game.addOutput(x);
 			
 			turnOrder.remove(tar); 

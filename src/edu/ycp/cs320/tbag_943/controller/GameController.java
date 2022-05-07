@@ -38,6 +38,14 @@ public class GameController {
 
 	// Methods
 	
+	public void giveXp() {
+		Player player = model.getPlayer();
+		player.setXp(20);
+		String s = player.getXp() + " xp"; 
+		model.addOutput(s);
+		
+	}
+	
 	public void move(String direction) {
 		Map map = model.getMap(); 
 		Player player = model.getPlayer(); 
@@ -173,6 +181,9 @@ public class GameController {
 					model.setPlayerTurnTaken(false);
 					String s = "Combat initiated!"; 
 					model.addOutput(s);
+					
+					// Compute the Turn Order for the combat. 
+					model.getCurrentCombat().calculateTurnOrder();
 					model.getCurrentCombat().runCombat(model, model.getPlayer(), model.isPlayerTurnTaken());
 					
 				} else {

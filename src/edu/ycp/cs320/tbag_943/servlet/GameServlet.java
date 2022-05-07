@@ -80,7 +80,12 @@ public class GameServlet extends HttpServlet {
 		DBController dbc = new DBController(); 
 		
 		if(req.getParameter("characterSubmit") != null) {
+			
+			System.out.println("GameServlet: Character Creation");
 			Game model = (Game) session.getAttribute("model"); 
+			
+			// Get the currently created player so that its objects have the correct IDs
+			Player player = model.getPlayer(); 
 			
 			String playerName =req.getParameter("playerName");
 			String startingWeapon = req.getParameter("weapons");
@@ -103,15 +108,22 @@ public class GameServlet extends HttpServlet {
 			System.out.println("character created");
 			
 			
-			Player player = new Player(playerName, model.getPlayer().getLocation(), (10 + vitalityStat), 10, strengthStat, speedStat);
+			// Set player name and stats. 
+			player.setName(playerName);
+			player.getStats().get("strength").setRank(strengthStat);
+			player.getStats().get("speed").setRank(speedStat);
+			player.getStats().get("health").setRank(vitalityStat + 10);
+			player.getStats().get("charisma").setRank(charismaStat);
 			
+			//TODO - work on starter items + adding those to the player's inventory after chosen! 
 			
+			session.setAttribute("xp", player.getXp());
 			session.setAttribute("health", player.getStats().get("health").getRank());
 			session.setAttribute("armor", player.getStats().get("armor").getRank());
 			
 			model.setPlayerNotCreated(false);
 		
-		
+			// TODO: Ensure Starter Items are properly equip! 
 			Item strtWeapon = new Item(startingWeapon, 5);
 			strtWeapon.isWeapon(true);
 			player.getInventory().put(startingWeapon, strtWeapon);
@@ -130,6 +142,9 @@ public class GameServlet extends HttpServlet {
 			Item strtMisc = new Item(startingMisc, 10);
 			strtMisc.isConsumable(true);
 			player.getInventory().put(startingMisc, strtMisc);
+			
+			// Match Player to Model's ID. 
+			//player.setId(model.getId());
 			
 			model.setPlayer(player);
 			session.setAttribute("model", model);
@@ -272,6 +287,8 @@ public class GameServlet extends HttpServlet {
 							break; 
 						case "look":
 							controller.look();
+							controller.giveXp();
+							error = "how did you get that?";
 							break;
 						case "inventory":
 						case "items":
@@ -298,6 +315,10 @@ public class GameServlet extends HttpServlet {
 								controller.puzzle();
 								break;
 							}
+					  case "xp":
+						  controller.giveXp();
+						  error = "how did you get that?";
+						  break;
 						default: 
 							model.addOutput("Unknown command.");
 					}
@@ -336,6 +357,8 @@ public class GameServlet extends HttpServlet {
 	}
 	
 	// A static function that can set the attributes for the map. 
+	// TODO: Fix bug where northeast/west southeast/west rooms don't appear since only north/south 
+	// 		 connections are checked.
 	public static void mapMaker(HttpSession session, Game game) {
 		// We will also set attributes for the Map colors and names of rooms. 
 		Location current = game.getPlayer().getLocation(); 
