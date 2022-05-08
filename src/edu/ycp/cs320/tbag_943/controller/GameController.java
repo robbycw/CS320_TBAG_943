@@ -337,6 +337,11 @@ public class GameController {
 		System.out.println("Default Case: " + model.getPlayer().getWinCondition().getDefaultCase());
 	}
 	
+	public void lose() {
+		model.getPlayer().getWinCondition().setDefaultCase(false);
+		model.getPlayer().getWinCondition().setLost(true);
+	}
+	
 	public void inventory() {
 		String s = "";
 		Set<String> set = model.getPlayer().getInventory().keySet();
@@ -460,7 +465,7 @@ public class GameController {
 						else
 						{
 							s = "your answer of: '" + response + "' is incorrect";
-							model.getTimer().decrementTime(600);
+							model.getTimer().decrementTime(300);
 						}
 					}
 					else if(!puz.isSolved() 

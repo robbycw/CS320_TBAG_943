@@ -291,6 +291,11 @@ public class GameServlet extends HttpServlet {
 					model.addOutput(dead);
 				}
 				
+				if(model.getTimer().getTime() <= 0) {
+					controller.lose();
+					resp.sendRedirect("/tbag_943/credits");
+				}
+				
 			} catch (ArrayIndexOutOfBoundsException e) {
 				// In the event the user passes a command without a target, 
 				// this catch will handle the exception. 
