@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import edu.ycp.cs320.tbag_943.classes.*;
 import edu.ycp.cs320.tbag_943.controller.*;
+import edu.ycp.cs320.tbag_943.servlet.*;
 
 
 public class EndCreditsServlet extends HttpServlet {
@@ -32,8 +33,10 @@ public class EndCreditsServlet extends HttpServlet {
 		System.out.println("EndCredits Servlet: doGet");	
 		
 		// Creating the variable that the jsp will access
-		WinCondition model = new WinCondition();
-		String condition = model.currentWinCondition();
+		//WinCondition model = new WinCondition();
+		Game model = (Game) session.getAttribute("model"); 
+		String condition = model.getPlayer().getWinCondition().currentWinCondition();
+		System.out.println("condition: " + condition);
 		req.setAttribute("condition", condition);
 		// call JSP to generate empty form
 		req.getRequestDispatcher("/_view/EndCredits.jsp").forward(req, resp);

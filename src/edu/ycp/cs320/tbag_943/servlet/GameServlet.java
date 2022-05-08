@@ -279,6 +279,10 @@ public class GameServlet extends HttpServlet {
 								controller.puzzle();
 								break;
 							}
+					  case "wargames":
+						  	controller.win();
+						  	resp.sendRedirect("/tbag_943/credits");
+						  	break;
 						default: 
 							model.addOutput("Unknown command.");
 					}
