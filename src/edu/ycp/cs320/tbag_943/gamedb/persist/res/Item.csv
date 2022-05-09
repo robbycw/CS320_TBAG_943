@@ -1,6 +1,7 @@
-1|Axe|description1|FALSE|TRUE|FALSE|FALSE|5|0|1|2|0|0
-2|Sword|description2|FALSE|TRUE|FALSE|FALSE|7|0|1|2|0|0
-3|Coin|description3|FALSE|FALSE|FALSE|FALSE|0|0|1|2|0|0
-4|Shield|description4|FALSE|FALSE|TRUE|FALSE|0|0|1|2|5|0
-5|Dagger|description5|FALSE|TRUE|FALSE|FALSE|4|0|1|2|0|0
-6|Gold|description6|FALSE|FALSE|FALSE|FALSE|0|0|100|1|0|0
+1|Pistol|A semi-automatic pistol.|FALSE|TRUE|FALSE|FALSE|15|0|500|1|0|1
+2|AK-47|An old assault rifle.|FALSE|TRUE|FALSE|FALSE|10|0|250|1|0|1
+3|Mop|A wooden mop.|FALSE|TRUE|FALSE|FALSE|4|0|5|1|0|1
+4|Wilted Flower|A wilted rose, free of thorns.|FALSE|FALSE|FALSE|TRUE|0|0|5|1|0|0
+5|Master Key|This key should unlock most doors in the asylum.|FALSE|FALSE|FALSE|TRUE|0|0|1000|1|0|0
+6|Facts and Logic|sometimes you need to destroy your openets emtionaly so they become their worst enemy|FALSE|TRUE|FALSE|FALSE|25|0|12000|1|0|1
+7|measily shiv|when being a prisoner sometimes unexpected items can form a weapon|FALSE|TRUE|FALSE|FALSE|4|0|0|1|0|1
