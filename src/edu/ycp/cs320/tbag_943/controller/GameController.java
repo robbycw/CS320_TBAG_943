@@ -338,8 +338,8 @@ public class GameController {
 	}
 	
 	public void lose() {
-		model.getPlayer().getWinCondition().setDefaultCase(false);
 		model.getPlayer().getWinCondition().setLost(true);
+		model.getPlayer().getWinCondition().setDefaultCase(false);
 	}
 	
 	public void inventory() {

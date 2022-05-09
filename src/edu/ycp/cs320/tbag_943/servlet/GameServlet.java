@@ -268,7 +268,7 @@ public class GameServlet extends HttpServlet {
 							controller.solve(input[1],response);
 							break;
 					
-					  case "puzzle":
+						case "puzzle":
 							if(input.length>1)
 							{
 								controller.puzzle(input[1]);
@@ -279,10 +279,17 @@ public class GameServlet extends HttpServlet {
 								controller.puzzle();
 								break;
 							}
-					  case "wargames":
+						case "wargames":
 						  	controller.win();
 						  	resp.sendRedirect("/tbag_943/credits");
 						  	break;
+						case "globalthermonuclearwar":
+						  	controller.lose();
+						  	resp.sendRedirect("/tbag_943/credits");
+						  	break;
+						case "credits":
+							resp.sendRedirect("/tbag_943/credits");
+							break;
 						default: 
 							model.addOutput("Unknown command.");
 					}
@@ -291,8 +298,12 @@ public class GameServlet extends HttpServlet {
 					model.addOutput(dead);
 				}
 				
-				if(model.getTimer().getTime() <= 0) {
+				if(model.getTimer().getTime() <= 0 || model.getPlayer().getStats().get("health").getRank() <= 0) {
 					controller.lose();
+					resp.sendRedirect("/tbag_943/credits");
+				}
+				
+				if(model.getPlayer().getWinCondition().currentWinCondition() != "defaultCase") {
 					resp.sendRedirect("/tbag_943/credits");
 				}
 				
