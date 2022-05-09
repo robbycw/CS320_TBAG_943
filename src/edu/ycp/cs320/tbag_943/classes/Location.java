@@ -104,6 +104,7 @@ public class Location {
 
 	public void setWinCondition(WinCondition winCondition) {
 		this.winCondition = winCondition;
+		this.winCondition.setComplete(true);
 	}
 
 	public void setId(int id) {

@@ -342,7 +342,15 @@ public class GameController {
 	}
 	
 	public void win(){
-		model.getPlayer().getWinCondition().setComplete(true);
+		model.getPlayer().getWinCondition().setBestCase(true);
+		model.getPlayer().getWinCondition().setDefaultCase(false);
+		System.out.println("Best Case: " + model.getPlayer().getWinCondition().getBestCase());
+		System.out.println("Default Case: " + model.getPlayer().getWinCondition().getDefaultCase());
+	}
+	
+	public void lose() {
+		model.getPlayer().getWinCondition().setLost(true);
+		model.getPlayer().getWinCondition().setDefaultCase(false);
 	}
 	
 	public void inventory() {
@@ -521,6 +529,7 @@ public class GameController {
 						else
 						{
 							s = "your answer of: '" + response + "' is incorrect";
+							model.getTimer().decrementTime(300);
 						}
 					}
 					else if(!puz.isSolved() && puz.getBreakable()) 
