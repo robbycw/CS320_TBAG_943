@@ -353,17 +353,18 @@ public class DerbyDatabase implements IDatabase {
 						location.setId(resultSet.getInt(1));
 						location.setName(resultSet.getString(2));
 						location.setDescription(resultSet.getString(3));
-						location.setHidden(Boolean.parseBoolean(resultSet.getString(4)));
-						location.setBlocked(Boolean.parseBoolean(resultSet.getString(5)));
+						location.setLongDescription(resultSet.getString(4));
+						location.setHidden(Boolean.parseBoolean(resultSet.getString(5)));
+						location.setBlocked(Boolean.parseBoolean(resultSet.getString(6)));
 						
 						System.out.println("Location ID: " + location.getId()); 
 						
 						// Set Loot
-						Loot loot = findLootByLootID(resultSet.getInt(6));
+						Loot loot = findLootByLootID(resultSet.getInt(7));
 						location.setTreasure(loot);
 						
 						// Set WinCondition
-						WinCondition wc = findWinConditionByWinConditionId(resultSet.getInt(7));
+						WinCondition wc = findWinConditionByWinConditionId(resultSet.getInt(8));
 						location.setWinCondition(wc);
 						
 						// Set the NPCs
@@ -2120,23 +2121,24 @@ public class DerbyDatabase implements IDatabase {
 				
 				try {
 					stmt = conn.prepareStatement(
-						"insert into Location (location_id, name, description, hidden, blocked, loot_id, winCondition_id) "
-						+ " values(?, ?, ?, ?, ?, ?, ?)"	
+						"insert into Location (location_id, name, description, longDescription, hidden, blocked, loot_id, winCondition_id) "
+						+ " values(?, ?, ?, ?, ?, ?, ?, ?)"	
 					);
 					
 					for(Location location : locations) {
 						stmt.setInt(1,  location.getId() + locationMaxId);
 						stmt.setString(2,  location.getName());
 						stmt.setString(3,  location.getDescription());
-						stmt.setString(4,  Boolean.toString(location.isHidden()));
-						stmt.setString(5,  Boolean.toString(location.getBlocked()));
+						stmt.setString(4,  location.getLongDescription()); 
+						stmt.setString(5,  Boolean.toString(location.isHidden()));
+						stmt.setString(6,  Boolean.toString(location.getBlocked()));
 						if(location.getTreasure() == null) {
-							stmt.setInt(6, -1);
+							stmt.setInt(7, -1);
 						} else {
-							stmt.setInt(6, location.getTreasure().getId() + lootMaxId);
+							stmt.setInt(7, location.getTreasure().getId() + lootMaxId);
 						}
 						
-						stmt.setInt(7, location.getWinCondition().getId() + winConditionMaxId);
+						stmt.setInt(8, location.getWinCondition().getId() + winConditionMaxId);
 						stmt.addBatch();
 					}
 					
@@ -2827,8 +2829,8 @@ public class DerbyDatabase implements IDatabase {
 			updatePuzzleByPuzzleId(p);
 		}
 		
-		// Update Loot
-		updateLootByLootId(location.getTreasure());
+		// Update LootItems
+		updateLootItemsByLootId(location.getTreasure());
 		
 		// Update Location fields. 
 		return executeTransaction(new Transaction<Boolean>() {
@@ -3312,6 +3314,7 @@ public class DerbyDatabase implements IDatabase {
 						"	location_id integer primary key, " +
 						"	name varchar(50)," +
 						"	description varchar(500)," +
+						"	longDescription varchar(2500)," +
 						"	hidden varchar(5)," +
 						"	blocked varchar(5)," +
 						"	loot_id integer," +

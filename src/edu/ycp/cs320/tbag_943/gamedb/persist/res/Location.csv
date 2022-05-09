@@ -1,5 +1,5 @@
-﻿1|Room1|RoomDesc1|true|false|-1|1
-2|Room2|RoomDesc2|true|false|1|2
-3|Room3|RoomDesc3|true|false|-1|3
-4|Room4|RoomDesc4|true|false|-1|4
-5|Room5|RoomDesc5|true|false|2|5
+﻿1|Room1|RoomDesc1|LongDesc1|TRUE|FALSE|-1|1
+2|Room2|RoomDesc2|LongDesc 2|TRUE|FALSE|1|2
+3|Room3|RoomDesc3|LongDesc3|TRUE|FALSE|-1|3
+4|Room4|RoomDesc4|LongDesc4|TRUE|FALSE|-1|4
+5|Room5|RoomDesc5|LongDesc5|TRUE|FALSE|2|5

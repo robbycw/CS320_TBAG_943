@@ -101,7 +101,7 @@ public interface IDatabase {
 	public boolean updateCombatByCombatId(Combat combat);
 	public boolean updatePuzzleByPuzzleId(Puzzle puzzle);
 	public boolean updateWinConditionByWinConditionId(WinCondition winCondition);
-	public boolean updateLootByLootId(Loot loot);
+	public boolean updateLootItemsByLootId(Loot loot);
 	
 	//
 	// Removal Queries

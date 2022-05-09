@@ -450,6 +450,7 @@ public class InitialData {
 				loc.setId(Integer.parseInt(i.next()));
 				loc.setName(i.next());
 				loc.setDescription(i.next());
+				loc.setLongDescription(i.next());
 				loc.setHidden(Boolean.parseBoolean(i.next()));
 				loc.setBlocked(Boolean.parseBoolean(i.next()));
 				// the object with ID X will be stored in index X-1 within the list.

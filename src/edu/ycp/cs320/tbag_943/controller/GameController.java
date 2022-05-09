@@ -353,9 +353,9 @@ public class GameController {
 			for(String key : set) 
 			{
 				String itemName = model.getPlayer().getInventory().get(key).getName();
-				s = s + itemName + ", ";
+				s = s + itemName + " (" + model.getPlayer().getInventory().get(key).getAmount() + ")" + ", ";
 			}
-			s = s.substring(0,s.length()-2);
+			s = s.substring(0, s.length() - 2);
 			model.addOutput("You currently have: " + s);
 		}
 		else
@@ -366,9 +366,11 @@ public class GameController {
 	
 	public void look()
 	{
+		// Print Long Description: 
 		model.addOutput("Description:");
 		model.addOutput(model.getPlayer().getLocation().getLongDescription());
 		
+		// Print Item names
 		Set<String> itemNames = model.getPlayer().getLocation().getTreasure().getItems().keySet();
 		if(!itemNames.isEmpty())
 		{
@@ -382,6 +384,7 @@ public class GameController {
 			model.addOutput("There are no items here.");
 		}
 		
+		// Print NPC Names
 		Set<String> npcNames = model.getPlayer().getLocation().getNPCs().keySet();
 		if(!npcNames.isEmpty())
 		{
@@ -403,7 +406,48 @@ public class GameController {
 		{
 			model.addOutput("There are no people in this room");
 		}
-
+		
+		// Print Connections in current location
+		ArrayList<String> connections = model.getMap().getConnections().get(model.getPlayer().getLocation().getName().toLowerCase()); 
+		HashMap<String, Location> locations = model.getMap().getLocations(); 
+		for(int i = 0; i <= 3; i++) {
+			// Set direction
+			String direction; 
+			switch(i) {
+			case 0:
+				direction = "north"; 
+				break;
+			case 1:
+				direction = "east"; 
+				break;
+			case 2: 
+				direction = "south"; 
+				break; 
+			case 3: 
+				direction = "west"; 
+				break; 
+			default: 
+				direction = null; 
+				break; 
+			}
+			
+			if(connections.get(i).equals("-1")) {
+				// There is nothing in this direction. 
+				model.addOutput("There is nothing to the " + direction);
+			} else {
+				// There is a room in this direction. Print its name. 
+				model.addOutput("To the " + direction + " is " + locations.get(connections.get(i)));
+			}
+		}
+		
+		// Describe Extra Connection
+		if(connections.get(4).equals("-1")) {
+			// No extra connection.
+			model.addOutput("There is no secret tunnel. How tragic.");
+		} else {
+			// There is an extra connection. 
+			model.addOutput("There is a hidden connection to another room! Perhaps it is a way to the " + locations.get(connections.get(4)));
+		}
 	}
 	
 	public void equip(String item) {
