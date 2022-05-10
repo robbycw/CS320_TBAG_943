@@ -402,6 +402,14 @@ public class GameServlet extends HttpServlet {
 						case "items":
 							controller.inventory();
 							break;
+						case "drop":
+							error = "Incorrect Syntax: solve [target #] [answer]";
+							String itemName = input[1];
+							for(int i = 2; i < input.length; i++) {
+								itemName = itemName + " " + input[i];
+							}
+							int itemId = controller.drop(itemName);
+							break;
 						case "solve":
 						case "answer":
 							error = "Incorrect Syntax: solve [target #] [answer]";

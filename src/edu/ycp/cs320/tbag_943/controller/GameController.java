@@ -222,6 +222,20 @@ public class GameController {
 		}
 	}
 	
+	public int drop(String item) {
+		Player p = model.getPlayer();
+		if(p.getInventory().containsKey(item)) {
+			p.getLocation().getTreasure().addItem(p.getInventory().get(item));
+			p.getInventory().remove(item);
+			String s = p.getName() + " dropped " + "'" + item + "'."; 
+			model.addOutput(s);
+			return p.getLocation().getTreasure().getItems().get(item).getId();
+		} else {
+			model.addOutput("'" + item + "'" + " does not exist in your inventory.");
+			return -1; 
+		}
+	}
+	
 	//Gets talk targets
 	public void talk() {
 		String s = "";

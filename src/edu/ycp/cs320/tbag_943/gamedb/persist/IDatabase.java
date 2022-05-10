@@ -55,6 +55,7 @@ public interface IDatabase {
 	public Integer insertNewItem(List<Item> items, int itemMaxId);
 	public Integer insertNewWinConditions(List<WinCondition> winConditions, int WCMaxID);
 	public Integer insertNewLoot(List<Loot> loots, int lootMaxId);
+	public Integer insertNewLootItems(List<Pair<Integer,Integer>> lootItems, int rowsLootItems)
 	public Integer insertNewPuzzle(List<Puzzle> puzzles, int puzzleMaxId, int statMax, int itemMax);
 	public Integer insertNewCombat(List<Combat> combats, int combatMax);
 	public Integer insertNewSpeech(List<Speech> speeches);
@@ -108,6 +109,7 @@ public interface IDatabase {
 	//
 	
 	public boolean removeItemFromInventoryByItemIdAndPlayerId(int itemID, int playerID);
+	public boolean removeItemFromLootItems(int lootId, int itemId);
 	
 	// 
 	// Other Queries

@@ -1747,8 +1747,8 @@ public class DerbyDatabase implements IDatabase {
 					
 					
 					stmt1 = conn.prepareStatement(
-							"insert into Loot (loot_id, xp, collected, item_id) " +
-							"  values(?,?,?,?) "
+							"insert into Loot (loot_id, xp) " +
+							"  values(?,?) "
 					);
 
 
@@ -3061,6 +3061,39 @@ public class DerbyDatabase implements IDatabase {
 	//
 	// Removal Queries
 	//
+	
+	public boolean RemoveItemFromLootItems(int lootId,int itemId) {
+		return executeTransaction(new Transaction<Boolean>() {
+			@Override
+			public Boolean execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				PreparedStatement stmt2 = null;
+				ResultSet resultSet2 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"delete" +
+							"  from  LootItems " +
+							"  where loot_id = ? " +
+							"  and item_id = ?" 
+					);
+					stmt1.setInt(1, lootId);
+					stmt1.setInt(2, itemId);
+					
+					stmt1.executeUpdate();
+					
+					// check if the locationID was found
+						System.out.println("<" + itemId + "> was deleted from loot <" + lootId + ">");
+					
+					return true;
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
 	
 	public boolean removeItemFromInventoryByItemIdAndPlayerId(int itemID, int playerID) {
 		return executeTransaction(new Transaction<Boolean>() {
