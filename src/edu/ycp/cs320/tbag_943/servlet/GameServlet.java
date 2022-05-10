@@ -166,9 +166,10 @@ public class GameServlet extends HttpServlet {
 			// Starting armor
 			Item strtApparel = new Item(startingApparel);
 			strtApparel.isArmor(true);
-			strtApparel.setArmor(6);
+			strtApparel.setArmor(5);
 			player.getInventory().put(startingApparel.toLowerCase(), strtApparel);
 			player.setArmor(startingApparel.toLowerCase());
+			player.getStats().get("armor").setRank(10 + strtApparel.getArmor());
 			
 			// Starting tool 
 			Item strtTool = new Item(startingTool);

@@ -461,9 +461,26 @@ public class GameController {
 	public void equip(String item) {
 		HashMap<String, Item> inventory = model.getPlayer().getInventory(); 
 		if(inventory.containsKey(item)) {
-			model.getPlayer().setWeapon(item);
-			String s = item + " is now equipped."; 
-			model.addOutput(s);
+			// Consider if item is a weapon or armor. 
+			if(inventory.get(item).getIsWeapon()) {
+				// Equip the weapon.
+				model.getPlayer().setWeapon(item);
+				String s = item + " is now equipped."; 
+				model.addOutput(s);
+			} else if (inventory.get(item).getIsArmor()) {
+				// Equip the armor. 
+				model.getPlayer().setArmor(item);
+				int armorInc = inventory.get(item).getArmor(); 
+				
+				// Set the player's Armor stat. 
+				model.getPlayer().getStats().get("armor").setRank(10 + armorInc);
+				String s = item + " is now equipped."; 
+				model.addOutput(s);
+			} else {
+				String er = item + " is not a weapon or armor.";
+				model.addOutput(er);
+			}
+			
 		} else {
 			String s = "You do not have a " + item + '.'; 
 			model.addOutput(s);
