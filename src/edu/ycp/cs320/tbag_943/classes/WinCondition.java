@@ -48,6 +48,14 @@ public class WinCondition {
 		}
 	}
 	
+	public boolean checkLocationCondition(Location loc) {
+		if(loc.getWinCondition().getComplete()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	// Getters
 	
 	public boolean getComplete() {

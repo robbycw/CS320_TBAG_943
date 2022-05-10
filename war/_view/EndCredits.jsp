@@ -35,11 +35,13 @@
 		<h1 style="color: red;font-size:300%;">
 			<center>-11:43-</center>
 		</h1>
-		<h2 style="color: red;font-size:400%;">
-			<center>GAME OVER</center>
-		</h2>
 		<c:if test="${! empty errorMessage}">
 			<div class="error">${errorMessage}</div>
+		</c:if>
+		<c:if test="${condition != 'defaultCase'}">
+			<h2 style="color: red;font-size:400%;">
+				<center>GAME OVER</center>
+			</h2>
 		</c:if>
 		<c:if test="${condition == 'lost'}">
 			<h2 style="color: red;font-size:400%;">

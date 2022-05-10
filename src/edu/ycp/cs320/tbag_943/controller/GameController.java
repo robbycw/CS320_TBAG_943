@@ -347,7 +347,15 @@ public class GameController {
 	}
 	
 	public void win(){
-		model.getPlayer().getWinCondition().setComplete(true);
+		model.getPlayer().getWinCondition().setBestCase(true);
+		model.getPlayer().getWinCondition().setDefaultCase(false);
+		System.out.println("Best Case: " + model.getPlayer().getWinCondition().getBestCase());
+		System.out.println("Default Case: " + model.getPlayer().getWinCondition().getDefaultCase());
+	}
+	
+	public void lose() {
+		model.getPlayer().getWinCondition().setLost(true);
+		model.getPlayer().getWinCondition().setDefaultCase(false);
 	}
 	
 	public void inventory() {
@@ -375,15 +383,16 @@ public class GameController {
 		model.addOutput(model.getPlayer().getLocation().getLongDescription());
 		giveXp(10);
 		
-		try
+		Set<String> itemNames = model.getPlayer().getLocation().getTreasure().getItems().keySet();
+		if(!itemNames.isEmpty())
 		{
-			String itemName = model.getPlayer().getLocation().getTreasure().getItem().getName();
-			if(!itemName.equals(""))
+			model.addOutput("Item:");
+			for(String name : itemNames)
 			{
-				model.addOutput("Item: " + model.getPlayer().getLocation().getTreasure().getItem().getDes());
+				model.addOutput("\n" + name);
 			}
 		}
-		catch(Exception ie){
+		else{
 			model.addOutput("There are no items here.");
 		}
 		
@@ -461,21 +470,29 @@ public class GameController {
 		Location loc = model.getPlayer().getLocation();
 			if(loc.getPuzzles().size() != 0)
 			{
-					Puzzle puz = loc.getPuzzle(choice);
-					String s = "Uninit";
-					if(!puz.isSolved() 
-							&& !puz.getBreakable()) 
+				Puzzle puz = loc.getPuzzle(choice);
+				String s = "Uninit";
+				if(!puz.isSolved() 
+						&& !puz.getBreakable()) 
+				{
+					if(puz.solve(response))
 					{
-						if(puz.solve(response))
-						{
-						s = "Correct! You now have a " + puz.getReward().getName();
-						puz.getLoot().giveItems(model.getPlayer());
+						s = "Correct!";
 						
-						giveXp(100);
+						Set<String> itemNames = puz.getLoot().getItems().keySet();
+						if(!itemNames.isEmpty()) {
+							s = s + " You have the following new items: ";
+							for(String name : itemNames) {
+								s = s + "\n" + name;
+							}
+							puz.getLoot().giveItems(model.getPlayer());
+              giveXp(100);
+						}
 						}
 						else
 						{
 							s = "your answer of: '" + response + "' is incorrect";
+							model.getTimer().decrementTime(300);
 						}
 					}
 					else if(!puz.isSolved() 

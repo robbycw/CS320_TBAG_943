@@ -85,8 +85,8 @@ public class Puzzle {
 		return result;
 	}
 	
-	public Item getReward() {
-		return loot.getItem();
+	public void giveReward(Player player) {
+		loot.giveItems(player);
 	}
 	
 	public Loot getLoot() {

@@ -284,11 +284,29 @@ public class GameServlet extends HttpServlet {
 						case "move":
 							System.out.println(input[1]); 
 							controller.move(input[1]);
-							break; 
+							break;
+						case "east":
+						case "e":
+							controller.move("east");
+							break;
+						case "north":
+						case "n":
+							controller.move("north");
+							break;
+						case "west":
+						case "w":
+							controller.move("west");
+							break;
+						case "south":
+						case "s":
+							controller.move("south");
+							break;
 						case "help":
+						case "commands":
 							controller.help(); 
 							break; 
 						case "attack":
+						case "fight":	
 							controller.attack(input[1]);
 							break; 
 						case "win":
@@ -319,6 +337,7 @@ public class GameServlet extends HttpServlet {
 						case "persuade":
 							controller.persuade(input[1]);
 							break;
+						case "pickup":
 						case "collect":
 							int result = controller.collect(input[1]);
 							if(result != -1) {
@@ -344,7 +363,7 @@ public class GameServlet extends HttpServlet {
 							controller.solve(input[1],response);
 							break;
 					
-					  case "puzzle":
+						case "puzzle":
 							if(input.length>1)
 							{
 								controller.puzzle(input[1]);
@@ -355,6 +374,17 @@ public class GameServlet extends HttpServlet {
 								controller.puzzle();
 								break;
 							}
+						case "wargames":
+						  	controller.win();
+						  	resp.sendRedirect("/tbag_943/credits");
+						  	break;
+						case "globalthermonuclearwar":
+						  	controller.lose();
+						  	resp.sendRedirect("/tbag_943/credits");
+						  	break;
+						case "credits":
+							resp.sendRedirect("/tbag_943/credits");
+							break;
 					  case "xp":
 						  controller.giveXp(10);
 						  break;
@@ -364,6 +394,15 @@ public class GameServlet extends HttpServlet {
 				} else {
 					String dead = "You cannot enter commands, as " + model.getPlayer().getName() + " is dead."; 
 					model.addOutput(dead);
+				}
+				
+				if(model.getTimer().getTime() <= 0 || model.getPlayer().getStats().get("health").getRank() <= 0) {
+					controller.lose();
+					resp.sendRedirect("/tbag_943/credits");
+				}
+				
+				if(model.getPlayer().getWinCondition().currentWinCondition() != "defaultCase") {
+					resp.sendRedirect("/tbag_943/credits");
 				}
 				
 			} catch (ArrayIndexOutOfBoundsException e) {
