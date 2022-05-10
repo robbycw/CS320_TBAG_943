@@ -93,11 +93,13 @@ public class GameServlet extends HttpServlet {
 			String startingTool = req.getParameter("tool");
 			String startingMisc = req.getParameter("misc");
 			
+			
 			int strengthStat = getIntegerFromParameter(req.getParameter("strengthStat"));
 			int speedStat = getIntegerFromParameter(req.getParameter("speedStat"));
 			int vitalityStat = getIntegerFromParameter(req.getParameter("vitalityStat"));
 			int charismaStat = getIntegerFromParameter(req.getParameter("charismaStat"));
-			 
+			
+			System.out.println(req.getParameter("strengthStat")  + " strength stat");
 			
 			session.setAttribute("playerName", playerName);
 			session.setAttribute("strengthStat", strengthStat);
@@ -107,7 +109,7 @@ public class GameServlet extends HttpServlet {
 			
 			System.out.println("character created");
 			
-			
+			System.out.println(req.getParameter("strengthStat"));
 			// Set player name and stats. 
 			player.setName(playerName);
 			player.getStats().get("strength").setRank(strengthStat);
@@ -115,14 +117,16 @@ public class GameServlet extends HttpServlet {
 			player.getStats().get("health").setRank(vitalityStat + 10);
 			player.getStats().get("charisma").setRank(charismaStat);
 			
-			//TODO - work on starter items + adding those to the player's inventory after chosen! 
+			player.setXpThreshold(40);
+			player.setLevel(1);
 			
-			session.setAttribute("xp", player.getXp());
+			session.setAttribute("xpThreshold", player.getXpThreshold());
+			session.setAttribute("xp", player.getLevel());
 			session.setAttribute("health", player.getStats().get("health").getRank());
 			session.setAttribute("armor", player.getStats().get("armor").getRank());
-			
-			model.setPlayerNotCreated(false);
 		
+			//TODO - work on starter items + adding those to the player's inventory after chosen! 
+			model.setPlayerNotCreated(false);
 			// TODO: Ensure Starter Items are properly equip! 
 			Item strtWeapon = new Item(startingWeapon, 5);
 			strtWeapon.isWeapon(true);
@@ -149,6 +153,9 @@ public class GameServlet extends HttpServlet {
 			model.setPlayer(player);
 			session.setAttribute("model", model);
 			dbc.saveGame(model, player.getLocation());
+			
+			
+			
 		}
 		
 		if(req.getParameter("title") != null) {
@@ -185,13 +192,43 @@ public class GameServlet extends HttpServlet {
 			resp.sendRedirect("/tbag_943/titlePage");
 			return; 
 		}
+		System.out.println("_____" + req.getParameter("levelUP"));
+		if(req.getParameter("levelUP") != null) {
+			Game model = (Game) session.getAttribute("model"); 
+			Player player = model.getPlayer(); 
+			
+			System.out.print("button works!!_________________________");
+			int strengthPoints = getIntegerFromParameter(req.getParameter("newStrengthStat"));
+			int speedPoints = getIntegerFromParameter(req.getParameter("newSpeedStat"));
+			int vitalityPoints = getIntegerFromParameter(req.getParameter("newVitalityStat"));
+			int charismaPoints = getIntegerFromParameter(req.getParameter("newCharismaStat"));
+			
+			strengthPoints += player.getStats().get("strength").getRank();
+			speedPoints += player.getStats().get("speed").getRank();
+			vitalityPoints += player.getStats().get("health").getRank();
+			charismaPoints += player.getStats().get("charisma").getRank();
+			
+			session.setAttribute("strengthStat", strengthPoints );
+			session.setAttribute("speedStat", speedPoints);
+			session.setAttribute("vitalityStat", vitalityPoints);
+			session.setAttribute("charismaStat", charismaPoints);
+			
+			player.getStats().get("strength").setRank(player.getStats().get("strength").getRank());
+			player.getStats().get("speed").setRank(speedPoints + player.getStats().get("speed").getRank());
+			player.getStats().get("health").setRank(vitalityPoints + player.getStats().get("health").getRank());
+			player.getStats().get("charisma").setRank(charismaPoints + player.getStats().get("charisma").getRank());
+			model.setIsLevelUp(false);
+		}
+		System.out.println("_____" + req.getParameter("levelUP"));
+		System.out.println(req.getParameter("newStrengthStat")  + " new strength stat");
 		// Once we have a Game model that persists each request, we can have it so the Servlet will
 		// store Strings from the user input into the outputLog in Game. 
 		if(req.getParameter("user") != null) {
 			String in = req.getParameter("user"); 
 			Game model = (Game) session.getAttribute("model"); 
+			Player player = model.getPlayer(); 
 			GameController controller = new GameController(model); 
-			
+			model.getPlayerNotCreated();
 			Location previous = model.getPlayer().getLocation(); 
 			
 			int log_id = model.getId(); 
@@ -204,15 +241,38 @@ public class GameServlet extends HttpServlet {
 			
 			model.addOutput(in); // The user's command is added to the output 
 			
+			System.out.println(req.getParameter("strengthStat")  + " strength stat");
+			
 			// We will want to ensure the input is all lower case, and then split the
 			// command into an array of strings, as this is necessary to interpret 
 			// multiple-word commands (ex: move north). 
-			
 			in = in.toLowerCase(); 
 			String[] input = in.split(" +"); 
 			
 			// Generate the personalized error
 			String error = "";
+			System.out.println(model.getIsLevelUp() + " before");
+			// this will call the levelup overlay
+			System.out.println(req.getParameter("newStrengthStat")  + "new strength stat");
+			
+			
+			if(model.getPlayer().getXp() >= (model.getPlayer().getXpThreshold() - .01111)) {
+			
+				
+				model.setIsLevelUp(true);
+				player.setLevel(model.getPlayer().getLevel() + 1);
+				player.setXpThreshold(model.getPlayer().getXpThreshold() * 3);
+				
+				
+				
+				System.out.println( model.getPlayer().getXpThreshold() + " xpThreshold");
+				System.out.println(model.getIsLevelUp() + "levelUp! Panel");
+			}else {
+				model.setIsLevelUp(false);
+				System.out.println("levelUp false");
+			}
+			System.out.println("levelUp! test");
+			System.out.print(model.getIsLevelUp() + " after");
 			
 			// The following switch-case will interpret the user's command and call the
 			// appropriate controller functions. 
@@ -268,7 +328,6 @@ public class GameServlet extends HttpServlet {
 							break; 
 						case "look":
 							controller.look();
-							controller.giveXp();
 							error = "how did you get that?";
 							break;
 						case "inventory":
@@ -297,8 +356,7 @@ public class GameServlet extends HttpServlet {
 								break;
 							}
 					  case "xp":
-						  controller.giveXp();
-						  error = "how did you get that?";
+						  controller.giveXp(10);
 						  break;
 						default: 
 							model.addOutput("Unknown command.");
@@ -320,6 +378,7 @@ public class GameServlet extends HttpServlet {
 			// Update Map
 			GameServlet.mapMaker(session, model);
 			
+			
 			// Add output to DB.
 			ArrayList<String> log = model.getOutputLog(); 
 			for(int i = log_size; i < model.getOutputLog().size(); i++) {
@@ -330,12 +389,17 @@ public class GameServlet extends HttpServlet {
 			dbc.saveGame(model, previous);
 			
 			// Put the updated model back in the HttpSession.
+			session.setAttribute("xp", model.getPlayer().getLevel());
 			session.setAttribute("model", model);
 			session.setAttribute("health", model.getPlayer().getStats().get("health").getRank());
+			
 		}
 		
 		req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
 	}
+	
+	
+	
 	
 	// A static function that can set the attributes for the map. 
 	// TODO: Fix bug where northeast/west southeast/west rooms don't appear since only north/south 

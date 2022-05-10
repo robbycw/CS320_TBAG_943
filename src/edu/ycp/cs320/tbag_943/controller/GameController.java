@@ -38,9 +38,9 @@ public class GameController {
 
 	// Methods
 	
-	public void giveXp() {
+	public void giveXp(int xp) {
 		Player player = model.getPlayer();
-		player.setXp(20);
+		player.setXp(xp);
 		String s = player.getXp() + " xp"; 
 		model.addOutput(s);
 		
@@ -203,7 +203,10 @@ public class GameController {
 	
 	// Prints a help 
 	public void help() {
-		String s = "You want help? Sorry, I'm all out of pity..."; 
+		String s = "The commands you may input: Move, Attack, Talk, and Collect."
+				+ ""
+				+ " These commands need an object directly after being stated: attack Elon Musk."
+				+" However, for move you may simply state the direction"; 
 		model.addOutput(s);
 	}
 	
@@ -308,6 +311,7 @@ public class GameController {
 		if(model.getPlayer().getLocation().getNPCs().containsKey(NPCName)){
 			if(model.getPlayer().getLocation().getNPCs().get(NPCName).isIntimidated()){
 				model.addOutput("[SUCCESS] " + model.getPlayer().getLocation().getNPCs().get(NPCName).getSpeech().getIntimRes());
+				giveXp(30);
 			}
 			else if(!model.getPlayer().getLocation().getNPCs().get(NPCName).canIntimidate()){
 				model.addOutput("This target cannot be intimidated");
@@ -327,6 +331,7 @@ public class GameController {
 		if(model.getPlayer().getLocation().getNPCs().containsKey(NPCName)){
 			if(model.getPlayer().getLocation().getNPCs().get(NPCName).isPersuaded()){
 				model.addOutput("[SUCCESS] " + model.getPlayer().getLocation().getNPCs().get(NPCName).getSpeech().getPersRes());
+				giveXp(30);
 			}
 			else if(!model.getPlayer().getLocation().getNPCs().get(NPCName).canPersuade()){
 				model.addOutput("This target cannot be intimidated");
@@ -365,9 +370,10 @@ public class GameController {
 	}
 	
 	public void look()
-	{
+	{	
 		model.addOutput("Description:");
 		model.addOutput(model.getPlayer().getLocation().getLongDescription());
+		giveXp(10);
 		
 		try
 		{
@@ -464,6 +470,8 @@ public class GameController {
 						{
 						s = "Correct! You now have a " + puz.getReward().getName();
 						puz.getLoot().giveItems(model.getPlayer());
+						
+						giveXp(100);
 						}
 						else
 						{
@@ -479,6 +487,8 @@ public class GameController {
 							if(!puz.getRoomCon().equals(""))
 							{
 								model.getMap().getLocations().get(puz.getRoomCon()).setBlocked(false);
+								
+								giveXp(50);
 							}
 						//puz connections
 

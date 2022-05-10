@@ -6,7 +6,7 @@ html, body {
 }
 #overlayLevelUp{
 	position: fixed; /* Sit on top of the page content */
-  	display: none; /* Hidden by default */
+  	display: block; /* Hidden by default */
   	width: 32.25%; /* Full width (cover the whole page) */
   	height: 75%; /* Full height (cover the whole page) */
   	top: 10%;
@@ -46,16 +46,24 @@ html, body {
 	border-spacing: 20px;
 	text-align:right;
 }
+#plusTable{
+	margin-top:-72%;
+	margin-left:42%;
+	font-size:20px;
+	border-spacing: 5px;
+	color:blue;
+	float: left;
+}
 #levelUpTableTextBox{
-	margin-top:19%;
-	margin-left:-33%;
+	margin-top:-76%;
+	margin-left:33%;
 	float: left;
 	font-size: 40px;
 	border-spacing: 20px;
 	width: 5px;
 }
 #levelUpResultText{
-	margin-top:0%;
+	margin-top:-75%;
 	margin-left:45%;
 	float: left;
 	font-size:40px;
@@ -65,8 +73,8 @@ html, body {
 	text-align:right;
 }
 #levelUpResultNumbers{
-	margin-top:;
-	margin-left:-6%;
+	margin-top:-75%;
+	margin-left: 80%;
 	float: left;
 	font-size:40px;
 	border-spacing: 20px;
@@ -80,8 +88,9 @@ html, body {
 }
 #levelUpError{
 	margin-top:107%;
-	margin-left:70%;
+	margin-right:15%;
 	color: red;
+	text-align: right;
 }
 #overlayCharacterCreation{
 	position: fixed; /* Sit on top of the page content */
@@ -213,6 +222,11 @@ html, body {
 	margin-top:25%;
 	float: left;
 }
+#chrDone{
+	margin-top:1%;
+	margin-left:1%;
+	float: left;
+}
 #submitButton{
 	background:black;
 	float: right;
@@ -304,7 +318,7 @@ margin-top:10%;
 	margin-top: 0%;
 }
 #xpBar{
-	margin-bottom:1%;
+	margin-top:-15px;
 	margin-left:90%;
 	float: left;
 }
@@ -318,7 +332,7 @@ margin-top:10%;
 	margin-top:0%;
 	background-color:blue;
 	width:10px;
-	height:50%;
+	height:0%;
 }
 
 #playerHealth{

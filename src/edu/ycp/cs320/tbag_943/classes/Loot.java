@@ -27,10 +27,6 @@ public class Loot {
 		
 	}
 	
-	public int calculateXP() {
-		return this.xp = 20;
-	}
-	
 	public void giveItems(Player player) {
 		if(!collected)
 		{
