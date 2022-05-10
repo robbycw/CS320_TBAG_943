@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 public class Player {
 	private String name; 
-	private int id, xp; 
+	private int id, xp, xpThreshold, level; 
 	private String icon; 
 	private HashMap<String, Item> inventory; 
 	private Location location; 
@@ -67,7 +67,7 @@ public class Player {
 	}
 	
 	// Methods
-	
+
 	public int getId() {
 		return id;
 	}
@@ -126,6 +126,22 @@ public class Player {
 
 	public String getIcon() {
 		return icon;
+	}
+	
+	public Integer getLevel() {
+		return level;
+	}
+	
+	public void setLevel(int level) {
+		this.level = level;
+	}
+	
+	public Integer getXpThreshold() {
+		return xpThreshold;
+	}
+	
+	public void setXpThreshold(int xpThreshold) {
+		this.xpThreshold = xpThreshold;
 	}
 	
 	public Integer getXp() {

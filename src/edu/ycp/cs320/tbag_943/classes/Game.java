@@ -10,7 +10,7 @@ public class Game {
 	private Player player; 
 	private Combat currentCombat; 
 	private boolean inCombat, playerTurnTaken; 
-	private boolean playerNotCreated;
+	private boolean playerNotCreated, isLevelUp;
 	private int id; 
 	
 	// Constructors
@@ -34,7 +34,6 @@ public class Game {
 	}
 	
 	// Getters
-	
 	public int getId() {
 		return id;
 	}
@@ -77,7 +76,9 @@ public class Game {
 	public boolean getPlayerNotCreated() {
 		return playerNotCreated;
 	}
-	
+	public boolean getIsLevelUp() {
+		return isLevelUp;
+	}
 	// Setters
 	
 	public void setId(int id) {
@@ -90,7 +91,9 @@ public class Game {
 	public void setPlayerNotCreated(boolean created) {
 		this.playerNotCreated = created;
 	}
-
+	public void setIsLevelUp(boolean isLevelUp) {
+		this.isLevelUp = isLevelUp;
+	}
 	public void setPlayerTurnTaken(boolean playerTurnTaken) {
 		this.playerTurnTaken = playerTurnTaken;
 	}

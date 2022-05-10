@@ -45,6 +45,7 @@
 				</table>
 			</form>
 			</div>
+			
 		</c:if>
 	
 		
@@ -72,7 +73,7 @@
 		}, 1000);  
 
 		</script>
-
+		
 		<c:if test= "${model.playerNotCreated}">
 			<div id="overlayCharacterCreation">
 				
@@ -83,9 +84,6 @@
 					<p>Vitality:</p>
 					<p>Charisma:</p>
 				</div>
-			
-			
-			
 		
 				<form action="${pageContext.servletContext.contextPath}/game" method="post" onkeydown="return event.key != 'Enter'">
 					
@@ -122,8 +120,6 @@
 									<input type="text" maxlength="2" name="charismaStat" value="0" id="charismaStatBox"><br>
 								</div>
 							</tr>
-							
-							
 					</div>
 				
 					<div id= "SkillPoints">
@@ -182,97 +178,121 @@
 						<p class="output" id="chrError"></p>
 					</div>
 						<button type="button" id="chrDone" value="Done" onclick="off()" name= "characterSubmit">Done</button>
-						
 					</div>
-					
-					
 				</form>
 			</div >
 		</c:if>
 		
-		<div id="overlayLevelUp">
-			<h id="levelUpTitle">Level Up!</h>
-			<table id="levelUpTextTable">
-				<tr>
-			    	<td id="levelUpSkillPoints"><p class="output" id="levelUpSkillPoints"></p></td>
-			  	</tr>
-			  	<tr>
-			    	<td id="levelUpSkillPointsText">Points Available</td>
-			  	</tr>
-			</table>
-			
-			<table id= "levelUpTable">
-				<tr>
-					<td text-align: "right">Strength:</td>
-				</tr>
-				<tr>
-					<td text-align: "right">Speed:</td>
+		<c:if test= "${model.isLevelUp}">
+			<div id="overlayLevelUp">
+				<h id="levelUpTitle">Level Up!</h>
+				<table id="levelUpTextTable">
+					<tr>
+				    	<td id="levelUpSkillPoints"><p class="output" id="levelUpSkillPoints"></p></td>
+				  	</tr>
+				  	<tr>
+				    	<td id="levelUpSkillPointsText">Points Available</td>
+				  	</tr>
+				</table>
+				
+				<table id= "levelUpTable">
+					<tr>
+						<td text-align: "right">Strength:</td>
+					</tr>
+					<tr>
+						<td text-align: "right">Speed:</td>
+						
+					</tr>
+					<tr>
+						<td text-align: "right">Vitality:</td>
+					</tr>
+					<tr>
+						<td text-align: "right">Charisma:</td>
+					</tr>
+				</table>
+				
+				<form action="${pageContext.servletContext.contextPath}/game" method="post" onkeydown="return event.key != 'Enter'">
+						<table id="levelUpTableTextBox">
+							<tr>
+								<td text-align: "center"><input type="text" maxlength="2" name="newStrengthStat" value= "0" id="newStrengthStat" style="width:30px;"></td>
+							</tr>
+							
+							<tr>
+								<td><input type="text" maxlength="2" name="newSpeedStat" value= "0" id="newSpeedStat" style="width:30px;"></td>
+							</tr>
+							
+							<tr>
+								<td><input type="text" maxlength="2" name="newVitalityStat" value= "0" id="newVitalityStat" style="width:30px;"></td>
+							</tr>
+							
+							<tr>
+								<td><input type="text" maxlength="2" name="newCharismaStat" value= "0" id="newCharismaStat" style="width:30px;"></td>
+							</tr>
+						</table>
 					
-				</tr>
-				<tr>
-					<td text-align: "right">Vitality:</td>
-				</tr>
-				<tr>
-					<td text-align: "right">Charisma:</td>
-				</tr>
-			</table>
+					<table id="plusTable">
+						<tr>
+							<td><p>+</p></td>
+						</tr>
+						
+						<tr>
+							<td><p>+</p></td>
+						</tr>
+						
+						<tr>
+							<td><p>+</p></td>
+						</tr>
+						
+						<tr>
+							<td><p>+</p></td>
+						</tr>
+					</table>
+					
+					<table id="levelUpResultText">
+						<tr>
+							<td>Strength:</td>
+						</tr>
+						
+						<tr>
+							<td>Speed:</td>
+						</tr>
+						
+						<tr>
+							<td>Vitality:</td>
+						</tr>
+						
+						<tr>
+							<td>Charisma:</td>
+						</tr>
+					</table>
+					
+					<table id="levelUpResultNumbers">
+						<tr>
+							<td class="output" id="updatedStrengthStat">${strengthStat}</td>
+						</tr>
+						
+						<tr>
+							<td class="output" id="updatedSpeedStat">${speedStat}</td>
+						</tr>
+						
+						<tr>
+							<td class="output" id="updatedVitalityStat">${vitalityStat}</td>
+						</tr>
+						
+						<tr>
+							<td class="output" id="updatedCharismaStat">${charismaStat}</td>
+						</tr>
+					</table>
+					
+					<p type="output" id="levelUpError"></p>
+					<button type="button" id="levelDone" value="Done" onclick="levelUpOff()" name= "levelUP">Done</button>
 			
-			<table id="levelUpTableTextBox">
-				<tr>
-					<td text-align: "center"><input type="text" maxlength="2" name="newStrengStat" value= "0" id="newStrengthStat" style="width:30px;"></td>
-				</tr>
-				
-				<tr>
-					<td><input type="text" maxlength="2" name="strengtat" value= "0" id="newSpeedStat" style="width:30px;"></td>
-				</tr>
-				
-				<tr>
-					<td><input type="text" maxlength="2" name="strengtat" value= "0" id="newVitalityStat" style="width:30px;"></td>
-				</tr>
-				
-				<tr>
-					<td><input type="text" maxlength="2" name="strengtat" value= "0" id="newCharismaStat" style="width:30px;"></td>
-				</tr>
-			</table>
+			</form>
 			
-			<table id="levelUpResultText">
-				<tr>
-					<td>Strength:</td>
-				</tr>
-				
-				<tr>
-					<td>Speed:</td>
-				</tr>
-				
-				<tr>
-					<td>Vitality:</td>
-				</tr>
-				
-				<tr>
-					<td>Charisma:</td>
-				</tr>
-			</table>
-			
-			<table id="levelUpResultNumbers">
-				<tr>
-					<td class="output" id="updatedStrengthStat"></td>
-				</tr>
-				
-				<tr>
-					<td class="output" id="updatedSpeedStat"></td>
-				</tr>
-				
-				<tr>
-					<td class="output" id="updatedVitalityStat"></td>
-				</tr>
-				
-				<tr>
-					<td class="output" id="updatedCharismaStat"></td>
-				</tr>
-			</table>
-			<p type="output" id="levelUpError"></p>
-			<button type="button" id="levelDone" value="Done" onclick="levelUpClose()">Done</button>
-		</div>
+			</div>
+		
+		</c:if>
+		
 		
 		<div id="entire"><div id="row">
 		
@@ -353,7 +373,7 @@
 				</script>
 				
 
-				<form action="${pageContext.servletContext.contextPath}/game" method="post">
+				<form action="${pageContext.servletContext.contextPath}/game" method="post" onsubmit=" on();">
 					<input type="text" id="user" name="user"><br>
 					<input type="hidden" id="timeLeft2" name="t" value="">
 					<input type="submit" value="Enter" id="enterButton"><br>
@@ -461,54 +481,30 @@
 			const vitalityPoints = document.getElementById('vitalityStatBox');
 			const charismaPoints = document.getElementById('charismaStatBox');
 			
-			const strengthLevelUp = document.getElementById('newStrengthStat')
-			const speedLevelUp = document.getElementById('newSpeedStat')
-			const vitailityLevelUp = document.getElementById('newVitalityStat')
-			const charismaLevelUp = document.getElementById('newCharismaStat')
+			const submitButton = document.getElementById('chrDone');
 			
 			const pointLeft = document.getElementById('availStats');
-			const levelUpPointsLeft = document.getElementById('levelUpSkillPoints');
-			
-			const updatedSTR = document.getElementById('updatedStrengthStat');
-			const updatedSP = document.getElementById('updatedSpeedStat');
-			const updatedVIT = document.getElementById('updatedVitalityStat');
-			const updatedCHR = document.getElementById('updatedCharismaStat');
-			
-			const submitButton = document.getElementById('chrDone');
-			const levelSubmitButton = document.getElementById('levelDone');
 			
 			const error = document.getElementById('chrError');
-			const levelUpError = document.getElementById('levelUpError');
 			
 			const apparelItem = document.getElementById('apparel');
 			const weaponItem = document.getElementById('weapon');
 			const toolItem = document.getElementById('tool');
 			const miscItem = document.getElementById('misc');
 			
+			const console = document.getElementById('user');
+			
 			const itemNum = 0;
 		
-			levelUpError.innerHTML = "ee";
-		
-			levelUpPointsLeft.innerHTML = 12;
-			updatedSTR.innerHTML = 5;
-			updatedSP.innerHTML = 3;
-			updatedVIT.innerHTML = 2;
-			updatedCHR.innerHTML = 7;
-			
-			newStrengthStat.addEventListener('input', calculateLevelUp);
-			newSpeedStat.addEventListener('input', calculateLevelUp);
-			newVitalityStat.addEventListener('input', calculateLevelUp);
-			newCharismaStat.addEventListener('input', calculateLevelUp);
-			
 			error.innerHTML = "";
-			
-			
+				
 			pointLeft.innerHTML = 21;
-			
+				
 			strengthStatBox.addEventListener('input', calculatePoints);
 			speedStatBox.addEventListener('input', calculatePoints);
 			vitalityStatBox.addEventListener('input', calculatePoints);
 			charismaStatBox.addEventListener('input', calculatePoints);
+			
 			
 			function calculatePoints(){
 				pointLeft.innerHTML = 21;
@@ -521,41 +517,6 @@
 					document.getElementById("SkillPoints").style.color = "red";
 				}else{
 					document.getElementById("SkillPoints").style.color = "blue";
-				}
-			}
-			
-			
-			
-			function calculateLevelUp(){
-				updatedSTR.innerHTML = 5;
-				updatedSP.innerHTML = 3;
-				updatedVIT.innerHTML = 2;
-				updatedCHR.innerHTML = 7;
-				levelUpPointsLeft.innerHTML = 12;
-				updatedSTR.innerHTML = updatedSTR.innerHTML - -(strengthLevelUp.value);
-				updatedSP.innerHTML = updatedSP.innerHTML - -(speedLevelUp.value);
-				updatedVIT.innerHTML = updatedVIT.innerHTML - -(vitailityLevelUp.value);
-				updatedCHR.innerHTML = updatedCHR.innerHTML - -(charismaLevelUp.value);
-				
-				levelUpPointsLeft.innerHTML = levelUpPointsLeft.innerHTML - (strengthLevelUp.value);
-				levelUpPointsLeft.innerHTML = levelUpPointsLeft.innerHTML - (speedLevelUp.value);
-				levelUpPointsLeft.innerHTML = levelUpPointsLeft.innerHTML - (vitailityLevelUp.value);
-				levelUpPointsLeft.innerHTML = levelUpPointsLeft.innerHTML - (charismaLevelUp.value);
-				
-				if(levelUpPointsLeft.innerHTML < 0){
-					document.getElementById("levelUpSkillPoints").style.color = "red";
-				}else{
-					document.getElementById("levelUpSkillPoints").style.color = "blue";
-				}
-			}
-	
-			function levelUpClose(){
-				if(pointLeft.innerHTML < 0 || pointLeft.innerHTML > 0){
-					levelUpError.innerHTML = "Error, points are allocated improperly";
-				}else{
-					levelUpError.innerHTML = "done";
-					levelSubmitButton.type = "submit";
-					document.getElementById("overlayLevelUp").style.display = "none";
 				}
 			}
 	
@@ -574,15 +535,61 @@
 					document.getElementById("overlayCharacterCreation").style.display = "none";
 				}
 			}
-			
-			
-			document.addEventListener('keydown', function (event) {
-  				if (event.key == 'd') {
-   					 document.getElementById("overlayLevelUp").style.display = "none";
-  				}
-			});
-			
+			function on(){
+				document.getElementById("overlayLevelUp").style.display = "block";
+			}
 		</script>
 		
+		<script>
+			const strengthLevelUp = document.getElementById('newStrengthStat')
+			const speedLevelUp = document.getElementById('newSpeedStat')
+			const vitailityLevelUp = document.getElementById('newVitalityStat')
+			const charismaLevelUp = document.getElementById('newCharismaStat')
+			
+			
+			const levelUpPointsLeft = document.getElementById('levelUpSkillPoints');
+			
+			const levelSubmitButton = document.getElementById('levelDone');
+			
+			const levelUpError = document.getElementById('levelUpError');
+			
+			levelUpPointsLeft.innerHTML = 5;
+			
+			levelUpError.innerHTML = "asfsafa";
+			
+			newStrengthStat.addEventListener('input', calculateLevelUp);
+			newSpeedStat.addEventListener('input', calculateLevelUp);
+			newVitalityStat.addEventListener('input', calculateLevelUp);
+			newCharismaStat.addEventListener('input', calculateLevelUp);
+			
+			
+			function calculateLevelUp(){
+				levelUpPointsLeft.innerHTML = 5;
+				levelUpPointsLeft.innerHTML = levelUpPointsLeft.innerHTML - (strengthLevelUp.value);
+				levelUpPointsLeft.innerHTML = levelUpPointsLeft.innerHTML - (speedLevelUp.value);
+				levelUpPointsLeft.innerHTML = levelUpPointsLeft.innerHTML - (vitailityLevelUp.value);
+				levelUpPointsLeft.innerHTML = levelUpPointsLeft.innerHTML - (charismaLevelUp.value);
+				
+				if(levelUpPointsLeft.innerHTML < 0){
+					document.getElementById("levelUpSkillPoints").style.color = "red";
+				}else{
+					document.getElementById("levelUpSkillPoints").style.color = "blue";
+				}
+			}
+	
+			function updateXp(){
+				document.getElementById("statsNames").style.color = "red";
+			}
+			function levelUpOff(){
+				if(levelUpPointsLeft.innerHTML == 5){
+					levelUpError.innerHTML = "Error, points need to be allocated";
+				}else if(levelUpPointsLeft.innerHTML < 0 || levelUpPointsLeft.innerHTML > 0){
+					levelUpError.innerHTML = "Error, points are allocated improperly";
+				}else{
+					document.getElementById("overlayLevelUp").style.display = "none";
+					levelSubmitButton.type = "submit";
+				}
+			}
+		</script>
 	</body>
 </html>
