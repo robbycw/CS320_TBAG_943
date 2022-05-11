@@ -55,7 +55,7 @@ public interface IDatabase {
 	public Integer insertNewItem(List<Item> items, int itemMaxId);
 	public Integer insertNewWinConditions(List<WinCondition> winConditions, int WCMaxID);
 	public Integer insertNewLoot(List<Loot> loots, int lootMaxId);
-	public Integer insertNewLootItems(List<Pair<Integer,Integer>> lootItems, int rowsLootItems)
+	public Integer insertNewLootItems(List<Pair<Integer,Integer>> lootItems, int lootRows, int itemRows); 
 	public Integer insertNewPuzzle(List<Puzzle> puzzles, int puzzleMaxId, int statMax, int itemMax);
 	public Integer insertNewCombat(List<Combat> combats, int combatMax);
 	public Integer insertNewSpeech(List<Speech> speeches);
@@ -86,6 +86,7 @@ public interface IDatabase {
 	public Integer insertOutputIntoGameLogByLogId(String output, int log_id, int log_size);
 	public Integer insertItemIntoPlayerInventoryByPlayerIdAndItemId(int player_id, int item_id);
 	public Integer insertStartingItemIntoItem(Item item); 
+	public Integer insertItemIntoLootItems(int loot_id, int item_id);
 	
 	
 	//

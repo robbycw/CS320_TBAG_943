@@ -155,7 +155,7 @@ public class GameServlet extends HttpServlet {
 			session.setAttribute("xpThreshold", player.getXpThreshold());
 			session.setAttribute("xp", player.getLevel());
 			session.setAttribute("health", player.getStats().get("health").getRank());
-			session.setAttribute("armor", player.getStats().get("armor").getRank());
+			
 		
 			//TODO - work on starter items + adding those to the player's inventory after chosen! 
 			model.setPlayerNotCreated(false);
@@ -174,6 +174,7 @@ public class GameServlet extends HttpServlet {
 			player.getInventory().put(startingApparel.toLowerCase(), strtApparel);
 			player.setArmor(startingApparel.toLowerCase());
 			player.getStats().get("armor").setRank(10 + strtApparel.getArmor());
+			session.setAttribute("armor", player.getStats().get("armor").getRank());
 			
 			// Starting tool 
 			Item strtTool = new Item(startingTool);
@@ -252,9 +253,12 @@ public class GameServlet extends HttpServlet {
 			int vitalityPoints = getIntegerFromParameter(req.getParameter("newVitalityStat"));
 			int charismaPoints = getIntegerFromParameter(req.getParameter("newCharismaStat"));
 			
+			// Increase health
+			player.getStats().get("health").addToRank(vitalityPoints);
+			
 			strengthPoints += player.getStats().get("strength").getRank();
 			speedPoints += player.getStats().get("speed").getRank();
-			vitalityPoints += player.getStats().get("health").getRank();
+			vitalityPoints += player.getStats().get("vitality").getRank();
 			charismaPoints += player.getStats().get("charisma").getRank();
 			
 			session.setAttribute("strengthStat", strengthPoints );
@@ -262,11 +266,14 @@ public class GameServlet extends HttpServlet {
 			session.setAttribute("vitalityStat", vitalityPoints);
 			session.setAttribute("charismaStat", charismaPoints);
 			
-			player.getStats().get("strength").setRank(player.getStats().get("strength").getRank());
-			player.getStats().get("speed").setRank(speedPoints + player.getStats().get("speed").getRank());
-			player.getStats().get("health").setRank(vitalityPoints + player.getStats().get("health").getRank());
-			player.getStats().get("charisma").setRank(charismaPoints + player.getStats().get("charisma").getRank());
+			player.getStats().get("strength").setRank(strengthPoints);
+			player.getStats().get("speed").setRank(speedPoints);
+			player.getStats().get("vitality").setRank(vitalityPoints);
+			player.getStats().get("charisma").setRank(charismaPoints);
 			model.setIsLevelUp(false);
+			
+			session.setAttribute("model", model);
+			dbc.saveGame(model, player.getLocation());
 		}
 		System.out.println("_____" + req.getParameter("levelUP"));
 		System.out.println(req.getParameter("newStrengthStat")  + " new strength stat");
@@ -305,23 +312,25 @@ public class GameServlet extends HttpServlet {
 			System.out.println(req.getParameter("newStrengthStat")  + "new strength stat");
 			
 			
-			if(model.getPlayer().getXp() >= (model.getPlayer().getXpThreshold() - .01111)) {
+			if(model.getPlayer().getStats().get("xp").getRank()
+					>= (model.getPlayer().getStats().get("level").getRank() * 10)) {
 			
 				
 				model.setIsLevelUp(true);
-				player.setLevel(model.getPlayer().getLevel() + 1);
-				player.setXpThreshold(model.getPlayer().getXpThreshold() * 3);
+				int level = player.getStats().get("level").getRank();
+				int xp = player.getStats().get("xp").getRank();
+				player.getStats().get("level").setRank(level + 1);
+				player.getStats().get("xp").setRank(xp - (level * 10));
 				
 				
-				
-				System.out.println( model.getPlayer().getXpThreshold() + " xpThreshold");
-				System.out.println(model.getIsLevelUp() + "levelUp! Panel");
-			}else {
+				//System.out.println( model.getPlayer().getXpThreshold() + " xpThreshold");
+				//System.out.println(model.getIsLevelUp() + "levelUp! Panel");
+			} else {
 				model.setIsLevelUp(false);
 				System.out.println("levelUp false");
 			}
-			System.out.println("levelUp! test");
-			System.out.print(model.getIsLevelUp() + " after");
+			//System.out.println("levelUp! test");
+			//System.out.print(model.getIsLevelUp() + " after");
 			
 			// The following switch-case will interpret the user's command and call the
 			// appropriate controller functions. 
@@ -388,10 +397,18 @@ public class GameServlet extends HttpServlet {
 							break;
 						case "pickup":
 						case "collect":
-							int result = controller.collect(input[1]);
+							String itemName1 = input[1]; 
+							for(int i = 2; i < input.length; i++) {
+								itemName1 = itemName1 + " " + input[i];
+							}
+							int result = controller.collect(itemName1);
+							
 							if(result != -1) {
 								// Insert Item into Inventory. 
 								dbc.addItemToPlayerInventory(model.getPlayer().getId(), result);
+								
+								// Remove Item from LootItems
+								dbc.removeItemToLootItems(model.getPlayer().getLocation().getId(), result);
 							}
 							break; 
 						case "look":
@@ -409,6 +426,8 @@ public class GameServlet extends HttpServlet {
 								itemName = itemName + " " + input[i];
 							}
 							int itemId = controller.drop(itemName);
+							dbc.removeItemFromPlayerInventory(model.getPlayer().getId(), itemId);
+							dbc.addItemToLootItems(model.getPlayer().getLocation().getId(), itemId);
 							break;
 						case "solve":
 						case "answer":
@@ -464,7 +483,7 @@ public class GameServlet extends HttpServlet {
 							resp.sendRedirect("/tbag_943/credits");
 							break;
 						case "xp":
-							controller.giveXp(10);
+							model.getPlayer().getStats().get("xp").addToRank(10);
 							break;
 						default: 
 							model.addOutput("Unknown command.");

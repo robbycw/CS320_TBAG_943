@@ -76,8 +76,10 @@ public class GameController {
 			// Check if the player has input the name of a room. 
 			// Also check if that room is discovered. This is legal
 			// thanks to short-circuiting booleans! 
-			if(map.getLocations().keySet().contains(direction) && 
-					!map.getLocations().get(direction).isHidden()) {
+			if((map.getLocations().keySet().contains(direction) && 
+					!map.getLocations().get(direction).isHidden()) || 
+					(map.getLocations().keySet().contains(direction) && 
+					map.getConnections().get(player.getLocation().getName().toLowerCase()).get(4).equals(direction) ) ) {
 				
 				String start = player.getLocation().getName(); 
 				
@@ -464,7 +466,7 @@ public class GameController {
 				model.addOutput("There is nothing to the " + direction);
 			} else {
 				// There is a room in this direction. Print its name. 
-				model.addOutput("To the " + direction + " is " + locations.get(connections.get(i)));
+				model.addOutput("To the " + direction + " is " + locations.get(connections.get(i)).getName());
 			}
 		}
 		
@@ -474,7 +476,7 @@ public class GameController {
 			model.addOutput("There is no secret tunnel. How tragic.");
 		} else {
 			// There is an extra connection. 
-			model.addOutput("There is a hidden connection to another room! Perhaps it is a way to the " + locations.get(connections.get(4)));
+			model.addOutput("There is a hidden connection to another room! Perhaps it is a way to the " + locations.get(connections.get(4)).getName());
 		}
 	}
 	
@@ -561,7 +563,7 @@ public class GameController {
 								s = s + "\n" + name;
 							}
 							puz.getLoot().giveItems(model.getPlayer());
-              giveXp(100);
+							giveXp(100);
 						}
 						}
 						else
@@ -572,28 +574,57 @@ public class GameController {
 					}
 					else if(!puz.isSolved() && puz.getBreakable()) 
 					{
-						if(puz.solve(response) && puz.checkRequiredSkill(model.getPlayer().getStats().get(
-								puz.getRequiredSkill().getName())))
-						{
-							s = "You demonstrated your skills and got past the obstacle!";
-							if(!puz.getRoomCon().equals(""))
+						if(puz.getRequiredSkill() != null) {
+							if(puz.solve(response) && puz.checkRequiredSkill(model.getPlayer().getStats().get(
+									puz.getRequiredSkill().getName())))
 							{
-								model.getMap().getLocations().get(puz.getRoomCon()).setBlocked(false);
-								
-								giveXp(50);
+								s = "You demonstrated your skills and got past the obstacle!";
+								if(!puz.getRoomCon().equals(""))
+								{
+									model.getMap().getLocations().get(puz.getRoomCon()).setBlocked(false);
+									
+									giveXp(50);
+								}
+							//puz connections
+	
 							}
-						//puz connections
-
+							else if(puz.solve(response) && !puz.checkRequiredSkill(model.getPlayer().getStats().get(
+									puz.getRequiredSkill().getName())))
+							{
+								s = "You are far too unskilled for this task. Your " + puz.getRequiredSkill().getName() + " is "
+									+ model.getPlayer().getStats().get(response).getRank() 
+									+ " and must be " + puz.getRequiredSkill().getRank();
+							}
+							else
+							{
+								s = "Your answer of: '" + response + "' is not what you do here.";
+							}
 						}
-						else if(puz.solve(response) && !puz.checkRequiredSkill(model.getPlayer().getStats().get("strength")))
-						{
-							s = "You are far too unskilled for this task. Your " + puz.getRequiredSkill().getName() + " is "
-								+ model.getPlayer().getStats().get("speed").getRank() 
-								+ " and must be " + puz.getRequiredSkill().getRank();
-						}
-						else
-						{
-							s = "Your answer of: '" + response + "' is not what you do here.";
+						else {
+							if(model.getPlayer().getInventory().containsKey(response) && puz.checkRequiredItem(model.getPlayer().getInventory().get(
+									response)))
+							{
+								s = "You used the item and got past the obstacle!";
+								if(!puz.getRoomCon().equals("-1"))
+								{
+									model.getMap().getLocations().get(puz.getRoomCon().toLowerCase()).setBlocked(false);
+									
+									giveXp(50);
+								}
+							//puz connections
+	
+							}
+							else if(model.getPlayer().getInventory().containsKey(response) && !puz.checkRequiredItem(model.getPlayer().getInventory().get(
+									response)))
+							{
+								s = "You do not have the required item. You must have a " + puz.getRequiredItem().getName();
+								model.getTimer().decrementTime(300);
+							}
+							else
+							{
+								s = "Your answer of: '" + response + "' is not the correct item.";
+								model.getTimer().decrementTime(300);
+							}
 						}
 					}
 					else if(puz.isSolved())
@@ -648,15 +679,13 @@ public class GameController {
 				// If not, return an error. 
 				
 				for(Puzzle p : model.getPlayer().getLocation().getPuzzles()) {
-					if(p.getRequiredItem().getName().equals(i.getName())) {
+					if(p.getRequiredItem() != null && p.getRequiredItem().getName().equals(i.getName())) {
 						model.addOutput(model.getPlayer().getName() + " used their " + i.getName() + 
 								" to complete Puzzle #" + p.getId());
-						p.setSolved(true);
+						
+						p.solve(p.getAnswer()); 
 						// TODO: Reward the Player's Loot (if applicable) - Needs Conrad's Update.
 						
-						// Add the connection (if applicable) to the current location. 
-						model.getMap().getConnections().get(
-								model.getPlayer().getLocation().getName()).set(4, p.getRoomCon()); 
 					}
 				}
 				

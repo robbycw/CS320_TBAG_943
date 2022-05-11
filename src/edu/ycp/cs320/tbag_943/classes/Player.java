@@ -189,7 +189,7 @@ public class Player {
 	}
 
 	public void collect(Item item) {
-		this.inventory.put(item.getName(), item); 
+		this.inventory.put(item.getName().toLowerCase(), item); 
 	}
 	
 	public void interactWithObject() {

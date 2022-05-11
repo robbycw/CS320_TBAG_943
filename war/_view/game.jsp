@@ -16,12 +16,14 @@
 			<%@include file="gamestyle.css" %> 
 		</style>
 		
+
+		<embed src="GameThemeMusic.mp3" type="audio/mpeg" autoplay="true" loop="true" hidden="true">
+		</embed>
 	</head>
 
 	<body>
 
-		<embed src="GameThemeMusic.mp3" type="audio/mpeg" autoplay="true" loop="true" hidden="true">
-		</embed>
+		
 		
 		<!-- Page Header: Has log-out button, display on all pages when logged in. -->
 		<c:if test= "${user.created}">

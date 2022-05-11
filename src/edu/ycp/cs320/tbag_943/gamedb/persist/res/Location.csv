@@ -14,7 +14,7 @@
 14|Armory|the armory seems completely emptied except for a single occupant|looking closer there seems to be some supplies that were overlooked. Within the room it seems the person is a security guard who hastly put on his bloody uniform and is in a corner clutching himself while he rocks back and forth|TRUE|TRUE|14|14
 15|Lounge|The room is completely destroyed with bodies that litter every part of the room|examining the pile of bodies within the room the events that may have transpired become more clear. Now observing the make shift barricades covered in inmates bodies it seems this was the patients last push before they all got mowed down|TRUE|FALSE|15|15
 16|Bathroom|the bathroom seems clean... strangely clean|As you take a further look you examine the stalls one by one until a particular stall catches your attention. Eminating a putrid smell that makes you gag, curosity gets the better of you. As you open the door a scene straight from a janitor's nightmare befalls you. Poop, poop everywhere! You are extremly astonished and disugusted to how the quantity of crap the lines the walls of the stalls and toilet. After staring at it for a while there seems to be something glittering within the toilet.|TRUE|FALSE|16|16
-17|CellBlocka|it seems earily quiet as the only sounds are moaning of the prisoners||TRUE|FALSE|17|17
+17|CellBlocka|it seems earily quiet as the only sounds are moaning of the prisoners|LongDescCellBlockA|TRUE|FALSE|17|17
 18|CellA|CellADesc|CellALongDesc|TRUE|FALSE|18|18
 19|CellB|CellBDesc|CellBLongDesc|TRUE|FALSE|19|19
 20|Cafeteria|Cafeteria Desc|Cafeteria LongDesc|TRUE|FALSE|20|20

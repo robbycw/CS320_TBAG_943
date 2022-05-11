@@ -259,13 +259,39 @@ public class InitialData {
 		}
 	}
 	
+	public static List<Pair<Integer, Integer>> getLootItems() throws IOException {
+		List<Pair<Integer, Integer>> lootItemsList = new ArrayList<Pair<Integer, Integer>>(); 
+		ReadCSV readLootItems = new ReadCSV("LootItems.csv"); 
+		try {
+			while (true) {
+				List<String> tuple = readLootItems.next();
+				if (tuple == null) {
+					break;
+				}
+				// Iterates over tuple.
+				Iterator<String> i = tuple.iterator();
+				
+				int loot_id = Integer.parseInt(i.next()); 
+				int item_id = Integer.parseInt(i.next()); 
+				
+				Pair<Integer, Integer> playerToStats = new Pair<Integer, Integer>(loot_id, item_id);
+
+				lootItemsList.add(playerToStats);
+			}
+			System.out.println("playerToStatsList loaded from CSV file");
+			return lootItemsList;
+		} finally {
+			readLootItems.close();
+		}
+	}
+	
 	public static List<Pair<Integer, Integer>> getPlayerInventory() throws IOException {
 		List<Pair<Integer, Integer>> playerInventoryList = new ArrayList<Pair<Integer, Integer>>(); 
 		ReadCSV readPlayerInventory = new ReadCSV("PlayerInventory.csv"); 
 		try {
 			while (true) {
 				List<String> tuple = readPlayerInventory.next();
-				if (tuple == null) {
+				if (tuple == null || tuple.size() == 0) {
 					break;
 				}
 				// Iterates over tuple.
@@ -539,7 +565,7 @@ public class InitialData {
 		}
 	}
 	
-	public static List<Loot> getLoot(List<Item> items) throws IOException {
+	public static List<Loot> getLoot(List<Item> items, List<Pair<Integer, Integer>> lootItems) throws IOException {
 		List<Loot> lootList = new ArrayList<Loot>(); 
 		ReadCSV readLoot = new ReadCSV("Loot.csv"); 
 		
@@ -558,7 +584,11 @@ public class InitialData {
 				loot.setId(Integer.parseInt(i.next()));
 				loot.setXP(Integer.parseInt(i.next()));
 				// An Item with ID = X will be stored in index X-1 in the list of items. 
-				loot.addItem(items.get(Integer.parseInt(i.next()) - 1));
+				for(Pair<Integer, Integer> li : lootItems) {
+					if(loot.getId() == li.getLeft()) {
+						loot.addItem(items.get(li.getRight() - 1));
+					}
+				}
 
 				// Add location to List. 
 				lootList.add(loot); 
@@ -1021,8 +1051,22 @@ public class InitialData {
 				puzzle.setAnswer(i.next());
 				
 				// The Item/Stat/Location ID X is stored in index X-1 in the list
-				puzzle.setRequiredItem(items.get(Integer.parseInt(i.next()) - 1));
-				puzzle.setRequiredSkill(stats.get(Integer.parseInt(i.next()) - 1));
+				int stat_id = Integer.parseInt(i.next());
+				int item_id = Integer.parseInt(i.next()); 
+				 
+				
+				if(item_id != -1) {
+					puzzle.setRequiredItem(items.get(item_id - 1));
+				} else {
+					puzzle.setRequiredItem(null);
+				}
+				
+				if(stat_id != -1) {
+					puzzle.setRequiredSkill(stats.get(stat_id - 1));
+				} else {
+					puzzle.setRequiredSkill(null);
+				}
+				
 				puzzle.setResult(Boolean.parseBoolean(i.next())); 
 				puzzle.setCanSolve(Boolean.parseBoolean(i.next()));
 				puzzle.setSolved(Boolean.parseBoolean(i.next()));

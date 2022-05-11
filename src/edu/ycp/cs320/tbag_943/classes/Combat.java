@@ -91,7 +91,7 @@ public class Combat {
 				s = "Critical hit! "; 
 			}
 			
-			player.getStats().get("health").addToRank(-damage);
+			tar.getStats().get("health").addToRank(-damage);
 			
 			s = s + player.getName() + " dealt " + Integer.toString(damage) + " damage with their " + player.getWeapon(); 
 			game.addOutput(s);
