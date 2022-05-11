@@ -58,6 +58,8 @@ public class InitialDataTest {
 	private List<Pair<Integer, Integer>> locationToPuzzle; 
 	private List<Combat> combatList; 
 	private List<Puzzle> puzzleList; 
+	private List<Pair<Integer, Integer>> lootItemsList; 
+	
 	
 	private IDatabase db = null;
 	
@@ -88,7 +90,7 @@ public class InitialDataTest {
 		this.locationToPuzzle = new ArrayList<Pair<Integer, Integer>>();
 		this.combatList = new ArrayList<Combat>();
 		this.puzzleList = new ArrayList<Puzzle>();
-		
+		this.lootItemsList = new ArrayList<Pair<Integer, Integer>>(); 
 		
 	}
 
@@ -105,7 +107,8 @@ public class InitialDataTest {
 			this.playerInventory.addAll(InitialData.getPlayerInventory());
 			this.playerStatsList.addAll(InitialData.getPlayerStats()); 
 			this.itemList.addAll(InitialData.getItem());
-			this.lootList.addAll(InitialData.getLoot(itemList));
+			this.lootItemsList.addAll(InitialData.getLootItems()); 
+			this.lootList.addAll(InitialData.getLoot(itemList, lootItemsList));
 			
 			this.locationToNPC.addAll(InitialData.getLocationToNPC());
 			this.winConditionList.addAll(InitialData.getWinCondition());
@@ -240,7 +243,7 @@ public class InitialDataTest {
 		for(Loot loot: lootList) {
 			System.out.println("____Item " + loot.getId());
 			System.out.println("Item_Id: " + loot.getId());
-			System.out.println( "Item name: " + loot.getItem().getName());
+			System.out.println( "Item name: " + loot.getItems().values());
 		}
 		
 		System.out.println("------locationList-------");
@@ -353,7 +356,7 @@ public class InitialDataTest {
 			System.out.println("puzzle_getReqItem: " + puzzle.getRequiredItem());
 			System.out.println("puzzle_getReqSkill: " + puzzle.getRequiredSkill());
 			System.out.println("puzzle_getResult: " + puzzle.getResult());
-			System.out.println("puzzle.getReward: " + puzzle.getReward());
+			//System.out.println("puzzle.getReward: " + puzzle.getReward());
 		}
 	}
 	
