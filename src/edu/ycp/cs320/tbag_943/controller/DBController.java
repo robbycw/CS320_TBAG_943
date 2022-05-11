@@ -93,8 +93,19 @@ public class DBController {
 		db.removeItemFromInventoryByItemIdAndPlayerId(item_id, player_id); 
 	}
 	
+	public Integer addStartingItem(Item item) {
+		return db.insertStartingItemIntoItem(item); 
+	}
+	
 	public void addOutputToLog(String output, int log_id, int log_size) {
 		db.insertOutputIntoGameLogByLogId(output, log_id, log_size);
 	}
 	
+	public void addItemToLootItems(int loot_id, int item_id) {
+		db.insertItemIntoLootItems(loot_id, item_id); 
+	}
+	
+	public void removeItemToLootItems(int loot_id, int item_id) {
+		db.removeItemFromLootItems(loot_id, item_id); 
+	}
 }

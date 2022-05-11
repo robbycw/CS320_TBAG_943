@@ -52,7 +52,7 @@ public class Puzzle {
 	}
 	
 	public boolean checkRequiredItem(Item item) {
-		if(requiredItem.equals(item)) {
+		if(item.getName().toLowerCase().equals(requiredItem.getName().toLowerCase())) {
 			return true;
 		} else {
 			return false;

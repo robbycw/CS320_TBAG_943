@@ -207,13 +207,8 @@ public class TitlePageServlet extends HttpServlet {
 			
 		} else if (req.getParameter("logOut") != null) {
 			// User wants to log out. 
-			User u = new User(); 
-			String loginError = ""; 
-			
-			session.setAttribute("user", u);
-			session.setAttribute("loginErr", loginError);
-			session.setAttribute("makeNewAccount", false);
-			session.setAttribute("playGameClicked", false);
+			// Invalidating the session 'deletes' the attributes stored in session. 
+			session.invalidate();
 			
 		} else if (req.getParameter("titlePage") != null) {
 			System.out.println("TitlePage Servlet: TitlePage");

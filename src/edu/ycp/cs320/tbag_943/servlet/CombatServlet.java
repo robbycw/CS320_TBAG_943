@@ -54,13 +54,7 @@ public class CombatServlet extends HttpServlet {
 		
 		if (req.getParameter("logOut") != null) {
 			// User wants to log out. 
-			User u = new User(); 
-			String loginError = ""; 
-			
-			session.setAttribute("user", u);
-			session.setAttribute("loginErr", loginError);
-			session.setAttribute("makeNewAccount", false);
-			session.setAttribute("playGameClicked", false);
+			session.invalidate();
 			
 		} else if (req.getParameter("titlePage") != null) {
 			System.out.println("TitlePage Servlet: TitlePage");

@@ -79,7 +79,8 @@ public class Combat {
 		int roll = rng.nextInt(20) + 1; 
 		String s = "";
 		
-		if(roll >= tar.getStats().get("armor").getRank()) {
+		if((roll + player.getStats().get("strength").getRank()) >= 
+				(10 + tar.getStats().get("armor").getRank())) {
 			// Attack hits
 			 
 			int damage = Combat.calculateDamage(player); 
@@ -90,7 +91,7 @@ public class Combat {
 				s = "Critical hit! "; 
 			}
 			
-			player.getStats().get("health").addToRank(-damage);
+			tar.getStats().get("health").addToRank(-damage);
 			
 			s = s + player.getName() + " dealt " + Integer.toString(damage) + " damage with their " + player.getWeapon(); 
 			game.addOutput(s);
@@ -135,7 +136,8 @@ public class Combat {
 			int roll = rng.nextInt(20) + 1; 
 			String s = "";
 			
-			if(roll >= player.getStats().get("armor").getRank()) {
+			if((roll + enemy.getStats().get("strength").getRank()) >= 
+					(10 + player.getStats().get("armor").getRank())) {
 				// Attack hits
 				 
 				int damage = Combat.calculateDamage(enemy); 

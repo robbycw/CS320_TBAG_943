@@ -91,6 +91,14 @@ public class Player {
 	public void setName(String name) {
 		this.name = name; 
 	}
+	
+	public ArrayList<String> getInventoryNames(){
+		ArrayList<String> inv = new ArrayList<String>(); 
+		for(Item i : inventory.values()) {
+			inv.add(i.getName()); 
+		}
+		return inv; 
+	}
 
 	public String getWeapon() {
 		return weapon;
@@ -181,7 +189,7 @@ public class Player {
 	}
 
 	public void collect(Item item) {
-		this.inventory.put(item.getName(), item); 
+		this.inventory.put(item.getName().toLowerCase(), item); 
 	}
 	
 	public void interactWithObject() {

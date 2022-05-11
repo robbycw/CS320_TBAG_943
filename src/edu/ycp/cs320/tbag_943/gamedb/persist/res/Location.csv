@@ -1,5 +1,42 @@
-﻿1|Room1|RoomDesc1|true|false|-1|1
-2|Room2|RoomDesc2|true|false|1|2
-3|Room3|RoomDesc3|true|false|-1|3
-4|Room4|RoomDesc4|true|false|-1|4
-5|Room5|RoomDesc5|true|false|2|5
+﻿1|Entrance|The entrance is now barred shut. There's no other way out.|It appears the only way to go is further inside.|TRUE|FALSE|1|1
+2|Lobby|The lobby reeks of bleach and appears completely deserted.|A newspaper discusses a missing person case, namely a former nurse at this asylum named Leonardo Wilson.|TRUE|FALSE|2|2
+3|Atrium|The atrium is filled with wilted potted plants, clearly unwatered for days. A little girl in a pink dress sits patiently in a chair.|The little girl smiles at you warmly. In her hands is a doll that looks eeriely like you.|TRUE|FALSE|3|3
+4|Hallway1|The hallway has various connections.|The hallway has various connections.|TRUE|FALSE|4|4
+5|Dr. Klein's Office|The office is well-organized, though stacks of papers pile upon his desk. Dr. Klein greets you with a smile.|Dr. Klein allows you to read over his documents. The papers describe unspeakable experiments performed on various patients, namely to test the brain's ability to remember. Among the list of participants, you clearly read your own name.|TRUE|TRUE|5|5
+6|Staff Lounge|Various staff members appear to be asleep in this cozy little lounge. Plenty of food litters the tables.|Upon closer inspection, it looks as though the staff members have been poisoned. It's far too late to help them now. The cupcakes smell especially tasty.|TRUE|FALSE|6|6
+7|Hallway2|The hallway has various connections.|The hallway has various connections.|TRUE|FALSE|7|7
+8|General Office|The office is disorganized and lacks any staff members. Documents litter the various desks.|A worker's complaint form sits upon one of the desks, hand-written by Leonardo Wilson himself. He complains about the treatment of patients and their well-being, threatening to inform the authorities if Dr. Klein doesn't fix the issues at hand.|TRUE|TRUE|8|8
+9|Checkpoint|Two guards are standing at the security checkpoint, one appearing to be laughing hysterically.|You notice that the quieter guard is propped up with leg braces, his lifeless eyes staring at the entrance of the checkpoint. The other guard continues to laugh, a keychain dangling on his waist next to his pistol.|TRUE|FALSE|9|9
+10|Hallway3|The hallway has various connections.|The hallway has various connections.|TRUE|FALSE|10|10
+11|Stairwell|The Stairwell seems to be very poorly lit.|As you step you suddenly realize the water underneath you isn't water at all! Under your feet seems to be gaint puddles of blood scattered all over the Room! However it seems the puddles eminate from the door to the east, it reaks of death. Its almost like its calling for you. To the south there seems to be another room blocked by a door with a faded name plate|TRUE|FALSE|11|11
+12|Hallway4|you enter a dingy hallway with a flickering light|As you peer closer at your sorroundings there seems to be dark smear trails leading down the hallway towards a door on the left|TRUE|FALSE|12|12
+13|Hallway5|the hallway seems to be in great disrepair as debirs is scattered everywhere|Closely examining the sourrounding area it seems that the debris wasn't caused by erosion at all! small holes and scorch marks scatter the hallway which makes you belive a battle took place within these halls|TRUE|FALSE|13|13
+14|Armory|the armory seems completely emptied except for a single occupant|looking closer there seems to be some supplies that were overlooked. Within the room it seems the person is a security guard who hastly put on his bloody uniform and is in a corner clutching himself while he rocks back and forth|TRUE|TRUE|14|14
+15|Lounge|The room is completely destroyed with bodies that litter every part of the room|examining the pile of bodies within the room the events that may have transpired become more clear. Now observing the make shift barricades covered in inmates bodies it seems this was the patients last push before they all got mowed down|TRUE|FALSE|15|15
+16|Bathroom|the bathroom seems clean... strangely clean|As you take a further look you examine the stalls one by one until a particular stall catches your attention. Eminating a putrid smell that makes you gag, curosity gets the better of you. As you open the door a scene straight from a janitor's nightmare befalls you. Poop, poop everywhere! You are extremly astonished and disugusted to how the quantity of crap the lines the walls of the stalls and toilet. After staring at it for a while there seems to be something glittering within the toilet.|TRUE|FALSE|16|16
+17|CellBlocka|it seems earily quiet as the only sounds are moaning of the prisoners|LongDescCellBlockA|TRUE|FALSE|17|17
+18|CellA|CellADesc|CellALongDesc|TRUE|FALSE|18|18
+19|CellB|CellBDesc|CellBLongDesc|TRUE|FALSE|19|19
+20|Cafeteria|Cafeteria Desc|Cafeteria LongDesc|TRUE|FALSE|20|20
+21|CellBlockb|CellBlockbDesc|CellBlockbLongDesc|TRUE|FALSE|21|21
+22|CellC|CellCDesc|CellCLongDesc|TRUE|FALSE|22|22
+23|CellD|CellDDesc|CellDLongDesc|TRUE|FALSE|23|23
+24|Vault|VaultDesc|VaultLongDesc|TRUE|FALSE|24|24
+25|CellBlockc|CellBlockcDesc|CellBlockcLongDesc|TRUE|FALSE|25|25
+26|CellE|CellEDesc|CellELongDesc|TRUE|FALSE|26|26
+27|CellF|CellFDesc|CellFLongDesc|TRUE|FALSE|27|27
+28|ExtraSolitary|ExtraSolitaryDesc|ExtraSolitaryLongDesc|TRUE|FALSE|28|28
+29|NursesOffice|The Nurse continues poking at the patient.|A happy Nurse cares for a patient sitting on a chair. The patient is not responding.|TRUE|FALSE|29|29
+30|MedicalBay|Medical Bay|Medical Equipment fills the room. A Nurse is shuffling through an empty box.|TRUE|FALSE|30|30
+31|Therapy|The doctor is still talking.|A doctor is talking to an empty couch. Beside him sits an electric chair. The sponge is already wet.|TRUE|FALSE|31|31
+32|Operating Room|Operating Room|The room appears to be an operating room. Tha janitor must have forgotten to clean up after the last operation.|TRUE|FALSE|32|32
+33|Lab|The lab. A fight must have happened in here.|You've wondered into a lab. Equipment is thrown throughout the room with broken glass covering the floor.|TRUE|FALSE|33|33
+34|Landing|Landing|The floor is painted in red. Definitely a weird choice of color to paint the bottom of a stairwell.|TRUE|FALSE|34|34
+35|Electrical|The Electrical Room|The electrical room. Wires run throughout the room. The worst wire organization.|TRUE|FALSE|35|35
+36|Pipes|The man continues playing the harmonica.|A man leans on the side of the pipes, playing a harmonica. No noise is coming out, but he appears to not be concerned.|TRUE|FALSE|36|36
+37|Morgue|The cleanest of rooms...The Morgue|The morgue, a dreadful place indeed. This room is somehow the cleanest in the building. No bodies to be seen.|TRUE|FALSE|37|37
+38|Boiler|Boiler Room|A very hot room indeed. Nothing seems unusual in here.|TRUE|FALSE|38|38
+39|Laundry|Laundry Room|Clothes are thrown on the floor. Every article of clothing appears to be stained. The washing and drying machines are running, but do not contain clothes.|TRUE|FALSE|39|39
+40|Hallway6|The hallway has various connections.|The hallway has various connections.|TRUE|FALSE|40|40
+41|Janitor's Office|The janitor's office.|A master key hangs on the wall.|TRUE|FALSE|41|41
+42|Security Office|Janitor's OfficeDesc|Janitor's OfficeLongDesc|TRUE|FALSE|42|42

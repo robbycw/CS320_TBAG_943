@@ -16,12 +16,14 @@
 			<%@include file="gamestyle.css" %> 
 		</style>
 		
+
+		<embed src="GameThemeMusic.mp3" type="audio/mpeg" autoplay="true" loop="true" hidden="true">
+		</embed>
 	</head>
 
 	<body>
 
-		<embed src="GameThemeMusic.mp3" type="audio/mpeg" autoplay="true" loop="true" hidden="true">
-		</embed>
+		
 		
 		<!-- Page Header: Has log-out button, display on all pages when logged in. -->
 		<c:if test= "${user.created}">
@@ -134,10 +136,10 @@
 							 <label for="weapons">Weapon:</label>
 							 <select name="weapons" id="weapon" >
 							 	<option value="--">--</option>
-							    <option value="revolver">Revolver</option>
-							    <option value="baton">Baton</option>
-							    <option value="brass knuckles">Brass Knuckles</option>
-							    <option value="hard salami">Hard Salami</option>
+							    <option value="Revolver">Revolver</option>
+							    <option value="Baton">Baton</option>
+							    <option value="Brass Knuckles">Brass Knuckles</option>
+							    <option value="Hard Salami">Hard Salami</option>
 							 </select>
 						 </div>
 						 
@@ -145,10 +147,10 @@
 							 <label for="apparel">Apparel:</label>
 							 <select name="apparel" id="apparel">
 							 	<option value="--">--</option>
-							    <option value="Sunday suit">Sunday Suit</option>
-							    <option value="old police uniform">Old Police Uniform</option>
-							    <option value="dectective's duster">Detective's Duster</option>
-							    <option value="birthday suit">Birthday Suit</option>
+							    <option value="Sunday Suit">Sunday Suit</option>
+							    <option value="Old Police Uniform">Old Police Uniform</option>
+							    <option value="Dectective's Duster">Detective's Duster</option>
+							    <option value="Birthday Suit">Birthday Suit</option>
 							 </select>
 						 </div>
 						  
@@ -156,10 +158,10 @@
 							  <label for="tool">Tool:</label>
 							  <select name="tool" id="tool">
 								   <option value="--">--</option>
-								   <option value="wire cutters">Wire Cutters</option>
-								   <option value="axe">Rusty Axe</option>
-								   <option value="crowbar">Crowbar</option>
-								   <option value="case file">Case File</option>
+								   <option value="Wire Cutters">Wire Cutters</option>
+								   <option value="Axe">Rusty Axe</option>
+								   <option value="Crowbar">Crowbar</option>
+								   <option value="Case File">Case File</option>
 							  </select>
 						  </div>
 						  
@@ -167,10 +169,10 @@
 							 <label for="misc">Misc:</label>
 							 <select name="misc" id="misc" onclick="itemSelected()">
 							 	<option value="--">--</option>
-							    <option value="box of cigars">Box of Cigars</option>
-							    <option value="flask of whiskey">Flask of Whiskey</option>
-							    <option value="pill bottle">Pill Bottle</option>
-							    <option value="teddy bear">Teddy Bear</option>
+							    <option value="Box of Cigars">Box of Cigars</option>
+							    <option value="Flask of Whiskey">Flask of Whiskey</option>
+							    <option value="Pill Bottle">Pill Bottle</option>
+							    <option value="Teddy Bear">Teddy Bear</option>
 							 </select>
 						 </div>
 					</div>
@@ -297,39 +299,38 @@
 		<div id="entire"><div id="row">
 		
 		
-			<div class="column">
-				Map goes here. 
+			<div class="column"> <!-- Map --> 
 
 				<%-- These divs below print out the map, namely the rooms connected to .--%> 
-					
-				 
-				<div style="background-color:gray; width: 95%; height: 25%;"> <%-- Row 1--%>
 				
-					<div style="background-color:${nwc}; width: 33.3%; height: 100%; float: left;">${nwr}</div><%-- Northwest --%>
-					<div style="background-color:${northc}; width: 33.3%; height: 100%; float: left;">${northr}</div><%-- North --%>
-					<div style="background-color:${nec}; width: 33.3%; height: 100%; float: left;">${ner}</div><%-- Northeast --%>
+				<div style="background-color:gray; width: 95%; height: 33%; margin: auto"> <%-- Row 1--%>
 				
-				</div>
-				<div style="background-color:gray; width: 95%; height: 25%;"> <%-- Row 2--%>
-				
-					<div style="background-color:${westc}; width: 33.3%; height: 100%; float: left;">${westr}</div><%-- West --%>
-					<div style="background-color:blue; width: 33.3%; height: 100%; float: left;">${currentr}</div><%-- Current --%>
-					<div style="background-color:${eastc}; width: 33.3%; height: 100%; float: left;">${eastr}</div><%-- East --%>
+					<div style="background-color:${nwc}; width: 33.3%; height: 100%; float: left; display: flex; align-items:center; justify-content: center;">${nwr}</div><%-- Northwest --%>
+					<div style="background-color:${northc}; width: 33.3%; height: 100%; float: left; display: flex; align-items:center; justify-content: center;">${northr}</div><%-- North --%>
+					<div style="background-color:${nec}; width: 33.3%; height: 100%; float: left; display: flex; align-items:center; justify-content: center;">${ner}</div><%-- Northeast --%>
 				
 				</div>
-				<div style="background-color:gray; width: 95%; height: 25%;"> <%-- Row 3--%>
+				<div style="background-color:gray; width: 95%; height: 33%; margin: auto"> <%-- Row 2--%>
 				
-					<div style="background-color:${swc}; width: 33.3%; height: 100%; float: left;">${swr}</div><%-- Southwest --%>
-					<div style="background-color:${southc}; width: 33.3%; height: 100%; float: left;">${southr}</div><%-- South --%>
-					<div style="background-color:${sec}; width: 33.3%; height: 100%; float: left;">${ser}</div><%-- Southeast --%>
+					<div style="background-color:${westc}; width: 33.3%; height: 100%; float: left; display: flex; align-items:center; justify-content: center;">${westr}</div><%-- West --%>
+					<div style="background-color:blue; width: 33.3%; height: 100%; float: left; display: flex; align-items:center; justify-content: center;">${currentr}</div><%-- Current --%>
+					<div style="background-color:${eastc}; width: 33.3%; height: 100%; float: left; display: flex; align-items:center; justify-content: center;">${eastr}</div><%-- East --%>
 				
 				</div>
+				<div style="background-color:gray; width: 95%; height: 33%; margin: auto"> <%-- Row 3--%>
+				
+					<div style="background-color:${swc}; width: 33.3%; height: 100%; float: left; display: flex; align-items:center; justify-content: center;">${swr}</div><%-- Southwest --%>
+					<div style="background-color:${southc}; width: 33.3%; height: 100%; float: left; display: flex; align-items:center; justify-content: center;">${southr}</div><%-- South --%>
+					<div style="background-color:${sec}; width: 33.3%; height: 100%; float: left; display: flex; align-items:center; justify-content: center;">${ser}</div><%-- Southeast --%>
+				
+				</div>
+				
 			</div>
 		
 		
-			<div class="column"> Console
+			<div class="column"> <!-- Console -->
 				
-				<div id="output" style="height: 200px; overflow: auto">
+				<div id="output" style="height: 80%; overflow: auto">
 			
 					<table align=center>
 						<center>
@@ -392,6 +393,18 @@
 			<div class="column">
 				
 				<div class="subsection">Inventory/Utility
+					<div style="overflow: auto">
+					<table align=center>
+						
+						<c:forEach items="${model.player.inventoryNames}" var="str" >
+						<tr>
+							<td>${str}</td>
+						</tr>
+
+						</c:forEach>
+
+					</table>
+					</div>
 				</div>
 				
 				<div class="subsection"> 

@@ -76,8 +76,10 @@ public class GameController {
 			// Check if the player has input the name of a room. 
 			// Also check if that room is discovered. This is legal
 			// thanks to short-circuiting booleans! 
-			if(map.getLocations().keySet().contains(direction) && 
-					!map.getLocations().get(direction).isHidden()) {
+			if((map.getLocations().keySet().contains(direction) && 
+					!map.getLocations().get(direction).isHidden()) || 
+					(map.getLocations().keySet().contains(direction) && 
+					map.getConnections().get(player.getLocation().getName().toLowerCase()).get(4).equals(direction) ) ) {
 				
 				String start = player.getLocation().getName(); 
 				
@@ -380,9 +382,9 @@ public class GameController {
 			for(String key : set) 
 			{
 				String itemName = model.getPlayer().getInventory().get(key).getName();
-				s = s + itemName + ", ";
+				s = s + itemName + " (" + model.getPlayer().getInventory().get(key).getAmount() + ")" + ", ";
 			}
-			s = s.substring(0,s.length()-2);
+			s = s.substring(0, s.length() - 2);
 			model.addOutput("You currently have: " + s);
 		}
 		else
@@ -392,11 +394,13 @@ public class GameController {
 	}
 	
 	public void look()
-	{	
+	{
+		// Print Long Description: 
 		model.addOutput("Description:");
 		model.addOutput(model.getPlayer().getLocation().getLongDescription());
 		giveXp(10);
 		
+		// Print Item names
 		Set<String> itemNames = model.getPlayer().getLocation().getTreasure().getItems().keySet();
 		if(!itemNames.isEmpty())
 		{
@@ -410,6 +414,7 @@ public class GameController {
 			model.addOutput("There are no items here.");
 		}
 		
+		// Print NPC Names
 		Set<String> npcNames = model.getPlayer().getLocation().getNPCs().keySet();
 		if(!npcNames.isEmpty())
 		{
@@ -431,15 +436,73 @@ public class GameController {
 		{
 			model.addOutput("There are no people in this room");
 		}
-
+		
+		// Print Connections in current location
+		ArrayList<String> connections = model.getMap().getConnections().get(model.getPlayer().getLocation().getName().toLowerCase()); 
+		HashMap<String, Location> locations = model.getMap().getLocations(); 
+		for(int i = 0; i <= 3; i++) {
+			// Set direction
+			String direction; 
+			switch(i) {
+			case 0:
+				direction = "north"; 
+				break;
+			case 1:
+				direction = "east"; 
+				break;
+			case 2: 
+				direction = "south"; 
+				break; 
+			case 3: 
+				direction = "west"; 
+				break; 
+			default: 
+				direction = null; 
+				break; 
+			}
+			
+			if(connections.get(i).equals("-1")) {
+				// There is nothing in this direction. 
+				model.addOutput("There is nothing to the " + direction);
+			} else {
+				// There is a room in this direction. Print its name. 
+				model.addOutput("To the " + direction + " is " + locations.get(connections.get(i)).getName());
+			}
+		}
+		
+		// Describe Extra Connection
+		if(connections.get(4).equals("-1")) {
+			// No extra connection.
+			model.addOutput("There is no secret tunnel. How tragic.");
+		} else {
+			// There is an extra connection. 
+			model.addOutput("There is a hidden connection to another room! Perhaps it is a way to the " + locations.get(connections.get(4)).getName());
+		}
 	}
 	
 	public void equip(String item) {
 		HashMap<String, Item> inventory = model.getPlayer().getInventory(); 
 		if(inventory.containsKey(item)) {
-			model.getPlayer().setWeapon(item);
-			String s = item + " is now equipped."; 
-			model.addOutput(s);
+			// Consider if item is a weapon or armor. 
+			if(inventory.get(item).getIsWeapon()) {
+				// Equip the weapon.
+				model.getPlayer().setWeapon(item);
+				String s = item + " is now equipped."; 
+				model.addOutput(s);
+			} else if (inventory.get(item).getIsArmor()) {
+				// Equip the armor. 
+				model.getPlayer().setArmor(item);
+				int armorInc = inventory.get(item).getArmor(); 
+				
+				// Set the player's Armor stat. 
+				model.getPlayer().getStats().get("armor").setRank(10 + armorInc);
+				String s = item + " is now equipped."; 
+				model.addOutput(s);
+			} else {
+				String er = item + " is not a weapon or armor.";
+				model.addOutput(er);
+			}
+			
 		} else {
 			String s = "You do not have a " + item + '.'; 
 			model.addOutput(s);
@@ -500,7 +563,7 @@ public class GameController {
 								s = s + "\n" + name;
 							}
 							puz.getLoot().giveItems(model.getPlayer());
-              giveXp(100);
+							giveXp(100);
 						}
 						}
 						else
@@ -509,30 +572,59 @@ public class GameController {
 							model.getTimer().decrementTime(300);
 						}
 					}
-					else if(!puz.isSolved() 
-							&& puz.getBreakable()) 
+					else if(!puz.isSolved() && puz.getBreakable()) 
 					{
-						if(puz.solve(response) && puz.checkRequiredSkill(model.getPlayer().getStats().get(puz.getRequiredSkill().getName())))
-						{
-						s = "You demonstrated your skills and got past the obstacle!";
-							if(!puz.getRoomCon().equals(""))
+						if(puz.getRequiredSkill() != null) {
+							if(puz.solve(response) && puz.checkRequiredSkill(model.getPlayer().getStats().get(
+									puz.getRequiredSkill().getName())))
 							{
-								model.getMap().getLocations().get(puz.getRoomCon()).setBlocked(false);
-								
-								giveXp(50);
+								s = "You demonstrated your skills and got past the obstacle!";
+								if(!puz.getRoomCon().equals(""))
+								{
+									model.getMap().getLocations().get(puz.getRoomCon()).setBlocked(false);
+									
+									giveXp(50);
+								}
+							//puz connections
+	
 							}
-						//puz connections
-
+							else if(puz.solve(response) && !puz.checkRequiredSkill(model.getPlayer().getStats().get(
+									puz.getRequiredSkill().getName())))
+							{
+								s = "You are far too unskilled for this task. Your " + puz.getRequiredSkill().getName() + " is "
+									+ model.getPlayer().getStats().get(response).getRank() 
+									+ " and must be " + puz.getRequiredSkill().getRank();
+							}
+							else
+							{
+								s = "Your answer of: '" + response + "' is not what you do here.";
+							}
 						}
-						else if(puz.solve(response) && !puz.checkRequiredSkill(model.getPlayer().getStats().get("strength")))
-						{
-						s = "You are far too unskilled for this task. Your " + puz.getRequiredSkill().getName() + " is "
-								+ model.getPlayer().getStats().get("speed").getRank() 
-								+ " and must be " + puz.getRequiredSkill().getRank();
-						}
-						else
-						{
-							s = "your answer of: '" + response + "' is not what you do here.";
+						else {
+							if(model.getPlayer().getInventory().containsKey(response) && puz.checkRequiredItem(model.getPlayer().getInventory().get(
+									response)))
+							{
+								s = "You used the item and got past the obstacle!";
+								if(!puz.getRoomCon().equals("-1"))
+								{
+									model.getMap().getLocations().get(puz.getRoomCon().toLowerCase()).setBlocked(false);
+									
+									giveXp(50);
+								}
+							//puz connections
+	
+							}
+							else if(model.getPlayer().getInventory().containsKey(response) && !puz.checkRequiredItem(model.getPlayer().getInventory().get(
+									response)))
+							{
+								s = "You do not have the required item. You must have a " + puz.getRequiredItem().getName();
+								model.getTimer().decrementTime(300);
+							}
+							else
+							{
+								s = "Your answer of: '" + response + "' is not the correct item.";
+								model.getTimer().decrementTime(300);
+							}
 						}
 					}
 					else if(puz.isSolved())
@@ -542,6 +634,78 @@ public class GameController {
 					
 					model.addOutput(s);
 			}
+	}
+	
+	public void use(String item) {
+		// Check if Item is in inventory
+		if(model.getPlayer().getInventory().containsKey(item)) {
+			// Item is in inventory. 
+			
+			// Check the Item's type. Use only works if the item type is Consumable or Tool.
+			Item i = model.getPlayer().getInventory().get(item); 
+			if(i.isConsumable()) {
+				
+				// Apply the item's effect: Only healing/damage currently.
+				// Consumables only apply to the player currently. 
+				
+				// Check if damage or healing. 
+				if(i.getHealthGain() > 0) {
+					// Item heals the player. 
+					// Increase the player's health by this amount. 
+					int health = model.getPlayer().getStats().get("health").getRank(); 
+					model.getPlayer().getStats().get("health").setRank(health + i.getHealthGain());
+					model.addOutput(model.getPlayer().getName() + " used " + i.getName() + " and healed for " + i.getHealthGain() + " hitpoints.");
+				} else {
+					// Item deals damage to the Player. 
+					// Add the damage to the Player's health. 
+					int health = model.getPlayer().getStats().get("health").getRank(); 
+					model.getPlayer().getStats().get("health").setRank(health + i.getHealthGain());
+					int damage = i.getHealthGain() - (2 * i.getHealthGain()); 
+					model.addOutput(model.getPlayer().getName() + " used " + i.getName() + " and took " + damage + " damage!");
+					
+					// If health reduces to 0, set Player as dead and end game. 
+					if(model.getPlayer().getStats().get("health").getRank() < 1) {
+						model.addOutput(model.getPlayer().getName() + " died due to consuming " + i.getName() + "!");
+					}
+				}
+				
+				// Reduce amount of item by 1.
+				i.setAmount(i.getAmount() - 1);
+				model.addOutput(model.getPlayer().getName() + " has " + i.getAmount() + " " + i.getName() + "s remaining.");
+				
+			} else if (i.getIsTool()) {
+				// Check if the tool is used in the Location's Puzzles. 
+				// If so, solve the puzzle. 
+				// If not, return an error. 
+				
+				for(Puzzle p : model.getPlayer().getLocation().getPuzzles()) {
+					if(p.getRequiredItem() != null && p.getRequiredItem().getName().equals(i.getName())) {
+						model.addOutput(model.getPlayer().getName() + " used their " + i.getName() + 
+								" to complete Puzzle #" + p.getId());
+						
+						p.solve(p.getAnswer()); 
+						// TODO: Reward the Player's Loot (if applicable) - Needs Conrad's Update.
+						
+					}
+				}
+				
+			} else {
+				// Item is a weapon or armor. 
+				String s = "Error: Use command only works on items that are tools or consumables."; 
+				model.addOutput(s);
+				return; 
+			}
+			
+		} else {
+			
+			// Item is not in inventory. 
+			String s = model.getPlayer().getName() + " does not have " + item + "."; 
+			model.addOutput(s);
+			return; 
+		}
+		// Check item type
+		// Consumable: use and discard
+		// Tool: check if this solves a puzzle
 	}
 	
 	// Certain commands cannot be taken while in combat. This method is called in such a case

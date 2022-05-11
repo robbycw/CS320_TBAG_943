@@ -5,13 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import edu.ycp.cs320.booksdb.model.Author;
-import edu.ycp.cs320.booksdb.model.Book;
-import edu.ycp.cs320.booksdb.model.Pair;
 import edu.ycp.cs320.tbag_943.classes.*;
 
 //Code comes from CS320 Library Example. 
-public class FakeDatabase implements IDatabase {
+/*public class FakeDatabase implements IDatabase {
 	
 	private List<Author> authorList;
 	private List<Book> bookList;
@@ -77,6 +74,8 @@ public class FakeDatabase implements IDatabase {
 
 	// Fake database constructor - initializes the DB
 	// the DB only consists for a List of Authors and a List of Books
+	 *
+	 */
 	/*public FakeDatabase() {
 		authorList = new ArrayList<Author>();
 		bookList = new ArrayList<Book>();
@@ -89,7 +88,7 @@ public class FakeDatabase implements IDatabase {
 	}*/
 
 	// loads the initial data retrieved from the CSV files into the DB
-	public void readInitialData() {
+	/*public void readInitialData() {
 		try {
 			this.userList.addAll(InitialData.getUser());
 			this.userToGame.addAll(InitialData.getUserToGame());
@@ -387,4 +386,4 @@ public class FakeDatabase implements IDatabase {
 		}
 		return null;
 	}
-}
+}*/

@@ -58,7 +58,38 @@ public class GameServlet extends HttpServlet {
 			String desc = loc.getDescription();
 			req.setAttribute("description", desc);
 
-		} 
+		} else {
+			// Session and model attribute exist. 
+			// User is logged in and has selected a game. 
+			
+			User user = (User) session.getAttribute("user"); 
+			
+			DBController dbc = new DBController(); 
+			Game game = user.getCurrentGame(); 
+			
+			// Set Player attributes if they are created. 
+			if(!game.getPlayerNotCreated()) {
+				Player p = game.getPlayer(); 
+				session.setAttribute("playerName", p.getName());
+				session.setAttribute("strengthStat", p.getStats().get("strength").getRank());
+				session.setAttribute("speedStat", p.getStats().get("speed").getRank());
+				session.setAttribute("vitalityStat", p.getStats().get("vitality").getRank());
+				session.setAttribute("charismaStat", p.getStats().get("charisma").getRank());
+				
+				session.setAttribute("xp", p.getXp());
+				session.setAttribute("health", p.getStats().get("health").getRank());
+				session.setAttribute("armor", p.getStats().get("armor").getRank());
+			}
+			
+			// Make the map attributes. 
+			GameServlet.mapMaker(session, game);
+			
+			// Location Description
+			Location loc = new Location();
+			String desc = loc.getDescription();
+			req.setAttribute("description", desc);
+			
+		}
 		
 		
 		System.out.println("GameServlet: doGet");
@@ -114,7 +145,8 @@ public class GameServlet extends HttpServlet {
 			player.setName(playerName);
 			player.getStats().get("strength").setRank(strengthStat);
 			player.getStats().get("speed").setRank(speedStat);
-			player.getStats().get("health").setRank(vitalityStat + 10);
+			player.getStats().get("vitality").setRank(vitalityStat);
+			player.getStats().get("health").setRank(vitalityStat + 100);
 			player.getStats().get("charisma").setRank(charismaStat);
 			
 			player.setXpThreshold(40);
@@ -123,32 +155,48 @@ public class GameServlet extends HttpServlet {
 			session.setAttribute("xpThreshold", player.getXpThreshold());
 			session.setAttribute("xp", player.getLevel());
 			session.setAttribute("health", player.getStats().get("health").getRank());
-			session.setAttribute("armor", player.getStats().get("armor").getRank());
+			
 		
 			//TODO - work on starter items + adding those to the player's inventory after chosen! 
 			model.setPlayerNotCreated(false);
 			// TODO: Ensure Starter Items are properly equip! 
+			
+			// Starting weapon
 			Item strtWeapon = new Item(startingWeapon, 5);
 			strtWeapon.isWeapon(true);
-			player.getInventory().put(startingWeapon, strtWeapon);
-			player.setWeapon(startingWeapon);
+			player.getInventory().put(startingWeapon.toLowerCase(), strtWeapon);
+			player.setWeapon(startingWeapon.toLowerCase());
 			
+			// Starting armor
 			Item strtApparel = new Item(startingApparel);
 			strtApparel.isArmor(true);
-			strtApparel.setArmor(6);
-			player.getInventory().put(startingApparel, strtApparel);
-			player.setArmor(startingApparel);
+			strtApparel.setArmor(5);
+			player.getInventory().put(startingApparel.toLowerCase(), strtApparel);
+			player.setArmor(startingApparel.toLowerCase());
+			player.getStats().get("armor").setRank(10 + strtApparel.getArmor());
+			session.setAttribute("armor", player.getStats().get("armor").getRank());
 			
+			// Starting tool 
 			Item strtTool = new Item(startingTool);
 			strtTool.isTool(true);
-			player.getInventory().put(startingTool, strtTool);
+			player.getInventory().put(startingTool.toLowerCase(), strtTool);
 			
-			Item strtMisc = new Item(startingMisc, 10);
+			// Starting consumable
+			Item strtMisc = new Item(startingMisc);
 			strtMisc.isConsumable(true);
-			player.getInventory().put(startingMisc, strtMisc);
+			strtMisc.setHealthGain(5);
+			player.getInventory().put(startingMisc.toLowerCase(), strtMisc);
 			
-			// Match Player to Model's ID. 
-			//player.setId(model.getId());
+			// Add each item to the Item table and assign its ID
+			for(Item i : player.getInventory().values()) {
+				i.setId(dbc.addStartingItem(i));
+				System.out.println(i.getName() + " now has ID: " + i.getId());
+			}
+			
+			// Add each item to the PlayerInventory table
+			for(Item i : player.getInventory().values()) {
+				dbc.addItemToPlayerInventory(player.getId(), i.getId());
+			}
 			
 			model.setPlayer(player);
 			session.setAttribute("model", model);
@@ -178,13 +226,15 @@ public class GameServlet extends HttpServlet {
 			
 		} else if (req.getParameter("logOut") != null) {
 			// User wants to log out. 
-			User u = new User(); 
-			String loginError = ""; 
+			//User u = new User(); 
+			//String loginError = ""; 
 			
-			session.setAttribute("user", u);
-			session.setAttribute("loginErr", loginError);
-			session.setAttribute("makeNewAccount", false);
-			session.setAttribute("playGameClicked", false);
+			session.invalidate();
+			
+			//session.setAttribute("user", u);
+			//session.setAttribute("loginErr", loginError);
+			//session.setAttribute("makeNewAccount", false);
+			//session.setAttribute("playGameClicked", false);
 			
 		} else if (req.getParameter("titlePage") != null) {
 			System.out.println("TitlePage Servlet: TitlePage");
@@ -203,9 +253,12 @@ public class GameServlet extends HttpServlet {
 			int vitalityPoints = getIntegerFromParameter(req.getParameter("newVitalityStat"));
 			int charismaPoints = getIntegerFromParameter(req.getParameter("newCharismaStat"));
 			
+			// Increase health
+			player.getStats().get("health").addToRank(vitalityPoints);
+			
 			strengthPoints += player.getStats().get("strength").getRank();
 			speedPoints += player.getStats().get("speed").getRank();
-			vitalityPoints += player.getStats().get("health").getRank();
+			vitalityPoints += player.getStats().get("vitality").getRank();
 			charismaPoints += player.getStats().get("charisma").getRank();
 			
 			session.setAttribute("strengthStat", strengthPoints );
@@ -213,11 +266,14 @@ public class GameServlet extends HttpServlet {
 			session.setAttribute("vitalityStat", vitalityPoints);
 			session.setAttribute("charismaStat", charismaPoints);
 			
-			player.getStats().get("strength").setRank(player.getStats().get("strength").getRank());
-			player.getStats().get("speed").setRank(speedPoints + player.getStats().get("speed").getRank());
-			player.getStats().get("health").setRank(vitalityPoints + player.getStats().get("health").getRank());
-			player.getStats().get("charisma").setRank(charismaPoints + player.getStats().get("charisma").getRank());
+			player.getStats().get("strength").setRank(strengthPoints);
+			player.getStats().get("speed").setRank(speedPoints);
+			player.getStats().get("vitality").setRank(vitalityPoints);
+			player.getStats().get("charisma").setRank(charismaPoints);
 			model.setIsLevelUp(false);
+			
+			session.setAttribute("model", model);
+			dbc.saveGame(model, player.getLocation());
 		}
 		System.out.println("_____" + req.getParameter("levelUP"));
 		System.out.println(req.getParameter("newStrengthStat")  + " new strength stat");
@@ -256,23 +312,25 @@ public class GameServlet extends HttpServlet {
 			System.out.println(req.getParameter("newStrengthStat")  + "new strength stat");
 			
 			
-			if(model.getPlayer().getXp() >= (model.getPlayer().getXpThreshold() - .01111)) {
+			if(model.getPlayer().getStats().get("xp").getRank()
+					>= (model.getPlayer().getStats().get("level").getRank() * 10)) {
 			
 				
 				model.setIsLevelUp(true);
-				player.setLevel(model.getPlayer().getLevel() + 1);
-				player.setXpThreshold(model.getPlayer().getXpThreshold() * 3);
+				int level = player.getStats().get("level").getRank();
+				int xp = player.getStats().get("xp").getRank();
+				player.getStats().get("level").setRank(level + 1);
+				player.getStats().get("xp").setRank(xp - (level * 10));
 				
 				
-				
-				System.out.println( model.getPlayer().getXpThreshold() + " xpThreshold");
-				System.out.println(model.getIsLevelUp() + "levelUp! Panel");
-			}else {
+				//System.out.println( model.getPlayer().getXpThreshold() + " xpThreshold");
+				//System.out.println(model.getIsLevelUp() + "levelUp! Panel");
+			} else {
 				model.setIsLevelUp(false);
 				System.out.println("levelUp false");
 			}
-			System.out.println("levelUp! test");
-			System.out.print(model.getIsLevelUp() + " after");
+			//System.out.println("levelUp! test");
+			//System.out.print(model.getIsLevelUp() + " after");
 			
 			// The following switch-case will interpret the user's command and call the
 			// appropriate controller functions. 
@@ -339,10 +397,18 @@ public class GameServlet extends HttpServlet {
 							break;
 						case "pickup":
 						case "collect":
-							int result = controller.collect(input[1]);
+							String itemName1 = input[1]; 
+							for(int i = 2; i < input.length; i++) {
+								itemName1 = itemName1 + " " + input[i];
+							}
+							int result = controller.collect(itemName1);
+							
 							if(result != -1) {
 								// Insert Item into Inventory. 
 								dbc.addItemToPlayerInventory(model.getPlayer().getId(), result);
+								
+								// Remove Item from LootItems
+								dbc.removeItemToLootItems(model.getPlayer().getLocation().getId(), result);
 							}
 							break; 
 						case "look":
@@ -360,6 +426,8 @@ public class GameServlet extends HttpServlet {
 								itemName = itemName + " " + input[i];
 							}
 							int itemId = controller.drop(itemName);
+							dbc.removeItemFromPlayerInventory(model.getPlayer().getId(), itemId);
+							dbc.addItemToLootItems(model.getPlayer().getLocation().getId(), itemId);
 							break;
 						case "solve":
 						case "answer":
@@ -382,6 +450,27 @@ public class GameServlet extends HttpServlet {
 								controller.puzzle();
 								break;
 							}
+						case "use": 
+							// Concatenate multiple word entries. 
+							String itemIn = input[1];
+							for(int i = 2; i < input.length; i++) {
+								itemIn = itemIn + " " + input[i];
+							}
+							
+							// Try to use the item. 
+							controller.use(itemIn);
+							
+							// Check if the Item was consumed. If so, remove it from the Player's Inventory.
+							if(model.getPlayer().getInventory().containsKey(itemIn) && 
+									model.getPlayer().getInventory().get(itemIn).getAmount() == 0) {
+								// Removes Item To Player mapping from PlayerInventory Table. 
+								dbc.removeItemFromPlayerInventory(model.getPlayer().getId(),
+										model.getPlayer().getInventory().get(itemIn).getId());
+								
+								// Removes Item from current inventory. 
+								model.getPlayer().getInventory().remove(itemIn); 
+							}
+							break; 
 						case "wargames":
 						  	controller.win();
 						  	resp.sendRedirect("/tbag_943/credits");
@@ -393,9 +482,9 @@ public class GameServlet extends HttpServlet {
 						case "credits":
 							resp.sendRedirect("/tbag_943/credits");
 							break;
-					  case "xp":
-						  controller.giveXp(10);
-						  break;
+						case "xp":
+							model.getPlayer().getStats().get("xp").addToRank(10);
+							break;
 						default: 
 							model.addOutput("Unknown command.");
 					}
@@ -525,6 +614,44 @@ public class GameServlet extends HttpServlet {
 				Location n = game.getMap().getLocations().get(south);
 				session.setAttribute("swc", game.getMap().getDirectionColor(n, 3));
 				session.setAttribute("swr", game.getMap().getDirectionName(n, 3));
+			}
+		}
+		
+		// If Room to the East exists...
+		if(!game.getMap().getConnections().get(currentLC).get(1).equals("-1")) {
+			
+			// Try to color and name rooms to the east and west of the Southern room, if connected.
+			String east = game.getMap().getConnections().get(currentLC).get(1).toLowerCase();
+			// Northeast
+			if(!game.getMap().getConnections().get(east).get(0).equals("-1")) {
+				Location n = game.getMap().getLocations().get(east);
+				session.setAttribute("nec", game.getMap().getDirectionColor(n, 0));
+				session.setAttribute("ner", game.getMap().getDirectionName(n, 0));
+			}
+			// Southeast
+			if(!game.getMap().getConnections().get(east).get(2).equals("-1")) {
+				Location n = game.getMap().getLocations().get(east);
+				session.setAttribute("sec", game.getMap().getDirectionColor(n, 2));
+				session.setAttribute("ser", game.getMap().getDirectionName(n, 2));
+			}
+		}
+		
+		// If Room to the West exists...
+		if(!game.getMap().getConnections().get(currentLC).get(3).equals("-1")) {
+			
+			// Try to color and name rooms to the east and west of the Southern room, if connected.
+			String west = game.getMap().getConnections().get(currentLC).get(3).toLowerCase();
+			// Northwest
+			if(!game.getMap().getConnections().get(west).get(0).equals("-1")) {
+				Location n = game.getMap().getLocations().get(west);
+				session.setAttribute("nwc", game.getMap().getDirectionColor(n, 0));
+				session.setAttribute("nwr", game.getMap().getDirectionName(n, 0));
+			}
+			// Southwest
+			if(!game.getMap().getConnections().get(west).get(2).equals("-1")) {
+				Location n = game.getMap().getLocations().get(west);
+				session.setAttribute("swc", game.getMap().getDirectionColor(n, 2));
+				session.setAttribute("swr", game.getMap().getDirectionName(n, 2));
 			}
 		}
 		

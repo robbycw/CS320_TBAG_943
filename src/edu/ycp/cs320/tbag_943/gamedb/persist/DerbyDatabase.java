@@ -353,17 +353,18 @@ public class DerbyDatabase implements IDatabase {
 						location.setId(resultSet.getInt(1));
 						location.setName(resultSet.getString(2));
 						location.setDescription(resultSet.getString(3));
-						location.setHidden(Boolean.parseBoolean(resultSet.getString(4)));
-						location.setBlocked(Boolean.parseBoolean(resultSet.getString(5)));
+						location.setLongDescription(resultSet.getString(4));
+						location.setHidden(Boolean.parseBoolean(resultSet.getString(5)));
+						location.setBlocked(Boolean.parseBoolean(resultSet.getString(6)));
 						
 						System.out.println("Location ID: " + location.getId()); 
 						
 						// Set Loot
-						Loot loot = findLootByLootID(resultSet.getInt(6));
+						Loot loot = findLootByLootID(resultSet.getInt(7));
 						location.setTreasure(loot);
 						
 						// Set WinCondition
-						WinCondition wc = findWinConditionByWinConditionId(resultSet.getInt(7));
+						WinCondition wc = findWinConditionByWinConditionId(resultSet.getInt(8));
 						location.setWinCondition(wc);
 						
 						// Set the NPCs
@@ -830,8 +831,7 @@ public class DerbyDatabase implements IDatabase {
 			public Loot execute(Connection conn) throws SQLException {
 				PreparedStatement stmt1 = null;
 				ResultSet resultSet1 = null;
-				PreparedStatement stmt2 = null;
-				ResultSet resultSet2 = null;
+				
 				
 				try {
 					stmt1 = conn.prepareStatement(
@@ -840,14 +840,6 @@ public class DerbyDatabase implements IDatabase {
 							"  where loot_id = ?"
 					);
 					stmt1.setInt(1, lootID);
-					
-					stmt2 = conn.prepareStatement(
-							"select Items.*" +
-							"  from  LootItems, Items " +
-							"  where loot_id = ? " +
-							"  and LootItems.loot_id = Items.item_id"
-					);
-					stmt2.setInt(1, lootID);
 					
 					Loot loot = new Loot(); 
 					
@@ -858,31 +850,16 @@ public class DerbyDatabase implements IDatabase {
 					Boolean foundItem = false;
 					
 					while (resultSet1.next()) {
-						found = true;
-						
 						loot.setId(resultSet1.getInt(1));
 						loot.setXP(resultSet1.getInt(2));
-						while(resultSet2.next()) {
-							Item item = new Item();
-							
-							foundItem = true;
-							item.setId(resultSet2.getInt(1));
-							item.setName(resultSet2.getString(2));
-							item.setDes(resultSet2.getString(3));
-							item.setConsumable(Boolean.parseBoolean(resultSet2.getString(4)));
-							item.setArmor(Boolean.parseBoolean(resultSet2.getString(6)));
-							item.setWeapon(Boolean.parseBoolean(resultSet2.getString(5)));
-							item.setTool(Boolean.parseBoolean(resultSet2.getString(7)));
-							item.setDamage(resultSet2.getInt(8));
-							item.setHealthGain(resultSet2.getInt(9));
-							item.setValue(resultSet2.getInt(10));
-							item.setAmount(resultSet2.getInt(11));
-							item.setArmor(resultSet2.getInt(12));
-							item.setAccuracy(resultSet2.getDouble(13));
-								
-							loot.addItem(item);
-							}
+						
+						// Add items to Loot
+						List<Integer> itemIds = findItemIdsByLootId(loot.getId()); 
+						
+						for(int i : itemIds) {
+							loot.addItem(findItemByItemID(i));
 						}
+					}
 					
 					
 					// check if the locationID was found
@@ -894,8 +871,48 @@ public class DerbyDatabase implements IDatabase {
 				} finally {
 					DBUtil.closeQuietly(resultSet1);
 					DBUtil.closeQuietly(stmt1);
-					DBUtil.closeQuietly(resultSet2);
-					DBUtil.closeQuietly(stmt2);
+				}
+			}
+		});
+	}
+	
+	public List<Integer> findItemIdsByLootId(int loot_id) {
+		return executeTransaction(new Transaction<ArrayList<Integer>>() {
+			@Override
+			public ArrayList<Integer> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				ResultSet resultSet1 = null;
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select item_id " +
+							"  from  LootItems " +
+							"  where loot_id = ? "
+					);
+					stmt1.setInt(1, loot_id);
+					
+					ArrayList<Integer> combatIds = new ArrayList<Integer>();
+					
+					resultSet1 = stmt1.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+					
+					while (resultSet1.next()) {
+						found = true;
+						
+						combatIds.add(resultSet1.getInt(1));
+						
+					}
+					// check if the locationID was found
+					if (!found) {
+						System.out.println("<" + loot_id + "> was not found in the LootItems table");
+					}
+					
+					return combatIds;
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
 				}
 			}
 		});
@@ -1770,7 +1787,7 @@ public class DerbyDatabase implements IDatabase {
 		});
 	}
 	
-	public Integer insertNewLootItems(List<Pair<Integer,Integer>> lootItems, int rowsLootItems) {
+	public Integer insertNewLootItems(List<Pair<Integer,Integer>> lootItems, int lootRows, int itemRows) {
 		// Note, this method inserts a new row for the new player and default values.
 		// Character creation should call an update for the Player class! 
 		return executeTransaction(new Transaction<Integer>() {
@@ -1786,8 +1803,8 @@ public class DerbyDatabase implements IDatabase {
 					);
 					
 					for(Pair<Integer,Integer> pair: lootItems) {
-						stmt1.setInt(1, pair.getLeft());
-						stmt1.setInt(2, pair.getRight());
+						stmt1.setInt(1, pair.getLeft() + lootRows);
+						stmt1.setInt(2, pair.getRight() + itemRows);
 						stmt1.addBatch();
 					}
 					
@@ -1823,8 +1840,18 @@ public class DerbyDatabase implements IDatabase {
 						stmt1.setInt(1, puzzle.getId() + puzzleMaxId);
 						stmt1.setString(2, puzzle.getPrompt());
 						stmt1.setString(3, puzzle.getAnswer());
-						stmt1.setInt(4,puzzle.getRequiredSkill().getId() + statMax);
-						stmt1.setInt(5,puzzle.getRequiredItem().getId() + itemMax);
+						if(puzzle.getRequiredSkill() != null) {
+							stmt1.setInt(4,puzzle.getRequiredSkill().getId() + statMax);
+						} else {
+							stmt1.setInt(4, -1);
+						}
+						
+						if(puzzle.getRequiredItem() != null) {
+							stmt1.setInt(5,puzzle.getRequiredItem().getId() + itemMax);
+						} else {
+							stmt1.setInt(5, -1);
+						}
+						
 						stmt1.setString(6, Boolean.toString(puzzle.getResult()));
 						stmt1.setString(7, Boolean.toString(puzzle.isCanSolve()));
 						stmt1.setString(8, Boolean.toString(puzzle.isSolved()));
@@ -2120,23 +2147,24 @@ public class DerbyDatabase implements IDatabase {
 				
 				try {
 					stmt = conn.prepareStatement(
-						"insert into Location (location_id, name, description, hidden, blocked, loot_id, winCondition_id) "
-						+ " values(?, ?, ?, ?, ?, ?, ?)"	
+						"insert into Location (location_id, name, description, longDescription, hidden, blocked, loot_id, winCondition_id) "
+						+ " values(?, ?, ?, ?, ?, ?, ?, ?)"	
 					);
 					
 					for(Location location : locations) {
 						stmt.setInt(1,  location.getId() + locationMaxId);
 						stmt.setString(2,  location.getName());
 						stmt.setString(3,  location.getDescription());
-						stmt.setString(4,  Boolean.toString(location.isHidden()));
-						stmt.setString(5,  Boolean.toString(location.getBlocked()));
+						stmt.setString(4,  location.getLongDescription()); 
+						stmt.setString(5,  Boolean.toString(location.isHidden()));
+						stmt.setString(6,  Boolean.toString(location.getBlocked()));
 						if(location.getTreasure() == null) {
-							stmt.setInt(6, -1);
+							stmt.setInt(7, -1);
 						} else {
-							stmt.setInt(6, location.getTreasure().getId() + lootMaxId);
+							stmt.setInt(7, location.getTreasure().getId() + lootMaxId);
 						}
 						
-						stmt.setInt(7, location.getWinCondition().getId() + winConditionMaxId);
+						stmt.setInt(8, location.getWinCondition().getId() + winConditionMaxId);
 						stmt.addBatch();
 					}
 					
@@ -2642,6 +2670,88 @@ public class DerbyDatabase implements IDatabase {
 			}
 		});
 	}
+	
+	public Integer insertItemIntoLootItems(int loot_id, int item_id) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					// insert new string of output into the GameLog table. 
+					// prepare SQL insert statement to add new output.
+					stmt1 = conn.prepareStatement(
+							"insert into LootItems (loot_id, item_id) " +
+							"  values(?, ?) "
+					);
+					
+					stmt1.setInt(1, loot_id);
+					stmt1.setInt(2, item_id);
+						
+					stmt1.executeUpdate();
+					
+					System.out.println("Item #" + item_id + " inserted into LootItems table for Loot #:" + loot_id);
+									
+					
+					return 0;
+					
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
+	public Integer insertStartingItemIntoItem(Item item) {
+		
+		// Find ID for this item. 
+		int item_id = getLargestIdInTable("Item", "item_id") + 1; 
+		
+		// Insert this Item into the Item Table
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+											
+				try {
+					
+					stmt1 = conn.prepareStatement(
+							"insert into Item (item_id, name, description, isConsumable, " +
+							"isWeapon, isArmor, isTool, damage, healthGain, value, amount, armor, accuracy) " +
+							"  values(?,?,?, ?,?,?,?,?, ?,?,?,?,?) "
+					);
+					
+					
+					// Use ItemID based on current number of rows. 
+					stmt1.setInt(1, item_id);
+					stmt1.setString(2, item.getName());
+					stmt1.setString(3, item.getDes());
+					stmt1.setString(4, Boolean.toString(item.isConsumable()));
+					stmt1.setString(5, Boolean.toString(item.getIsWeapon()));
+					stmt1.setString(6, Boolean.toString(item.getIsArmor()));
+					stmt1.setString(7, Boolean.toString(item.getIsTool()));
+					stmt1.setInt(8, item.getDamage());
+					stmt1.setInt(9, item.getHealthGain());
+					stmt1.setInt(10, item.getValue());
+					stmt1.setInt(11, item.getAmount());
+					stmt1.setInt(12, item.getArmor());
+					stmt1.setDouble(13, item.getAccuracy());
+						
+					stmt1.executeUpdate();
+					
+					System.out.println("Item #" + item_id + " inserted into Item table");
+									
+					// Return the item's ID. 
+					return item_id;
+					
+				} finally {
+					DBUtil.closeQuietly(stmt1);
+				}
+			}
+		});
+	}
+	
 
 	//
 	// Update Queries
@@ -2777,8 +2887,8 @@ public class DerbyDatabase implements IDatabase {
 			updatePuzzleByPuzzleId(p);
 		}
 		
-		// Update Loot
-		updateLootByLootId(location.getTreasure());
+		// Update LootItems
+		// updateLootItemsByLootId(location.getTreasure());
 		
 		// Update Location fields. 
 		return executeTransaction(new Transaction<Boolean>() {
@@ -2980,6 +3090,7 @@ public class DerbyDatabase implements IDatabase {
 					// Update Loot by Loot ID
 					stmt1 = conn.prepareStatement(
 							"update LootItems " +
+							"  set loot_id = ?, item" +
 							"  where loot_id = ?" +
 							"  and item_id = ?"
 					);
@@ -3010,14 +3121,12 @@ public class DerbyDatabase implements IDatabase {
 	// Removal Queries
 	//
 	
-	public boolean RemoveItemFromLootItems(int lootId,int itemId) {
+	public boolean removeItemFromLootItems(int lootId,int itemId) {
 		return executeTransaction(new Transaction<Boolean>() {
 			@Override
 			public Boolean execute(Connection conn) throws SQLException {
 				PreparedStatement stmt1 = null;
 				ResultSet resultSet1 = null;
-				PreparedStatement stmt2 = null;
-				ResultSet resultSet2 = null;
 				
 				try {
 					stmt1 = conn.prepareStatement(
@@ -3213,6 +3322,7 @@ public class DerbyDatabase implements IDatabase {
 				PreparedStatement combatToNPC = null;
 				PreparedStatement locationToPuzzle = null;	
 				PreparedStatement puzzle = null;
+				PreparedStatement lootItems = null; 
 			
 				try {
 					user = conn.prepareStatement(
@@ -3295,6 +3405,7 @@ public class DerbyDatabase implements IDatabase {
 						"	location_id integer primary key, " +
 						"	name varchar(50)," +
 						"	description varchar(500)," +
+						"	longDescription varchar(2500)," +
 						"	hidden varchar(5)," +
 						"	blocked varchar(5)," +
 						"	loot_id integer," +
@@ -3521,6 +3632,16 @@ public class DerbyDatabase implements IDatabase {
 					
 					System.out.println("CombatToNPC table created");
 					
+					lootItems = conn.prepareStatement(
+							"create table LootItems (" +
+							"	loot_id integer, " +
+							"	item_id integer" +
+							")"
+						);
+					lootItems.executeUpdate();
+					
+					System.out.println("LootItems table created");
+					
 					
 					game = conn.prepareStatement(
 						"create table Game (" +
@@ -3580,6 +3701,7 @@ public class DerbyDatabase implements IDatabase {
 					DBUtil.closeQuietly(combatToNPC);
 					DBUtil.closeQuietly(locationToPuzzle);	
 					DBUtil.closeQuietly(puzzle);
+					DBUtil.closeQuietly(lootItems);
 				}
 			}
 		});
@@ -3605,6 +3727,7 @@ public class DerbyDatabase implements IDatabase {
 				List<Stat> playerStatsList; 
 				List<Item> itemList; 
 				List<Loot> lootList;
+				List<Pair<Integer, Integer>> lootItemsList; 
 				List<Location> locationList; 
 				List<Pair<Integer, Integer>> locationToNPC; 
 				List<WinCondition> winConditionList;
@@ -3631,6 +3754,7 @@ public class DerbyDatabase implements IDatabase {
 				playerStatsList = new ArrayList<Stat>();
 				itemList = new ArrayList<Item>();
 				lootList = new ArrayList<Loot>();
+				lootItemsList = new ArrayList<Pair<Integer, Integer>>(); 
 				locationList = new ArrayList<Location>();
 				locationToNPC = new ArrayList<Pair<Integer, Integer>>();
 				winConditionList = new ArrayList<WinCondition>();
@@ -3656,7 +3780,8 @@ public class DerbyDatabase implements IDatabase {
 					playerInventory.addAll(InitialData.getPlayerInventory());
 					playerStatsList.addAll(InitialData.getPlayerStats()); 
 					itemList.addAll(InitialData.getItem());
-					lootList.addAll(InitialData.getLoot(itemList));
+					lootItemsList.addAll(InitialData.getLootItems()); 
+					lootList.addAll(InitialData.getLoot(itemList, lootItemsList));
 					
 					locationToNPC.addAll(InitialData.getLocationToNPC());
 					winConditionList.addAll(InitialData.getWinCondition());
@@ -3741,6 +3866,7 @@ public class DerbyDatabase implements IDatabase {
 				insertNewLocationToPuzzle(locationToPuzzle, locationMax, puzzleMax); 
 				InsertNewCombatToNPC(combatToNPC, combatMax, npcMax);
 				InsertNewNPCToStats(npcToStats, npcMax, npcStatsMax); 
+				insertNewLootItems(lootItemsList, lootMax, itemMax); 
 				insertNewPlayer(playerList.get(0), locationMax, playerMax); 
 				insertNewPlayerToStats(playerToStats, playerMax, playerStatsMax); 
 				insertNewPlayerInventory(playerList.get(0), playerMax, itemMax);
